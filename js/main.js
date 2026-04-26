@@ -240,7 +240,7 @@ const langData = {
         footer_advantages: '核心优势',
         footer_partners: '合作伙伴',
         footer_follow: '关注我们',
-        footer_copyright: '© 2026 中韩出海数智港. 保留所有权利. 沪ICP备2026007459号  
+         '© 2026 中韩出海数智港. 保留所有权利. 沪ICP备2026007459号  
         footer_privacy: '隐私政策',
         footer_terms: '服务条款'
     },
@@ -320,7 +320,7 @@ const langData = {
         footer_advantages: '핵심 장점',
         footer_partners: '협력 파트너',
         footer_follow: '팔로우',
-        footer_copyright: '© 2026 한중 해외진출 디지털 포트. 모든 권리 보유.',
+         '© 2026 한중 해외진출 디지털 포트. 모든 권리 보유.',
         footer_privacy: '개인 정보 보호 정책',
         footer_terms: '서비스 약관'
     }
