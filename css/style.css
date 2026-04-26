@@ -825,31 +825,58 @@ body.light-mode .hero::before {
 
 .footer__bottom {
     display: flex;
+    flex-wrap: wrap;
     justify-content: space-between;
     align-items: center;
-    padding-top: 40px;
+    gap: 12px 24px;
+    padding-top: 28px;
     border-top: 1px solid var(--glass-border);
 }
 
 .footer__copyright {
-    font-size: 14px;
+    font-size: 13px;
     color: var(--text-muted);
+    line-height: 1.7;
+}
+
+.footer__copyright a {
+    color: var(--accent-primary);
+    text-decoration: none;
+    transition: color 200ms ease;
+}
+
+.footer__copyright a:hover {
+    color: var(--text-primary, #e0e0e0);
+    text-decoration: underline;
 }
 
 .footer__legal {
     display: flex;
-    gap: 24px;
+    gap: 20px;
+    flex-wrap: wrap;
 }
 
 .footer__legal a {
-    font-size: 14px;
+    position: relative;
+    font-size: 13px;
     color: var(--text-muted);
     text-decoration: none;
-    transition: var(--transition-fast);
+    transition: color 200ms ease;
+}
+
+.footer__legal a + a::before {
+    content: "";
+    position: absolute;
+    left: -10px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 1px;
+    height: 12px;
+    background: var(--glass-border);
 }
 
 .footer__legal a:hover {
-    color: var(--text-secondary);
+    color: var(--text-primary);
 }
 
 /* 响应式设计 */
@@ -953,16 +980,14 @@ body.light-mode .hero::before {
         gap: 32px;
     }
     
-    .footer__bottom {
-        flex-direction: column;
-        gap: 16px;
+   .footer__bottom {
+        justify-content: center;
         text-align: center;
     }
     
     .footer__legal {
         justify-content: center;
     }
-}
 
 /* 动画效果 */
 @keyframes fadeIn {
