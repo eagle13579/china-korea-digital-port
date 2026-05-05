@@ -469,6 +469,23 @@
                 transform: translateY(0);
             }
         }
+
+        /* 法律免责声明 */
+        .team__disclaimer {
+            background: var(--glass-bg);
+            border-top: 1px solid var(--glass-border);
+            padding: 24px 0;
+            margin-top: 20px;
+        }
+        .team__disclaimer p {
+            font-size: 12px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            opacity: 0.7;
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
@@ -541,6 +558,14 @@
             </div>
         </div>
     </section>
+
+    <!-- 法律免责声明 -->
+    <div class="team__disclaimer">
+        <div class="container">
+            <p data-lang-key="team_disclaimer_zh">※ 本页面展示的数字员工均为AI数字员工，经验数据基于AI训练模型模拟，为能力展示参考，非真实服务记录。月薪对标数据基于行业薪资估算，仅供参考。AI数字员工不替代持证律师/会计师/合规师等专业人士的服务。</p>
+            <p data-lang-key="team_disclaimer_ko" style="display:none;">※ 본 페이지에 표시된 디지털 직원은 AI 디지털 직원입니다. 경험 데이터는 AI 훈련 모델 시뮬레이션을 기반으로 한 능력 표시 참고 자료이며 실제 서비스 기록이 아닙니다. 월급 비교 데이터는 업계 급여 추정치를 기준으로 한 참고용입니다. AI 디지털 직원은 공인 변호사/회계사/규정 준수 전문가 등의 전문 서비스를 대체하지 않습니다.</p>
+        </div>
+    </div>
 
     <!-- 页脚（复用现有样式） -->
     <footer class="footer">
@@ -767,6 +792,13 @@
             } catch(e) {
                 console.error('Translation error:', e);
             }
+            // 免责声明语言切换
+            const disclaimerZh = document.querySelector('[data-lang-key="team_disclaimer_zh"]');
+            const disclaimerKo = document.querySelector('[data-lang-key="team_disclaimer_ko"]');
+            if (disclaimerZh && disclaimerKo) {
+                disclaimerZh.style.display = lang === 'ko-KR' ? 'none' : 'block';
+                disclaimerKo.style.display = lang === 'ko-KR' ? 'block' : 'none';
+            }
         }
 
         // 监听语言切换——通过监听 localStorage 变化和定时检查
@@ -780,9 +812,12 @@
 
         function inviteEmployee(id, name) {
             const lang = getCurrentLang();
+            const notice = lang === 'ko-KR'
+                ? '※ 본 서비스는 AI 디지털 직원이 제공하며, 콘텐츠는 참고용입니다. 공식적인 법률 의견을 대체하지 않으며 변호사/공인회계사 등 전문가의 서비스를 대체하지 않습니다.'
+                : '※ 本服务由AI数字员工提供，内容仅供参考，不构成正式法律意见，不替代持证律师/会计师等专业人士的服务。';
             const msg = lang === 'ko-KR'
-                ? `${name}님을 초대하시겠습니까? 문의 페이지로 이동합니다.`
-                : `即将邀请「${name}」为您服务，请联系我们开启合作。`;
+                ? `${name}님을 초대하시겠습니까? 문의 페이지로 이동합니다.\n\n${notice}`
+                : `即将邀请「${name}」为您服务，请联系我们开启合作。\n\n${notice}`;
             if (confirm(msg)) {
                 window.location.href = 'index.html#contact';
             }
