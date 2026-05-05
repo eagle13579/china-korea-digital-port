@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-lang-key="team_title">数字员工团队 - 中韩出海数智港</title>
+    <link rel="icon" href="favicon.ico">
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* ========== Team Page Specific Styles ========== */
+        .team-page {
+            padding-top: 140px;
+            padding-bottom: 100px;
+            min-height: 100vh;
+        }
+
+        .team__header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .team__header h2 {
+            font-size: 42px;
+            font-weight: 800;
+            margin-bottom: 16px;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .team__header p {
+            font-size: 18px;
+            color: var(--text-secondary);
+            max-width: 650px;
+            margin: 0 auto;
+            line-height: 1.7;
+        }
+
+        .team__header .sub-badge {
+            display: inline-block;
+            margin-top: 16px;
+            padding: 6px 20px;
+            border-radius: 20px;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            color: var(--accent-primary);
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .team__header .sub-badge i {
+            margin-right: 6px;
+        }
+
+        /* Employee Grid */
+        .employee-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+            gap: 28px;
+            max-width: 1300px;
+            margin: 0 auto;
+        }
+
+        /* Employee Card - Recruiting Market Style */
+        .employee-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            overflow: hidden;
+            transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .employee-card:hover {
+            transform: translateY(-6px);
+            border-color: var(--accent-primary);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        body.light-mode .employee-card:hover {
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Card Header - Avatar area */
+        .employee-card__header {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            padding: 28px 28px 0;
+        }
+
+        .employee-avatar {
+            width: 72px;
+            height: 72px;
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            font-weight: 700;
+            color: #fff;
+            flex-shrink: 0;
+            position: relative;
+        }
+
+        .employee-avatar .online-dot {
+            position: absolute;
+            bottom: 2px;
+            right: 2px;
+            width: 14px;
+            height: 14px;
+            background: #22c55e;
+            border: 2px solid var(--bg-secondary);
+            border-radius: 50%;
+        }
+
+        .employee-card__info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .employee-name-row {
+            display: flex;
+            align-items: baseline;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .employee-name-zh {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .employee-name-ko {
+            font-size: 16px;
+            color: var(--text-muted);
+        }
+
+        .employee-level {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 6px;
+            background: var(--accent-gradient);
+            color: #fff;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .employee-title {
+            font-size: 15px;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+
+        /* Price Tag */
+        .employee-card__price {
+            padding: 16px 28px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--glass-border);
+            background: var(--bg-tertiary);
+            margin: 16px 0 0;
+        }
+
+        .price-tag {
+            display: flex;
+            align-items: baseline;
+            gap: 4px;
+        }
+
+        .price-amount {
+            font-size: 28px;
+            font-weight: 800;
+            color: var(--accent-primary);
+            line-height: 1;
+        }
+
+        .price-currency {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--accent-primary);
+        }
+
+        .price-label {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-left: 4px;
+        }
+
+        .cost-compare {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .cost-compare i {
+            color: #22c55e;
+            font-size: 15px;
+        }
+
+        .cost-compare .human-cost {
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        /* Capabilities */
+        .employee-card__body {
+            padding: 20px 28px;
+            flex: 1;
+        }
+
+        .capabilities-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .capabilities-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .capabilities-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        .capabilities-list li i {
+            color: var(--accent-primary);
+            font-size: 14px;
+            margin-top: 3px;
+            flex-shrink: 0;
+        }
+
+        .employee-experience {
+            margin-top: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: var(--text-muted);
+            padding: 10px 14px;
+            background: var(--glass-bg);
+            border-radius: 10px;
+            border: 1px solid var(--glass-border);
+        }
+
+        .employee-experience i {
+            color: var(--accent-secondary);
+        }
+
+        /* Card Footer - CTA */
+        .employee-card__footer {
+            padding: 16px 28px 24px;
+            border-top: 1px solid var(--glass-border);
+        }
+
+        .btn-invite {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            padding: 14px 20px;
+            border: none;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: var(--accent-gradient);
+            color: #fff;
+            text-decoration: none;
+        }
+
+        .btn-invite:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(139, 92, 246, 0.4);
+        }
+
+        .btn-invite i {
+            font-size: 18px;
+        }
+
+        /* Loading & Error States */
+        .team-loading {
+            text-align: center;
+            padding: 80px 20px;
+            color: var(--text-secondary);
+        }
+
+        .team-loading .spinner {
+            width: 48px;
+            height: 48px;
+            border: 3px solid var(--glass-border);
+            border-top-color: var(--accent-primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .team-error {
+            text-align: center;
+            padding: 80px 20px;
+            color: #ef4444;
+        }
+
+        .team-error i {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+
+        .team-error p {
+            color: var(--text-secondary);
+            margin-top: 8px;
+        }
+
+        /* Empty state */
+        .team-empty {
+            text-align: center;
+            padding: 80px 20px;
+            color: var(--text-secondary);
+        }
+
+        .team-empty i {
+            font-size: 48px;
+            margin-bottom: 16px;
+            color: var(--text-muted);
+        }
+
+        /* Back link */
+        .team__back {
+            text-align: center;
+            margin-top: 50px;
+        }
+
+        .team__back a {
+            color: var(--accent-primary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: var(--transition-fast);
+        }
+
+        .team__back a:hover {
+            color: var(--accent-secondary);
+            text-decoration: underline;
+        }
+
+        .team__back a i {
+            margin-right: 6px;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .employee-grid {
+                grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+                gap: 24px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .team-page {
+                padding-top: 120px;
+                padding-bottom: 60px;
+            }
+
+            .team__header h2 {
+                font-size: 30px;
+            }
+
+            .team__header p {
+                font-size: 16px;
+            }
+
+            .employee-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+                padding: 0 4px;
+            }
+
+            .employee-card__header {
+                padding: 20px 20px 0;
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .employee-name-row {
+                justify-content: center;
+            }
+
+            .employee-card__price {
+                padding: 14px 20px;
+                flex-direction: column;
+                gap: 8px;
+                text-align: center;
+            }
+
+            .employee-card__body {
+                padding: 16px 20px;
+            }
+
+            .employee-card__footer {
+                padding: 14px 20px 20px;
+            }
+
+            .employee-avatar {
+                width: 64px;
+                height: 64px;
+                font-size: 24px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .team__header h2 {
+                font-size: 24px;
+            }
+
+            .employee-name-zh {
+                font-size: 20px;
+            }
+
+            .price-amount {
+                font-size: 24px;
+            }
+        }
+
+        /* Smooth entrance animation */
+        .employee-card {
+            opacity: 0;
+            transform: translateY(20px);
+            animation: cardEntrance 0.5s ease forwards;
+        }
+
+        .employee-card:nth-child(1) { animation-delay: 0.05s; }
+        .employee-card:nth-child(2) { animation-delay: 0.1s; }
+        .employee-card:nth-child(3) { animation-delay: 0.15s; }
+        .employee-card:nth-child(4) { animation-delay: 0.2s; }
+        .employee-card:nth-child(5) { animation-delay: 0.25s; }
+        .employee-card:nth-child(6) { animation-delay: 0.3s; }
+
+        @keyframes cardEntrance {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏（复用现有样式） -->
+    <header class="header">
+        <div class="container">
+            <div class="header__content">
+                <div class="header__logo">
+                    <h1 class="logo__text" data-lang-key="logo">中韩出海数智港</h1>
+                </div>
+                <nav class="header__nav">
+                    <ul class="nav__list">
+                        <li class="nav__item"><a href="index.html" class="nav__link" data-lang-key="home">首页</a></li>
+                        <li class="nav__item"><a href="index.html#services" class="nav__link" data-lang-key="services">服务内容</a></li>
+                        <li class="nav__item"><a href="index.html#features" class="nav__link" data-lang-key="features">核心功能</a></li>
+                        <li class="nav__item"><a href="team.html" class="nav__link nav__link--active" data-lang-key="team_nav">数字员工团队</a></li>
+                        <li class="nav__item"><a href="index.html#contact" class="nav__link" data-lang-key="contact">联系我们</a></li>
+                    </ul>
+                </nav>
+                <div class="header__lang">
+                    <button class="lang-btn" data-lang="zh-CN">中文</button>
+                    <button class="lang-btn" data-lang="ko-KR">한국어</button>
+                </div>
+                <div class="header__theme">
+                    <button class="theme-btn" id="themeToggle" aria-label="切换主题">
+                        <i class="bi bi-moon"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- 数字员工团队页面 -->
+    <section class="team-page">
+        <div class="container">
+            <div class="team__header">
+                <h2 data-lang-key="team_hero_title">AI数字员工团队</h2>
+                <p data-lang-key="team_hero_subtitle">我们的AI数字合规官覆盖中韩跨境全链路合规领域，7&times;24小时在线，为企业提供专业、高效、低成本的合规服务。</p>
+                <div class="sub-badge">
+                    <i class="bi bi-robot"></i>
+                    <span data-lang-key="team_badge">共6位AI数字员工 · 即刻可用</span>
+                </div>
+            </div>
+
+            <!-- 加载状态 -->
+            <div class="team-loading" id="teamLoading">
+                <div class="spinner"></div>
+                <p data-lang-key="team_loading">正在加载数字员工数据...</p>
+            </div>
+
+            <!-- 错误状态 -->
+            <div class="team-error" id="teamError" style="display:none;">
+                <i class="bi bi-exclamation-triangle"></i>
+                <h3 data-lang-key="team_error_title">数据加载失败</h3>
+                <p data-lang-key="team_error_desc">请检查网络连接后刷新页面重试</p>
+            </div>
+
+            <!-- 空状态 -->
+            <div class="team-empty" id="teamEmpty" style="display:none;">
+                <i class="bi bi-people"></i>
+                <h3 data-lang-key="team_empty_title">暂无数字员工</h3>
+                <p data-lang-key="team_empty_desc">数字员工团队正在组建中，敬请期待</p>
+            </div>
+
+            <!-- 员工卡片网格 -->
+            <div class="employee-grid" id="employeeGrid" style="display:none;"></div>
+
+            <div class="team__back">
+                <a href="index.html"><i class="bi bi-arrow-left"></i> <span data-lang-key="team_back">返回首页</span></a>
+            </div>
+        </div>
+    </section>
+
+    <!-- 页脚（复用现有样式） -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer__content">
+                <div class="footer__logo">
+                    <h3 class="logo__text" data-lang-key="logo">中韩出海数智港</h3>
+                    <p class="footer__tagline" data-lang-key="footer_tagline">AI赋能企业跨境发展</p>
+                </div>
+                <div class="footer__links">
+                    <h4 class="footer__heading" data-lang-key="footer_services">服务</h4>
+                    <ul class="footer__list">
+                        <li><a href="index.html#services" data-lang-key="service_china_to_korea">中国企业进韩国</a></li>
+                        <li><a href="index.html#services" data-lang-key="service_korea_to_china">韩国企业进中国</a></li>
+                        <li><a href="index.html#features" data-lang-key="footer_ai_services">AI赋能服务</a></li>
+                        <li><a href="#" data-lang-key="footer_opc_ai">OPC+AI模式</a></li>
+                    </ul>
+                </div>
+                <div class="footer__links">
+                    <h4 class="footer__heading" data-lang-key="footer_about">关于</h4>
+                    <ul class="footer__list">
+                        <li><a href="index.html#about" data-lang-key="footer_company">公司介绍</a></li>
+                        <li><a href="index.html#features" data-lang-key="footer_advantages">核心优势</a></li>
+                        <li><a href="index.html#contact" data-lang-key="contact">联系我们</a></li>
+                        <li><a href="#" data-lang-key="footer_partners">合作伙伴</a></li>
+                    </ul>
+                </div>
+                <div class="footer__social">
+                    <h4 class="footer__heading" data-lang-key="footer_follow">关注我们</h4>
+                    <div class="social__icons">
+                        <a href="#" class="social__icon"><i class="bi bi-weixin"></i></a>
+                        <a href="#" class="social__icon"><i class="bi bi-weibo"></i></a>
+                        <a href="#" class="social__icon"><i class="bi bi-linkedin"></i></a>
+                        <a href="#" class="social__icon"><i class="bi bi-youtube"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer__bottom">
+                <p class="footer__copyright" data-lang-key="footer_copyright">© 2026 中韩出海数智港. 保留所有权利.</p>
+                <div class="footer__legal">
+                    <a href="#" data-lang-key="footer_privacy">隐私政策</a>
+                    <a href="#" data-lang-key="footer_terms">服务条款</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+    <script>
+        // ========== Team Page Logic ==========
+
+        // 扩展翻译数据（追加到 main.js 的 translations 对象中）
+        (function extendTranslations() {
+            const extraTranslations = {
+                'zh-CN': {
+                    home: '首页',
+                    team_nav: '数字员工团队',
+                    team_title: '数字员工团队 - 中韩出海数智港',
+                    team_hero_title: 'AI数字员工团队',
+                    team_hero_subtitle: '我们的AI数字合规官覆盖中韩跨境全链路合规领域，7×24小时在线，为企业提供专业、高效、低成本的合规服务。',
+                    team_badge: '共6位AI数字员工 · 即刻可用',
+                    team_loading: '正在加载数字员工数据...',
+                    team_error_title: '数据加载失败',
+                    team_error_desc: '请检查网络连接后刷新页面重试',
+                    team_empty_title: '暂无数字员工',
+                    team_empty_desc: '数字员工团队正在组建中，敬请期待',
+                    team_back: '返回首页',
+                    team_invite: '邀请Ta为我服务',
+                    team_capabilities: '核心能力',
+                    team_monthly: '月薪',
+                    team_compare: '对标真人成本',
+                },
+                'ko-KR': {
+                    home: '홈',
+                    team_nav: '디지털 직원 팀',
+                    team_title: '디지털 직원 팀 - 중한 해외진출 디지털 포트',
+                    team_hero_title: 'AI 디지털 직원 팀',
+                    team_hero_subtitle: 'AI 디지털 규제 전문가가 중한跨境 전체 규제 영역을 커버하며, 7×24시간 온라인으로 기업에 전문적이고 효율적이며 저렴한 규제 서비스를 제공합니다.',
+                    team_badge: '총 6명의 AI 디지털 직원 · 즉시 이용 가능',
+                    team_loading: '디지털 직원 데이터를 불러오는 중...',
+                    team_error_title: '데이터 로드 실패',
+                    team_error_desc: '네트워크 연결을 확인하고 새로고침해 주세요',
+                    team_empty_title: '디지털 직원 없음',
+                    team_empty_desc: '디지털 직원 팀이 구성 중입니다. 기대해 주세요',
+                    team_back: '홈으로 돌아가기',
+                    team_invite: '초대하여 서비스 받기',
+                    team_capabilities: '핵심 역량',
+                    team_monthly: '월급',
+                    team_compare: '인건비 대비',
+                }
+            };
+
+            // 合并到全局 translations 对象
+            if (typeof translations !== 'undefined') {
+                for (const lang in extraTranslations) {
+                    if (!translations[lang]) translations[lang] = {};
+                    Object.assign(translations[lang], extraTranslations[lang]);
+                }
+            } else {
+                // 如果 translations 还没加载，等 DOM 就绪后再合并
+                document.addEventListener('DOMContentLoaded', function() {
+                    if (typeof translations !== 'undefined') {
+                        for (const lang in extraTranslations) {
+                            if (!translations[lang]) translations[lang] = {};
+                            Object.assign(translations[lang], extraTranslations[lang]);
+                        }
+                        // 重新应用当前语言
+                        const currentLang = localStorage.getItem('lang') || 'zh-CN';
+                        const langBtns = document.querySelectorAll('.lang-btn');
+                        langBtns.forEach(btn => {
+                            if (btn.dataset.lang === currentLang) {
+                                btn.click();
+                            }
+                        });
+                    }
+                });
+            }
+        })();
+
+        // ========== 员工卡片渲染 ==========
+
+        let cachedEmployees = []; // 缓存员工数据，语言切换时重新渲染
+
+        // 头像颜色映射
+        const avatarColors = [
+            '#8B5CF6', '#06B6D4', '#10B981',
+            '#F59E0B', '#EF4444', '#EC4899'
+        ];
+
+        function getAvatarInitial(name) {
+            return name.charAt(0);
+        }
+
+        function getRandomColor(name) {
+            let hash = 0;
+            for (let i = 0; i < name.length; i++) {
+                hash = name.charCodeAt(i) + ((hash << 5) - hash);
+            }
+            return avatarColors[Math.abs(hash) % avatarColors.length];
+        }
+
+        // 根据当前语言获取员工字段
+        function getEmployeeField(employee, fieldBase, lang) {
+            const isKo = lang === 'ko-KR';
+            const koField = fieldBase + '_ko';
+            const zhField = fieldBase + '_zh';
+            if (isKo) return employee[koField] || employee[zhField] || employee[fieldBase];
+            return employee[zhField] || employee[fieldBase] || employee[koField];
+        }
+
+        function getCurrentLang() {
+            return localStorage.getItem('lang') || 'zh-CN';
+        }
+
+        function renderEmployeeGrid() {
+            const gridEl = document.getElementById('employeeGrid');
+            if (!gridEl || cachedEmployees.length === 0) return;
+            gridEl.style.display = 'grid';
+            const lang = getCurrentLang();
+            gridEl.innerHTML = '';
+            cachedEmployees.forEach(employee => {
+                const card = document.createElement('div');
+                card.className = 'employee-card';
+                const color = employee.avatar_color || getRandomColor(employee.name_zh);
+                const title = getEmployeeField(employee, 'title', lang);
+                const caps = getEmployeeField(employee, 'capabilities', lang);
+                const exp = getEmployeeField(employee, 'experience', lang);
+                const cost = getEmployeeField(employee, 'cost_comparison', lang);
+                card.innerHTML = `
+                    <div class="employee-card__header">
+                        <div class="employee-avatar" style="background: ${color};">
+                            ${getAvatarInitial(employee.name_zh)}
+                            <span class="online-dot"></span>
+                        </div>
+                        <div class="employee-card__info">
+                            <div class="employee-name-row">
+                                <span class="employee-name-zh">${employee.name_zh}</span>
+                                <span class="employee-name-ko">${employee.name_ko}</span>
+                                <span class="employee-level">${employee.level}</span>
+                            </div>
+                            <div class="employee-title">${title}</div>
+                        </div>
+                    </div>
+                    <div class="employee-card__price">
+                        <div class="price-tag">
+                            <span class="price-currency">¥</span>
+                            <span class="price-amount">${employee.price.toLocaleString()}</span>
+                            <span class="price-label" data-lang-key="team_monthly">/月薪</span>
+                        </div>
+                        <div class="cost-compare">
+                            <i class="bi bi-person-down"></i>
+                            <span data-lang-key="team_compare">对标真人成本</span>
+                            <span class="human-cost">${cost}</span>
+                        </div>
+                    </div>
+                    <div class="employee-card__body">
+                        <div class="capabilities-title" data-lang-key="team_capabilities">核心能力</div>
+                        <ul class="capabilities-list">
+                            ${caps.map(cap => `<li><i class="bi bi-check2"></i> ${cap}</li>`).join('')}
+                        </ul>
+                        <div class="employee-experience">
+                            <i class="bi bi-briefcase"></i>
+                            <span>${exp}</span>
+                        </div>
+                    </div>
+                    <div class="employee-card__footer">
+                        <button class="btn-invite" onclick="inviteEmployee(${employee.id}, '${employee.name_zh}')">
+                            <i class="bi bi-plus-circle"></i>
+                            <span data-lang-key="team_invite">邀请Ta为我服务</span>
+                        </button>
+                    </div>
+                `;
+                gridEl.appendChild(card);
+            });
+            // 重新应用翻译（data-lang-key元素）
+            try {
+                const langData = typeof translations !== 'undefined' ? translations[lang] : null;
+                if (langData) {
+                    document.querySelectorAll('[data-lang-key]').forEach(el => {
+                        const key = el.dataset.langKey;
+                        if (langData[key]) el.textContent = langData[key];
+                    });
+                }
+            } catch(e) {
+                console.error('Translation error:', e);
+            }
+        }
+
+        // 监听语言切换——通过监听 localStorage 变化和定时检查
+        setInterval(function() {
+            const current = getCurrentLang();
+            if (window._lastLang && window._lastLang !== current) {
+                renderEmployeeGrid();
+            }
+            window._lastLang = current;
+        }, 300);
+
+        function inviteEmployee(id, name) {
+            const lang = getCurrentLang();
+            const msg = lang === 'ko-KR'
+                ? `${name}님을 초대하시겠습니까? 문의 페이지로 이동합니다.`
+                : `即将邀请「${name}」为您服务，请联系我们开启合作。`;
+            if (confirm(msg)) {
+                window.location.href = 'index.html#contact';
+            }
+        }
+
+        // ========== 主逻辑 ==========
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const loadingEl = document.getElementById('teamLoading');
+            const errorEl = document.getElementById('teamError');
+            const emptyEl = document.getElementById('teamEmpty');
+            const gridEl = document.getElementById('employeeGrid');
+
+            // 从 API 获取数据
+            fetch('/api/v1/digital-employees')
+                .then(response => {
+                    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                    return response.json();
+                })
+                .then(result => {
+                    loadingEl.style.display = 'none';
+                    if (!result.success || !result.data || result.data.length === 0) {
+                        emptyEl.style.display = 'block';
+                        return;
+                    }
+                    cachedEmployees = result.data;
+                    window._lastLang = getCurrentLang();
+                    renderEmployeeGrid();
+                })
+                .catch(err => {
+                    console.error('Failed to fetch employees:', err);
+                    loadingEl.style.display = 'none';
+                    errorEl.style.display = 'block';
+                });
+        });
+    </script>
+</body>
+</html>
+logout

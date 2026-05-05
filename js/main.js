@@ -202,6 +202,8 @@ const translations = {
         about: '关于我们',
         services: '服务内容',
         features: '核心功能',
+        home: '首页',
+        team_nav: '数字员工团队',
         contact: '联系我们',
         consult: '预约咨询',
         hero_title: '中韩出海数智港',
@@ -276,6 +278,8 @@ const translations = {
         about: '회사 소개',
         services: '서비스',
         features: '핵심 기능',
+        home: '홈',
+        team_nav: '디지털 직원 팀',
         contact: '문의하기',
         consult: '상담 예약',
         hero_title: '중한 해외진출 디지털 포트',
@@ -346,3 +350,4 @@ const translations = {
         feature_employees_desc: '6명의 AI 디지털 직원이 업종 허가, 데이터 보안, 지식재산권, 재무세무, 고용, 비자 전 과정 커버',
     }
 };
+logout
