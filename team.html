@@ -606,8 +606,8 @@
             <div class="footer__bottom">
                 <p class="footer__copyright" data-lang-key="footer_copyright">© 2026 中韩出海数智港. 保留所有权利. <a href="https://beian.miit.gov.cn" target="_blank" rel="nofollow" style="color:inherit;text-decoration:none;">沪ICP备2026007459号</a></p>
                 <div class="footer__legal">
-                    <a href="#" data-lang-key="footer_privacy">隐私政策</a>
-                    <a href="#" data-lang-key="footer_terms">服务条款</a>
+                    <a href="privacy.html" data-lang-key="footer_privacy">隐私政策</a>
+                    <a href="terms.html" data-lang-key="footer_terms">服务条款</a>
                 </div>
             </div>
         </div>
@@ -734,50 +734,127 @@
                 const caps = getEmployeeField(employee, 'capabilities', lang);
                 const exp = getEmployeeField(employee, 'experience', lang);
                 const cost = getEmployeeField(employee, 'cost_comparison', lang);
-                card.innerHTML = `
-                    <div class="employee-card__header">
-                        <div class="employee-avatar" style="background: ${color};">
-                            ${getAvatarInitial(employee.name_zh)}
-                            <span class="online-dot"></span>
-                        </div>
-                        <div class="employee-card__info">
-                            <div class="employee-name-row">
-                                <span class="employee-name-zh">${employee.name_zh}</span>
-                                <span class="employee-name-ko">${employee.name_ko}</span>
-                                <span class="employee-level">${employee.level}</span>
-                            </div>
-                            <div class="employee-title">${title}</div>
-                        </div>
-                    </div>
-                    <div class="employee-card__price">
-                        <div class="price-tag">
-                            <span class="price-currency">¥</span>
-                            <span class="price-amount">${employee.price.toLocaleString()}</span>
-                            <span class="price-label" data-lang-key="team_monthly">/月薪</span>
-                        </div>
-                        <div class="cost-compare">
-                            <i class="bi bi-person-down"></i>
-                            <span data-lang-key="team_compare">对标真人成本</span>
-                            <span class="human-cost">${cost}</span>
-                        </div>
-                    </div>
-                    <div class="employee-card__body">
-                        <div class="capabilities-title" data-lang-key="team_capabilities">核心能力</div>
-                        <ul class="capabilities-list">
-                            ${caps.map(cap => `<li><i class="bi bi-check2"></i> ${cap}</li>`).join('')}
-                        </ul>
-                        <div class="employee-experience">
-                            <i class="bi bi-briefcase"></i>
-                            <span>${exp}</span>
-                        </div>
-                    </div>
-                    <div class="employee-card__footer">
-                        <button class="btn-invite" onclick="inviteEmployee(${employee.id}, '${employee.name_zh}')">
-                            <i class="bi bi-plus-circle"></i>
-                            <span data-lang-key="team_invite">邀请Ta为我服务</span>
-                        </button>
-                    </div>
-                `;
+
+                // 使用DOM API构建卡片（防XSS）
+                const header = document.createElement('div');
+                header.className = 'employee-card__header';
+                const avatar = document.createElement('div');
+                avatar.className = 'employee-avatar';
+                avatar.style.background = color;
+                avatar.textContent = getAvatarInitial(employee.name_zh);
+                const dot = document.createElement('span');
+                dot.className = 'online-dot';
+                avatar.appendChild(dot);
+                header.appendChild(avatar);
+                const info = document.createElement('div');
+                info.className = 'employee-card__info';
+                const nameRow = document.createElement('div');
+                nameRow.className = 'employee-name-row';
+                const nameZh = document.createElement('span');
+                nameZh.className = 'employee-name-zh';
+                nameZh.textContent = employee.name_zh;
+                nameRow.appendChild(nameZh);
+                const nameKo = document.createElement('span');
+                nameKo.className = 'employee-name-ko';
+                nameKo.textContent = employee.name_ko;
+                nameRow.appendChild(nameKo);
+                const lvl = document.createElement('span');
+                lvl.className = 'employee-level';
+                lvl.textContent = employee.level;
+                nameRow.appendChild(lvl);
+                info.appendChild(nameRow);
+                const titleEl = document.createElement('div');
+                titleEl.className = 'employee-title';
+                titleEl.textContent = title;
+                info.appendChild(titleEl);
+                header.appendChild(info);
+                card.appendChild(header);
+
+                // 价格区
+                const priceDiv = document.createElement('div');
+                priceDiv.className = 'employee-card__price';
+                const tag = document.createElement('div');
+                tag.className = 'price-tag';
+                const curr = document.createElement('span');
+                curr.className = 'price-currency';
+                curr.textContent = '¥';
+                tag.appendChild(curr);
+                const amt = document.createElement('span');
+                amt.className = 'price-amount';
+                amt.textContent = employee.price.toLocaleString();
+                tag.appendChild(amt);
+                const lbl = document.createElement('span');
+                lbl.className = 'price-label';
+                lbl.setAttribute('data-lang-key', 'team_monthly');
+                lbl.textContent = '/月薪';
+                tag.appendChild(lbl);
+                priceDiv.appendChild(tag);
+                const cmp = document.createElement('div');
+                cmp.className = 'cost-compare';
+                const icon1 = document.createElement('i');
+                icon1.className = 'bi bi-person-down';
+                cmp.appendChild(icon1);
+                const cmpLabel = document.createElement('span');
+                cmpLabel.setAttribute('data-lang-key', 'team_compare');
+                cmpLabel.textContent = '对标真人成本';
+                cmp.appendChild(cmpLabel);
+                const humanCost = document.createElement('span');
+                humanCost.className = 'human-cost';
+                humanCost.textContent = cost;
+                cmp.appendChild(humanCost);
+                priceDiv.appendChild(cmp);
+                card.appendChild(priceDiv);
+
+                // 能力区
+                const body = document.createElement('div');
+                body.className = 'employee-card__body';
+                const capTitle = document.createElement('div');
+                capTitle.className = 'capabilities-title';
+                capTitle.setAttribute('data-lang-key', 'team_capabilities');
+                capTitle.textContent = '核心能力';
+                body.appendChild(capTitle);
+                const capList = document.createElement('ul');
+                capList.className = 'capabilities-list';
+                (caps || []).forEach(cap => {
+                    const li = document.createElement('li');
+                    const icon2 = document.createElement('i');
+                    icon2.className = 'bi bi-check2';
+                    li.appendChild(icon2);
+                    li.appendChild(document.createTextNode(' ' + cap));
+                    capList.appendChild(li);
+                });
+                body.appendChild(capList);
+                const expDiv = document.createElement('div');
+                expDiv.className = 'employee-experience';
+                const icon3 = document.createElement('i');
+                icon3.className = 'bi bi-briefcase';
+                expDiv.appendChild(icon3);
+                const expSpan = document.createElement('span');
+                expSpan.textContent = exp;
+                expDiv.appendChild(expSpan);
+                body.appendChild(expDiv);
+                card.appendChild(body);
+
+                // 按钮区
+                const footer = document.createElement('div');
+                footer.className = 'employee-card__footer';
+                const btn = document.createElement('button');
+                btn.className = 'btn-invite';
+                btn.setAttribute('data-employee-id', employee.id);
+                btn.setAttribute('data-employee-name', employee.name_zh);
+                btn.addEventListener('click', function() {
+                    inviteEmployee(this.getAttribute('data-employee-id'), this.getAttribute('data-employee-name'));
+                });
+                const icon4 = document.createElement('i');
+                icon4.className = 'bi bi-plus-circle';
+                btn.appendChild(icon4);
+                const btnLabel = document.createElement('span');
+                btnLabel.setAttribute('data-lang-key', 'team_invite');
+                btnLabel.textContent = '邀请Ta为我服务';
+                btn.appendChild(btnLabel);
+                footer.appendChild(btn);
+                card.appendChild(footer);
+
                 gridEl.appendChild(card);
             });
             // 重新应用翻译（data-lang-key元素）
@@ -856,4 +933,5 @@
     </script>
 </body>
 </html>
+
 logout

@@ -4,6 +4,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>定价方案 - 中韩出海数智港</title>
+    <meta name="description" content="选择适合您的中韩出海方案：免费初评、深度方案（¥9,800）、年订阅（¥58,000）。AI数字员工驱动的跨境合规服务，按需选择。">
+    <meta name="keywords" content="韩企中国合规,中韩出海,合规咨询,中国合规,深度方案,年订阅,中韩跨境服务,数字员工">
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="定价方案 - 中韩出海数智港">
+    <meta property="og:description" content="AI数字员工驱动的跨境合规服务，免费初评、深度方案、年订阅，按需选择。">
+    <meta property="og:image" content="https://go-aiport.com/favicon.ico">
+    <meta property="og:url" content="https://go-aiport.com/pricing.html">
+    <meta property="og:locale" content="zh_CN">
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="定价方案 - 中韩出海数智港">
+    <meta name="twitter:description" content="AI数字员工驱动的跨境合规服务，免费初评、深度方案、年订阅，按需选择。">
+    <!-- Hreflang -->
+    <link rel="alternate" hreflang="zh-CN" href="https://go-aiport.com/pricing.html">
+    <link rel="alternate" hreflang="ko-KR" href="https://go-aiport.com/pricing.html?lang=ko-KR">
+    <link rel="alternate" hreflang="x-default" href="https://go-aiport.com/pricing.html">
     <link rel="icon" href="favicon.ico">
     <link rel="stylesheet" href="css/style.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
@@ -38,6 +55,11 @@
         .back-link a:hover { text-decoration: underline; }
         :root { --accent: #6366f1; }
         body.light-mode { --accent: #4f46e5; }
+        /* Pricing inquiry form section */
+        .pricing-inquiry-section { max-width: 600px; margin: 60px auto 0; background: var(--bg-secondary); border: 1px solid var(--glass-border); border-radius: 20px; padding: 40px; box-shadow: var(--glass-shadow); }
+        .pricing-inquiry-section h3 { text-align: center; margin-bottom: 8px; }
+        .pricing-inquiry-section .form__group { margin-bottom: 16px; }
+        .pricing-inquiry-section .form__input, .pricing-inquiry-section .form__textarea { width: 100%; }
     </style>
 </head>
 <body>
@@ -84,7 +106,7 @@
                         <li><i class="bi bi-check-circle"></i> 中国市场概况报告</li>
                         <li><i class="bi bi-check-circle"></i> 基础合规清单</li>
                     </ul>
-                    <a href="index.html#contact" class="pricing-cta secondary">免费咨询</a>
+                    <button class="pricing-cta secondary" onclick="openPricingInquiry('免费初评')">免费咨询</button>
                 </div>
 
                 <!-- 深度方案 -->
@@ -101,7 +123,7 @@
                         <li><i class="bi bi-check-circle"></i> 竞品深度分析</li>
                         <li><i class="bi bi-check-circle"></i> 合规完整诊断（6位数字员工）</li>
                     </ul>
-                    <a href="index.html#contact" class="pricing-cta primary">立即咨询</a>
+                    <button class="pricing-cta primary" onclick="openPricingInquiry('深度方案')">立即咨询</button>
                 </div>
 
                 <!-- 年订阅 -->
@@ -117,8 +139,44 @@
                         <li><i class="bi bi-check-circle"></i> 优先技术支持</li>
                         <li><i class="bi bi-check-circle"></i> 季度战略复盘</li>
                     </ul>
-                    <a href="index.html#contact" class="pricing-cta secondary">了解详情</a>
+                    <button class="pricing-cta secondary" onclick="openPricingInquiry('年订阅')">了解详情</button>
                 </div>
+            </div>
+
+            <!-- 定价咨询表单区域 -->
+            <div class="pricing-inquiry-section" id="pricingInquiryForm">
+                <h3 data-lang-key="pricing_inquiry_title">套餐咨询</h3>
+                <p style="text-align:center;color:var(--text-secondary);margin-bottom:24px;" data-lang-key="pricing_inquiry_desc">填写以下信息，销售团队将主动联系您</p>
+                <form id="pricingInquiryFormEl">
+                    <div class="form__group">
+                        <input type="hidden" name="plan_type" id="pricing_plan_type" value="">
+                    </div>
+                    <div class="form__group">
+                        <label class="form__label">套餐</label>
+                        <input type="text" class="form__input form__input--readonly" name="plan_type_display" id="pricing_plan_display" readonly>
+                    </div>
+                    <div class="form__group">
+                        <label class="form__label" data-lang-key="form_contact">联系人</label>
+                        <input type="text" class="form__input" name="name" required placeholder="请输入您的姓名">
+                    </div>
+                    <div class="form__group">
+                        <label class="form__label" data-lang-key="form_company">企业名称</label>
+                        <input type="text" class="form__input" name="company" placeholder="请输入企业名称">
+                    </div>
+                    <div class="form__group">
+                        <label class="form__label" data-lang-key="form_email">邮箱</label>
+                        <input type="email" class="form__input" name="email" required placeholder="请输入邮箱地址">
+                    </div>
+                    <div class="form__group">
+                        <label class="form__label" data-lang-key="form_phone">电话</label>
+                        <input type="tel" class="form__input" name="phone" placeholder="请输入联系电话">
+                    </div>
+                    <div class="form__group">
+                        <label class="form__label" data-lang-key="form_message">咨询内容</label>
+                        <textarea class="form__textarea" name="message" placeholder="请描述您的需求"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn--primary" style="width:100%;" data-lang-key="form_submit">提交咨询</button>
+                </form>
             </div>
 
             <!-- FAQ -->
@@ -152,6 +210,62 @@
             </div>
         </div>
     </footer>
+    <script src="js/toast.js"></script>
     <script src="js/main.js"></script>
+    <script>
+        // 定价页面扩展翻译
+        (function() {
+            if (typeof translations !== 'undefined') {
+                var extra = {
+                    'zh-CN': {
+                        pricing_inquiry_title: '套餐咨询',
+                        pricing_inquiry_desc: '填写以下信息，销售团队将主动联系您',
+                    },
+                    'ko-KR': {
+                        pricing_inquiry_title: '패키지 문의',
+                        pricing_inquiry_desc: '아래 정보를 입력하시면 영업팀이 연락드립니다',
+                    }
+                };
+                for (var lang in extra) {
+                    if (!translations[lang]) translations[lang] = {};
+                    Object.assign(translations[lang], extra[lang]);
+                }
+            }
+        })();
+
+        // 打开定价咨询表单（滚动到表单区域）
+        function openPricingInquiry(planType) {
+            document.getElementById('pricing_plan_type').value = planType;
+            document.getElementById('pricing_plan_display').value = planType;
+            document.getElementById('pricingInquiryForm').scrollIntoView({ behavior: 'smooth', block: 'start' });
+            // 高亮效果
+            var formEl = document.getElementById('pricingInquiryForm');
+            formEl.style.transition = 'box-shadow 0.3s ease';
+            formEl.style.boxShadow = '0 0 0 2px var(--accent)';
+            setTimeout(function() { formEl.style.boxShadow = ''; }, 1500);
+        }
+
+        // 定价咨询表单提交
+        document.addEventListener('DOMContentLoaded', function() {
+            var pricingForm = document.getElementById('pricingInquiryFormEl');
+            if (pricingForm) {
+                pricingForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    // 删除 plan_type_display 字段（仅用于显示）
+                    var formData = {};
+                    pricingForm.querySelectorAll('input, textarea').forEach(function(el) {
+                        if (el.name && el.name !== 'plan_type_display') {
+                            formData[el.name] = el.value;
+                        }
+                    });
+                    window.submitForm(pricingForm, '/api/v1/pricing/inquiry', function(data) {
+                        // 移除 display 字段
+                        delete data.plan_type_display;
+                        return data;
+                    }, 'success_pricing');
+                });
+            }
+        });
+    </script>
 </body>
 </html>

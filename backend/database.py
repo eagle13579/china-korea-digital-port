@@ -76,6 +76,23 @@ def init_db():
         )
     """)
 
+    # 服务邀请表（数字员工邀请）
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS service_inquiries (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT NOT NULL,
+            company TEXT,
+            email TEXT NOT NULL,
+            phone TEXT,
+            employee_id INTEGER,
+            employee_name TEXT,
+            message TEXT,
+            status TEXT DEFAULT 'new',
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP
+        )
+    """)
+
     conn.commit()
     conn.close()
     print(f"✅ 数据库初始化完成: {DB_PATH}")

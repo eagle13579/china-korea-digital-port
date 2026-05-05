@@ -43,6 +43,17 @@ class PricingInquiry(BaseModel):
     message: Optional[str] = Field(None, max_length=2000)
 
 
+class ServiceInquiry(BaseModel):
+    """服务邀请（数字员工邀请）模型"""
+    name: str = Field(..., min_length=1, max_length=100, description="联系人姓名")
+    company: Optional[str] = Field(None, max_length=200, description="公司名称")
+    email: str = Field(..., description="电子邮箱")
+    phone: Optional[str] = Field(None, max_length=50, description="联系电话")
+    employee_id: Optional[int] = Field(None, description="感兴趣的数字员工ID")
+    employee_name: Optional[str] = Field(None, max_length=100, description="感兴趣的数字员工姓名")
+    message: Optional[str] = Field(None, max_length=2000, description="需求描述")
+
+
 class APIResponse(BaseModel):
     """统一API响应格式"""
     success: bool = True

@@ -22,59 +22,64 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     });
 });
 
-// 表单提交
+// ===== SEO Meta 更新函数 =====
+function updateSEOMeta(lang) {
+    var seoData = window._seoMeta || {};
+    var data = seoData[lang];
+    if (!data) return;
+
+    // 更新 lang 属性
+    document.documentElement.lang = lang;
+
+    // 更新 meta description
+    var metaDesc = document.querySelector('meta[name="description"]');
+    if (metaDesc && data.description) metaDesc.content = data.description;
+
+    // 更新 OG tags
+    var ogTitle = document.querySelector('meta[property="og:title"]');
+    if (ogTitle && data.og_title) ogTitle.content = data.og_title;
+    var ogDesc = document.querySelector('meta[property="og:description"]');
+    if (ogDesc && data.og_description) ogDesc.content = data.og_description;
+
+    // 更新 Twitter Card
+    var twTitle = document.querySelector('meta[name="twitter:title"]');
+    if (twTitle && data.og_title) twTitle.content = data.og_title;
+    var twDesc = document.querySelector('meta[name="twitter:description"]');
+    if (twDesc && data.og_description) twDesc.content = data.og_description;
+
+    // 更新 JSON-LD（替换整个 script 块）
+    var jsonld = document.querySelector('script[type="application/ld+json"]');
+    if (jsonld && data.jsonld) {
+        jsonld.textContent = JSON.stringify(data.jsonld);
+    }
+
+    // 更新网页标题
+    if (data.title) {
+        document.title = data.title;
+    }
+}
+
+// 设置中韩双语 SEO 数据（每个页面各自扩展）
+window._seoMeta = window._seoMeta || {};
+window._seoMeta['zh-CN'] = window._seoMeta['zh-CN'] || {
+    description: '中韩出海数智港 - AI赋能企业跨境发展，助力中国企业进韩国，韩国企业进中国。提供AI数字合规官、市场准入咨询、合规诊断等一站式服务。',
+    og_title: '中韩出海数智港 - AI赋能企业跨境发展',
+    og_description: 'AI驱动中韩跨境商业落地平台，6位AI数字合规官为韩企进入中国市场提供一站式解决方案。',
+    title: '中韩出海数智港 - AI赋能企业跨境发展'
+};
+window._seoMeta['ko-KR'] = window._seoMeta['ko-KR'] || {
+    description: '중한 해외진출 디지털 포트 - AI 기반 기업 해외진출 플랫폼, 중국 기업의 한국 진출, 한국 기업의 중국 진출 지원. AI 디지털 규제 전문가, 시장 진출 컨설팅, 규제 진단 등 원스톱 서비스.',
+    og_title: '중한 해외진출 디지털 포트 - AI 기반 해외진출 플랫폼',
+    og_description: 'AI 기반 중한跨境 비즈니스 플랫폼, 6명의 AI 디지털 규제 전문가가 한국 기업의 중국 시장 진출을 위한 원스톱 솔루션 제공.',
+    title: '중한 해외진출 디지털 포트 - AI 기반 해외진출 플랫폼'
+};
+
+// ===== 表单提交逻辑（使用name属性收集数据，Toast替代alert） =====
 const form = document.querySelector('.form');
 if (form) {
     form.addEventListener('submit', async function(e) {
         e.preventDefault();
-        
-        // 获取按钮防止重复提交
-        const submitBtn = form.querySelector('button[type="submit"]');
-        
-        // 获取表单数据
-        const formData = {
-            company: document.querySelector('input[placeholder="请输入企业名称"]')?.value || document.querySelector('input[data-placeholder-zh="请输入企业名称"]')?.value || '',
-            contact: document.querySelector('input[placeholder="请输入联系人姓名"]')?.value || document.querySelector('input[data-placeholder-zh="请输入联系人姓名"]')?.value || '',
-            phone: document.querySelector('input[placeholder="请输入联系电话"]')?.value || document.querySelector('input[data-placeholder-zh="请输入联系电话"]')?.value || '',
-            email: document.querySelector('input[placeholder="请输入邮箱地址"]')?.value || document.querySelector('input[data-placeholder-zh="请输入邮箱地址"]')?.value || '',
-            message: document.querySelector('textarea[placeholder="请简述您的需求"]')?.value || document.querySelector('textarea[data-placeholder-zh="请简述您的需求"]')?.value || ''
-        };
-        
-        // 简单验证
-        if (!formData.company || !formData.contact || !formData.phone || !formData.email) {
-            const isKo = document.querySelector('.lang-btn.active')?.dataset?.lang === 'ko-KR';
-            alert(isKo ? '필수 항목을 입력하세요' : '请填写必填字段');
-            return;
-        }
-        
-        // 禁用按钮
-        submitBtn.disabled = true;
-        const originalText = submitBtn.textContent;
-        const isKo = document.querySelector('.lang-btn.active')?.dataset?.lang === 'ko-KR';
-        submitBtn.textContent = isKo ? '제출 중...' : '提交中...';
-        
-        try {
-            // 发送到后端 API
-            const response = await fetch('/api/v1/contact', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(formData)
-            });
-            
-            const result = await response.json();
-            
-            if (response.ok && result.success === true) {
-                alert(isKo ? '제출 성공! 곧 연락드리겠습니다.' : '表单提交成功！我们会尽快与您联系。');
-                form.reset();
-            } else {
-                throw new Error(result.message || '提交失败');
-            }
-        } catch (err) {
-            alert(isKo ? '제출 실패: ' + err.message : '提交失败: ' + err.message);
-        } finally {
-            submitBtn.disabled = false;
-            submitBtn.textContent = originalText;
-        }
+        window.submitForm(form, '/api/v1/contact', null, 'success_contact');
     });
 }
 
@@ -104,7 +109,7 @@ function animateNumbers() {
         const target = element.textContent;
         const numericValue = parseInt(target.replace(/[^0-9]/g, ''));
         const suffix = target.replace(/[0-9]/g, '');
-        
+
         let current = 0;
         const increment = numericValue / 50;
         const timer = setInterval(() => {
@@ -138,19 +143,19 @@ if (statsSection) {
 document.addEventListener('DOMContentLoaded', function() {
     // 获取当前语言（默认中文）
     let currentLang = localStorage.getItem('lang') || 'zh-CN';
-    
+
     // 切换语言
     const langBtns = document.querySelectorAll('.lang-btn');
-    
+
     function switchLang(lang) {
         currentLang = lang;
         localStorage.setItem('lang', lang);
-        
+
         // 更新按钮状态
         langBtns.forEach(btn => {
             btn.classList.toggle('active', btn.dataset.lang === lang);
         });
-        
+
         // 更新所有 data-lang-key 元素
         document.querySelectorAll('[data-lang-key]').forEach(element => {
             const key = element.dataset.langKey;
@@ -166,14 +171,17 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
         });
+
+        // 同步更新 SEO meta
+        updateSEOMeta(lang);
     }
-    
+
     langBtns.forEach(btn => {
         btn.addEventListener('click', function() {
             switchLang(this.dataset.lang);
         });
     });
-    
+
     // 主题切换
     const themeToggle = document.getElementById('themeToggle');
     if (themeToggle) {
@@ -182,7 +190,7 @@ document.addEventListener('DOMContentLoaded', function() {
             document.body.classList.add('light-mode');
             themeToggle.innerHTML = '<i class="bi bi-sun"></i>';
         }
-        
+
         themeToggle.addEventListener('click', function() {
             document.body.classList.toggle('light-mode');
             const isLight = document.body.classList.contains('light-mode');
@@ -190,7 +198,7 @@ document.addEventListener('DOMContentLoaded', function() {
             themeToggle.innerHTML = isLight ? '<i class="bi bi-sun"></i>' : '<i class="bi bi-moon"></i>';
         });
     }
-    
+
     // 初始化语言
     switchLang(currentLang);
 });
@@ -350,4 +358,3 @@ const translations = {
         feature_employees_desc: '6명의 AI 디지털 직원이 업종 허가, 데이터 보안, 지식재산권, 재무세무, 고용, 비자 전 과정 커버',
     }
 };
-logout
