@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>管理后台 - 中韩出海数智港</title>
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        body { background: #0f172a; color: #e2e8f0; font-family: 'Inter', system-ui, sans-serif; }
+        .card { background: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 20px; }
+        .card-stat { background: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 24px; text-align: center; transition: all .2s; }
+        .card-stat:hover { border-color: #6366f1; transform: translateY(-2px); }
+        .btn { padding: 8px 16px; border-radius: 8px; border: none; font-weight: 500; cursor: pointer; transition: all .2s; }
+        .btn-primary { background: #6366f1; color: #fff; }
+        .btn-primary:hover { background: #4f46e5; }
+        .btn-sm { padding: 4px 12px; font-size: 13px; }
+        .badge { padding: 3px 10px; border-radius: 12px; font-size: 12px; font-weight: 500; }
+        .badge-new { background: #1e40af; color: #93c5fd; }
+        .badge-contacted { background: #854d0e; color: #fde68a; }
+        .badge-qualified { background: #166534; color: #86efac; }
+        .badge-lost { background: #7f1d1d; color: #fca5a5; }
+        .badge-pending { background: #1e40af; color: #93c5fd; }
+        .badge-confirmed { background: #166534; color: #86efac; }
+        .badge-completed { background: #064e3b; color: #6ee7b7; }
+        .badge-cancelled { background: #7f1d1d; color: #fca5a5; }
+        .badge-negotiating { background: #854d0e; color: #fde68a; }
+        .badge-closed { background: #1e293b; color: #94a3b8; }
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 50; display: flex; align-items: center; justify-content: center; }
+        .modal-content { background: #1e293b; border: 1px solid #334155; border-radius: 16px; padding: 32px; max-width: 600px; width: 90%; max-height: 80vh; overflow-y: auto; }
+        .input { background: #0f172a; border: 1px solid #334155; border-radius: 8px; padding: 10px 14px; color: #e2e8f0; width: 100%; outline: none; }
+        .input:focus { border-color: #6366f1; }
+        select.input { appearance: auto; }
+        table { width: 100%; border-collapse: collapse; }
+        th { text-align: left; padding: 12px 16px; border-bottom: 1px solid #334155; color: #94a3b8; font-weight: 500; font-size: 13px; }
+        td { padding: 12px 16px; border-bottom: 1px solid #1e293b; }
+        tr:hover td { background: #1e293b; }
+        .truncate { max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #0f172a; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+        .toast { position: fixed; bottom: 24px; right: 24px; background: #166534; color: #fff; padding: 12px 24px; border-radius: 8px; z-index: 100; animation: slideIn .3s; }
+        @keyframes slideIn { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .loading { display: inline-block; width: 20px; height: 20px; border: 2px solid #334155; border-top-color: #6366f1; border-radius: 50%; animation: spin .6s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+<div x-data="adminApp()" x-init="init()" class="min-h-screen">
+    
+    <!-- 登录页 -->
+    <div x-show="!token" class="flex items-center justify-center min-h-screen">
+        <div class="card w-full max-w-md mx-4">
+            <div class="text-center mb-8">
+                <h1 class="text-2xl font-bold text-white mb-2">管理后台</h1>
+                <p class="text-slate-400 text-sm">中韩出海数智港</p>
+            </div>
+            <form @submit.prevent="doLogin" class="space-y-4">
+                <div>
+                    <label class="block text-sm text-slate-400 mb-1">用户名</label>
+                    <input type="text" x-model="loginForm.username" class="input" placeholder="admin" required>
+                </div>
+                <div>
+                    <label class="block text-sm text-slate-400 mb-1">密码</label>
+                    <input type="password" x-model="loginForm.password" class="input" placeholder="••••••" required>
+                </div>
+                <div x-show="loginError" class="text-red-400 text-sm" x-text="loginError"></div>
+                <button type="submit" class="btn btn-primary w-full py-3" :disabled="loading">
+                    <span x-show="!loading">登录</span>
+                    <span x-show="loading" class="loading inline-block"></span>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- 管理后台主体 -->
+    <div x-show="token" class="p-4 md:p-6 max-w-7xl mx-auto">
+        
+        <!-- 顶部导航 -->
+        <div class="flex items-center justify-between mb-6">
+            <div>
+                <h1 class="text-xl font-bold">管理后台</h1>
+                <p class="text-slate-400 text-sm">中韩出海数智港 · 线索管理系统</p>
+            </div>
+            <div class="flex items-center gap-3">
+                <span class="text-slate-400 text-sm">admin</span>
+                <button @click="doLogout" class="btn btn-sm" style="background:#334155;color:#e2e8f0">退出</button>
+            </div>
+        </div>
+
+        <!-- 统计卡片 -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+            <div class="card-stat">
+                <div class="text-3xl font-bold" x-text="stats.grand_total || '-'"></div>
+                <div class="text-slate-400 text-sm mt-1">总线索</div>
+            </div>
+            <div class="card-stat">
+                <div class="text-3xl font-bold text-green-400" x-text="stats.today_total || '-'"></div>
+                <div class="text-slate-400 text-sm mt-1">今日新增</div>
+            </div>
+            <div class="card-stat">
+                <div class="text-3xl font-bold text-yellow-400" x-text="pendingCount"></div>
+                <div class="text-slate-400 text-sm mt-1">待跟进</div>
+            </div>
+            <div class="card-stat">
+                <div class="text-3xl font-bold text-blue-400" x-text="tableCount + '个'"></div>
+                <div class="text-slate-400 text-sm mt-1">数据表</div>
+            </div>
+        </div>
+
+        <!-- 各表统计 -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+            <template x-for="(t, name) in stats.by_table || {}" :key="name">
+                <div class="card">
+                    <div class="flex items-center justify-between mb-2">
+                        <h3 class="font-semibold" x-text="t.label"></h3>
+                        <span class="text-slate-400 text-sm" x-text="t.total + '条'"></span>
+                    </div>
+                    <div class="flex gap-2 text-xs">
+                        <span class="badge badge-new" x-text="'今日+' + t.today_new"></span>
+                        <template x-for="(cnt, st) in t.status_distribution" :key="st">
+                            <span :class="'badge badge-' + st" x-text="st + ':' + cnt"></span>
+                        </template>
+                    </div>
+                </div>
+            </template>
+        </div>
+
+        <!-- 筛选和搜索 -->
+        <div class="card mb-6">
+            <div class="flex flex-wrap items-center gap-3 mb-4">
+                <div class="flex gap-2">
+                    <button @click="filterTable=''" :class="filterTable===''?'btn-primary':'btn btn-sm'" class="btn btn-sm" style="background:#334155;color:#e2e8f0">全部</button>
+                    <template x-for="(label, key) in tableLabels" :key="key">
+                        <button @click="filterTable=key" :class="filterTable===key?'btn-primary':''" class="btn btn-sm" style="background:#334155;color:#e2e8f0" x-text="label"></button>
+                    </template>
+                </div>
+                <div class="flex-1"></div>
+                <div>
+                    <select x-model="filterStatus" @change="loadLeads" class="input py-1.5 text-sm">
+                        <option value="">全部状态</option>
+                        <option value="new">新线索</option>
+                        <option value="contacted">已联系</option>
+                        <option value="qualified">优质客户</option>
+                        <option value="lost">已流失</option>
+                        <option value="pending">待确认</option>
+                        <option value="confirmed">已确认</option>
+                        <option value="completed">已完成</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- 线索表格 -->
+            <div x-show="leadsLoading" class="text-center py-8">
+                <div class="loading mx-auto"></div>
+                <p class="text-slate-400 mt-2">加载中...</p>
+            </div>
+            <div x-show="!leadsLoading && filteredLeads.length === 0" class="text-center py-8 text-slate-500">
+                暂无线索数据
+            </div>
+            <div x-show="!leadsLoading && filteredLeads.length > 0" class="overflow-x-auto">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>来源</th>
+                            <th>姓名</th>
+                            <th>公司</th>
+                            <th>邮箱</th>
+                            <th>电话</th>
+                            <th>状态</th>
+                            <th>时间</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <template x-for="lead in filteredLeads" :key="lead._table + '-' + lead.id">
+                            <tr class="cursor-pointer" @click="showDetail(lead)">
+                                <td><span class="badge badge-new" x-text="lead._label"></span></td>
+                                <td class="font-medium" x-text="lead.name"></td>
+                                <td class="truncate" x-text="lead.company || '-'"></td>
+                                <td class="text-sm text-slate-400" x-text="lead.email"></td>
+                                <td class="text-sm" x-text="lead.phone || '-'"></td>
+                                <td><span :class="'badge badge-' + lead.status" x-text="lead.status"></span></td>
+                                <td class="text-sm text-slate-400" x-text="lead.created_at?.slice(0,10)"></td>
+                                <td>
+                                    <button @click.stop="changeStatus(lead)" class="btn btn-sm btn-primary">改状态</button>
+                                </td>
+                            </tr>
+                        </template>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- 详情弹窗 -->
+    <div x-show="detailModal" class="modal-overlay" @click.self="detailModal=false">
+        <div class="modal-content">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-lg font-bold">线索详情</h2>
+                <button @click="detailModal=false" class="text-slate-400 hover:text-white text-xl">&times;</button>
+            </div>
+            <div class="space-y-3">
+                <template x-for="(val, key) in detailData" :key="key">
+                    <div x-show="!key.startsWith('_')" class="flex">
+                        <span class="text-slate-400 w-28 shrink-0 text-sm" x-text="key"></span>
+                        <span class="text-white" x-text="val || '-'"></span>
+                    </div>
+                </template>
+            </div>
+            <div class="mt-6 flex gap-2">
+                <template x-for="st in availableStatuses" :key="st">
+                    <button @click="doUpdateStatus(detailData._table, detailData.id, st)" 
+                            :class="st === detailData.status ? 'btn-primary' : ''" 
+                            class="btn btn-sm" style="background:#334155;color:#e2e8f0" x-text="st"></button>
+                </template>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div x-show="toast" class="toast" x-text="toast" x-init="setTimeout(() => toast='', 3000)"></div>
+</div>
+
+<script>
+function adminApp() {
+    return {
+        // 登录
+        token: localStorage.getItem('portal_token') || '',
+        loginForm: { username: 'admin', password: '' },
+        loginError: '',
+        loading: false,
+
+        // 数据
+        stats: {},
+        leads: [],
+        leadsLoading: false,
+
+        // 筛选
+        filterTable: '',
+        filterStatus: '',
+
+        // 详情
+        detailModal: false,
+        detailData: {},
+
+        // 通知
+        toast: '',
+
+        tableLabels: { contacts: '联系咨询', demo_requests: '预约演示', pricing_inquiries: '定价咨询' },
+
+        get filteredLeads() {
+            let items = this.leads
+            if (this.filterTable) items = items.filter(l => l._table === this.filterTable)
+            if (this.filterStatus) items = items.filter(l => l.status === this.filterStatus)
+            return items
+        },
+
+        get pendingCount() {
+            let c = 0
+            for (const t of Object.values(this.stats.by_table || {})) {
+                for (const [st, cnt] of Object.entries(t.status_distribution || {})) {
+                    if (['new', 'pending'].includes(st)) c += cnt
+                }
+            }
+            return c
+        },
+
+        get tableCount() {
+            return Object.keys(this.stats.by_table || {}).length
+        },
+
+        get availableStatuses() {
+            const tables = {
+                contacts: ['new', 'contacted', 'qualified', 'lost'],
+                demo_requests: ['pending', 'confirmed', 'completed', 'cancelled'],
+                pricing_inquiries: ['new', 'contacted', 'negotiating', 'closed', 'lost'],
+            }
+            return tables[this.detailData._table] || ['new', 'contacted', 'lost']
+        },
+
+        async api(path, options = {}) {
+            const headers = { 'Content-Type': 'application/json' }
+            if (this.token) headers['Authorization'] = 'Bearer ' + this.token
+            const res = await fetch(path, { ...options, headers })
+            const data = await res.json()
+            if (!res.ok && (res.status === 401)) {
+                this.token = ''
+                localStorage.removeItem('portal_token')
+                this.loginError = '登录已过期，请重新登录'
+            }
+            return data
+        },
+
+        async doLogin() {
+            this.loading = true
+            this.loginError = ''
+            try {
+                const res = await this.api('/api/v1/admin/login', {
+                    method: 'POST',
+                    body: JSON.stringify(this.loginForm)
+                })
+                if (res.success && res.token) {
+                    this.token = res.token
+                    localStorage.setItem('portal_token', res.token)
+                    this.init()
+                } else {
+                    this.loginError = res.detail || '登录失败'
+                }
+            } catch(e) {
+                this.loginError = '网络错误：' + e.message
+            }
+            this.loading = false
+        },
+
+        doLogout() {
+            this.token = ''
+            localStorage.removeItem('portal_token')
+        },
+
+        async init() {
+            if (!this.token) return
+            this.loadLeads()
+            this.loadStats()
+        },
+
+        async loadLeads() {
+            this.leadsLoading = true
+            try {
+                const params = new URLSearchParams()
+                if (this.filterTable) params.set('table', this.filterTable)
+                const res = await this.api('/api/v1/admin/leads?' + params.toString())
+                if (res.success) this.leads = res.data
+            } catch(e) {
+                this.toast = '加载线索失败'
+            }
+            this.leadsLoading = false
+        },
+
+        async loadStats() {
+            try {
+                const res = await this.api('/api/v1/admin/stats')
+                if (res.success) this.stats = res.data
+            } catch(e) {}
+        },
+
+        showDetail(lead) {
+            this.detailData = lead
+            this.detailModal = true
+        },
+
+        async changeStatus(lead) {
+            const st = prompt('输入新状态: new contacted qualified lost')
+            if (!st) return
+            await this.doUpdateStatus(lead._table, lead.id, st)
+        },
+
+        async doUpdateStatus(table, id, status) {
+            const res = await this.api(`/api/v1/admin/leads/${table}/${id}/status?status=${status}`, { method: 'PATCH' })
+            if (res.success) {
+                this.toast = `状态已更新为: ${status}`
+                this.loadLeads()
+                this.loadStats()
+            } else {
+                this.toast = res.detail || '更新失败'
+            }
+        }
+    }
+}
+</script>
+</body>
+</html>

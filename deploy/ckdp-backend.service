@@ -1,0 +1,43 @@
+[Unit]
+Description=中韩出海数智港 Backend API (FastAPI + Uvicorn)
+Documentation=https://github.com/eagle13579/china-korea-digital-port
+After=network.target
+
+[Service]
+Type=simple
+User=opc
+Group=opc
+WorkingDirectory=/var/www/china-korea-digital-port
+
+# 从 .env 文件加载环境变量
+EnvironmentFile=/var/www/china-korea-digital-port/.env
+
+# 设置 PATH，包含 venv 目录
+Environment=PATH=/var/www/china-korea-digital-port/venv/bin:/usr/local/bin:/usr/bin:/bin
+
+# 启动命令 — 单进程模式 (无 workers，避免 SQLite 并发问题)
+ExecStart=/var/www/china-korea-digital-port/venv/bin/uvicorn backend.main:app \
+    --host 127.0.0.1 \
+    --port 8000 \
+    --workers 1 \
+    --proxy-headers \
+    --forwarded-allow-ips="127.0.0.1"
+
+# 重启策略
+Restart=always
+RestartSec=5
+StartLimitInterval=0
+StartLimitBurst=5
+
+# 日志
+StandardOutput=append:/var/log/ckdp/backend.log
+StandardError=append:/var/log/ckdp/backend-error.log
+
+# 安全设置
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ProtectHome=false
+
+[Install]
+WantedBy=multi-user.target
