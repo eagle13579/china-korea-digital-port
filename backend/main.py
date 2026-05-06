@@ -11,7 +11,8 @@ from dotenv import load_dotenv
 load_dotenv()
 
 from backend.database import init_db
-from backend.routers import contact, demo, pricing, admin, employees, service_inquiry
+from backend.routers import contact, demo, pricing, admin, employees, service_inquiry, payment
+# order.py 已废弃并合并到 payment.py 中
 
 # 项目根目录
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -49,6 +50,7 @@ app.include_router(pricing.router)
 app.include_router(admin.router)
 app.include_router(employees.router)
 app.include_router(service_inquiry.router)
+app.include_router(payment.router)
 
 # 静态文件路由
 @app.get("/")
@@ -61,7 +63,15 @@ async def index_html():
 
 @app.get("/pricing.html")
 async def pricing_html():
-    return FileResponse(os.path.join(ROOT_DIR, "pricing.html"))
+    return FileResponse(os.path.join(ROOT_DIR, "pricing-v2.html"))
+
+@app.get("/pricing-v2.html")
+async def pricing_v2_html():
+    return FileResponse(os.path.join(ROOT_DIR, "pricing-v2.html"))
+
+@app.get("/order.html")
+async def order_html():
+    return FileResponse(os.path.join(ROOT_DIR, "order.html"))
 
 @app.get("/team.html")
 async def team_html():
@@ -95,6 +105,10 @@ async def css_files(path: str):
 async def js_files(path: str):
     return FileResponse(os.path.join(ROOT_DIR, "js", path))
 
+@app.get("/uploads/{path:path}")
+async def upload_files(path: str):
+    return FileResponse(os.path.join(ROOT_DIR, "uploads", path))
+
 @app.get("/admin")
 async def admin_root():
     return FileResponse(os.path.join(ROOT_DIR, "admin", "index.html"))
@@ -116,3 +130,4 @@ async def health():
 async def startup():
     """启动时初始化数据库"""
     init_db()
+logout

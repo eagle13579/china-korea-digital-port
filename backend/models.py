@@ -58,3 +58,28 @@ class APIResponse(BaseModel):
     """统一API响应格式"""
     success: bool = True
     message: str = "操作成功"
+
+
+# ── 支付系统模型 ──────────────────────────────────────
+
+class OrderCreate(BaseModel):
+    """创建订单请求"""
+    user_company: str = Field(..., min_length=1, max_length=200, description="企业名称")
+    user_name: str = Field(..., min_length=1, max_length=100, description="联系人姓名")
+    user_phone: Optional[str] = Field(None, max_length=50, description="联系电话")
+    user_email: str = Field(..., description="电子邮箱")
+    plan_type: str = Field(..., pattern=r'^(free|depth|annual|source)$', description="套餐类型: free/depth/annual/source")
+    price: float = Field(..., ge=0, description="金额")
+
+
+class PaymentCreate(BaseModel):
+    """上传付款凭证请求（JSON部分）"""
+    order_id: int = Field(..., description="订单ID")
+    method: str = Field(..., pattern=r'^(alipay|wechat|transfer)$', description="付款方式")
+    amount: float = Field(..., ge=0, description="付款金额")
+
+
+class StatusUpdate(BaseModel):
+    """订单状态更新请求"""
+    status: str = Field(..., pattern=r'^(paid|cancelled)$', description="目标状态: paid/cancelled")
+logout

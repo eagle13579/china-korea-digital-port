@@ -93,6 +93,46 @@ def init_db():
         )
     """)
 
+    # 订单表 — 沙箱支付模式
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS orders (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            order_no TEXT UNIQUE,
+            user_company TEXT NOT NULL,
+            user_name TEXT NOT NULL,
+            user_phone TEXT,
+            user_email TEXT NOT NULL,
+            plan_type TEXT NOT NULL CHECK(plan_type IN ('free','depth','annual','source')),
+            price REAL NOT NULL DEFAULT 0,
+            status TEXT NOT NULL DEFAULT 'pending' CHECK(status IN ('pending','paid','cancelled')),
+            license_key TEXT,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP
+        )
+    """)
+
+    # 迁移：为现有记录添加order_no（如果列为空）
+    cursor.execute("PRAGMA table_info(orders)")
+    cols = [r[1] for r in cursor.fetchall()]
+    if 'order_no' in cols:
+        cursor.execute("UPDATE orders SET order_no = 'ORD' || printf('%06d', id) WHERE order_no IS NULL")
+    if 'license_key' not in cols:
+        cursor.execute("ALTER TABLE orders ADD COLUMN license_key TEXT")
+
+    # 支付表 — 三种付款方式 + 凭证上传
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS payments (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            order_id INTEGER NOT NULL,
+            method TEXT NOT NULL CHECK(method IN ('alipay','wechat','transfer')),
+            amount REAL NOT NULL,
+            voucher_path TEXT,
+            status TEXT NOT NULL DEFAULT 'pending' CHECK(status IN ('pending','confirmed','rejected')),
+            confirmed_at TIMESTAMP,
+            FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE
+        )
+    """)
+
     conn.commit()
     conn.close()
     print(f"✅ 数据库初始化完成: {DB_PATH}")
