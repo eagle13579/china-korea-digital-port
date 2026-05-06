@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>订单支付 - 中韩出海数智港</title>
+    <meta name="description" content="订单确认与支付 - 中韩出海数智港">
+    <link rel="icon" href="favicon.ico">
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        .order-page { padding-top: 120px; padding-bottom: 80px; }
+        .order-container { max-width: 820px; margin: 0 auto; }
+        .order-card { background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 20px; padding: 36px; margin-bottom: 24px; }
+        .order-card h2 { font-size: 20px; font-weight: 700; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+        .order-card h2 i { color: var(--accent); }
+        .order-info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        .order-info-item { padding: 12px 0; border-bottom: 1px solid var(--border-color); }
+        .order-info-item .label { font-size: 13px; color: var(--text-secondary); margin-bottom: 4px; }
+        .order-info-item .value { font-size: 16px; font-weight: 500; }
+        .order-info-item .value.price { font-size: 28px; font-weight: 700; color: var(--accent); }
+        .order-status { display: inline-flex; align-items: center; gap: 6px; padding: 6px 16px; border-radius: 20px; font-size: 14px; font-weight: 500; }
+        .order-status.pending { background: #1e40af; color: #93c5fd; }
+        .order-status.paid { background: #166534; color: #86efac; }
+        .order-status.cancelled { background: #7f1d1d; color: #fca5a5; }
+
+        /* 支付方式选项卡 */
+        .payment-tabs { display: flex; gap: 8px; margin-bottom: 24px; }
+        .payment-tab { flex: 1; padding: 14px; border: 2px solid var(--border-color); border-radius: 12px; text-align: center; cursor: pointer; transition: all .2s; background: transparent; color: var(--text-primary); font-size: 15px; font-weight: 500; }
+        .payment-tab:hover { border-color: var(--accent); }
+        .payment-tab.active { border-color: var(--accent); background: var(--accent); color: #fff; }
+        .payment-tab i { font-size: 20px; display: block; margin-bottom: 4px; }
+        .payment-panel { display: none; }
+        .payment-panel.active { display: block; }
+
+        /* 二维码占位 */
+        .qr-placeholder { width: 200px; height: 200px; margin: 20px auto; background: var(--bg-tertiary); border: 2px dashed var(--border-color); border-radius: 16px; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 8px; color: var(--text-secondary); }
+        .qr-placeholder i { font-size: 48px; }
+        .qr-placeholder span { font-size: 14px; }
+
+        /* 银行转账信息 */
+        .bank-info { background: var(--bg-tertiary); border-radius: 16px; padding: 24px; margin-bottom: 20px; }
+        .bank-info-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border-color); }
+        .bank-info-row:last-child { border-bottom: none; }
+        .bank-info-row .label { color: var(--text-secondary); font-size: 14px; }
+        .bank-info-row .value { font-weight: 500; font-size: 14px; text-align: right; font-family: monospace; }
+
+        /* 凭证上传 */
+        .upload-area { border: 2px dashed var(--border-color); border-radius: 16px; padding: 32px; text-align: center; cursor: pointer; transition: all .2s; margin-top: 16px; }
+        .upload-area:hover { border-color: var(--accent); background: var(--bg-tertiary); }
+        .upload-area i { font-size: 36px; color: var(--text-secondary); margin-bottom: 8px; }
+        .upload-area p { color: var(--text-secondary); font-size: 14px; }
+        .upload-area .file-name { margin-top: 8px; color: var(--accent); font-weight: 500; }
+        .upload-area input { display: none; }
+
+        .btn-submit { display: block; width: 100%; padding: 16px; border: none; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer; transition: all .2s; margin-top: 20px; }
+        .btn-submit.primary { background: var(--accent); color: #fff; }
+        .btn-submit.primary:hover { opacity: .9; }
+        .btn-submit:disabled { opacity: .5; cursor: not-allowed; }
+        .btn-submit.secondary { background: transparent; border: 1px solid var(--border-color); color: var(--text-primary); }
+
+        /* 支付成功状态 */
+        .success-banner { text-align: center; padding: 40px 20px; }
+        .success-banner i { font-size: 64px; color: #22c55e; margin-bottom: 16px; }
+        .success-banner h3 { font-size: 24px; font-weight: 700; margin-bottom: 8px; }
+        .success-banner p { color: var(--text-secondary); }
+
+        /* 轮询状态指示器 */
+        .polling-indicator { display: flex; align-items: center; gap: 8px; justify-content: center; margin-top: 16px; font-size: 14px; color: var(--text-secondary); }
+        .polling-indicator .spinner { width: 16px; height: 16px; border: 2px solid var(--border-color); border-top-color: var(--accent); border-radius: 50%; animation: spin .6s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .order-loading { text-align: center; padding: 80px 20px; }
+        .order-loading .spinner { width: 40px; height: 40px; border: 4px solid var(--border-color); border-top-color: var(--accent); border-radius: 50%; animation: spin .6s linear infinite; margin: 0 auto 16px; }
+        .order-error { text-align: center; padding: 80px 20px; }
+        .order-error i { font-size: 48px; color: #ef4444; margin-bottom: 16px; }
+        .order-error h3 { font-size: 20px; margin-bottom: 8px; }
+        .order-error p { color: var(--text-secondary); margin-bottom: 24px; }
+    </style>
+</head>
+<body>
+    <!-- 导航 -->
+    <header class="header">
+        <div class="container">
+            <div class="header__content">
+                <div class="header__logo">
+                    <h1 class="logo__text">中韩出海数智港</h1>
+                </div>
+                <nav class="header__nav">
+                    <ul class="nav__list">
+                        <li class="nav__item"><a href="index.html" class="nav__link" data-lang-key="home">首页</a></li>
+                        <li class="nav__item"><a href="pricing-v2.html" class="nav__link" data-lang-key="footer_pricing">定价/购买</a></li>
+                        <li class="nav__item"><a href="index.html#contact" class="nav__link" data-lang-key="contact">联系我们</a></li>
+                    </ul>
+                </nav>
+                <div class="header__lang">
+                    <button class="lang-btn" data-lang="zh-CN">中文</button>
+                    <button class="lang-btn" data-lang="ko-KR">한국어</button>
+                </div>
+                <div class="header__theme">
+                    <button class="theme-btn" id="themeToggle" aria-label="切换主题">
+                        <i class="bi bi-moon"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <section class="order-page">
+        <div class="container">
+            <div class="order-container" id="orderApp">
+                <!-- 加载中 -->
+                <div class="order-loading" id="orderLoading">
+                    <div class="spinner"></div>
+                    <p data-lang-key="order_loading">加载订单信息...</p>
+                </div>
+
+                <!-- 错误提示 -->
+                <div class="order-error" id="orderError" style="display:none">
+                    <i class="bi bi-exclamation-circle"></i>
+                    <h3 data-lang-key="order_error_title">订单加载失败</h3>
+                    <p id="orderErrorMsg" data-lang-key="order_error_msg">无法加载订单信息，请检查订单号是否正确</p>
+                    <a href="pricing-v2.html" class="btn btn--primary" data-lang-key="order_back_pricing">返回定价页</a>
+                </div>
+
+                <!-- 订单内容 -->
+                <div id="orderContent" style="display:none">
+                    <!-- 订单信息卡片 -->
+                    <div class="order-card">
+                        <h2><i class="bi bi-receipt"></i> <span data-lang-key="order_info_title">订单信息</span></h2>
+                        <div class="order-info-grid">
+                            <div class="order-info-item">
+                                <div class="label" data-lang-key="order_no">订单号</div>
+                                <div class="value" id="orderNo">-</div>
+                            </div>
+                            <div class="order-info-item">
+                                <div class="label" data-lang-key="order_status">订单状态</div>
+                                <div id="orderStatusBadge"></div>
+                            </div>
+                            <div class="order-info-item">
+                                <div class="label" data-lang-key="order_plan">方案名称</div>
+                                <div class="value" id="orderPlan">-</div>
+                            </div>
+                            <div class="order-info-item">
+                                <div class="label" data-lang-key="order_company">企业名称</div>
+                                <div class="value" id="orderCompany">-</div>
+                            </div>
+                            <div class="order-info-item">
+                                <div class="label" data-lang-key="order_contact">联系人</div>
+                                <div class="value" id="orderName">-</div>
+                            </div>
+                            <div class="order-info-item">
+                                <div class="label" data-lang-key="order_email">邮箱</div>
+                                <div class="value" id="orderEmail">-</div>
+                            </div>
+                            <div class="order-info-item" style="grid-column: 1 / -1;">
+                                <div class="label" data-lang-key="order_total">应付金额</div>
+                                <div class="value price" id="orderPrice">-</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 支付区域（仅待支付时显示） -->
+                    <div id="paymentSection">
+                        <div class="order-card">
+                            <h2><i class="bi bi-credit-card"></i> <span data-lang-key="payment_title">选择支付方式</span></h2>
+
+                            <!-- 支付方式选项卡 -->
+                            <div class="payment-tabs">
+                                <div class="payment-tab active" data-payment="alipay" onclick="switchPayment('alipay')">
+                                    <i class="bi bi-alipay"></i>
+                                    <span data-lang-key="payment_alipay">支付宝</span>
+                                </div>
+                                <div class="payment-tab" data-payment="wechat" onclick="switchPayment('wechat')">
+                                    <i class="bi bi-wechat"></i>
+                                    <span data-lang-key="payment_wechat">微信支付</span>
+                                </div>
+                                <div class="payment-tab" data-payment="transfer" onclick="switchPayment('transfer')">
+                                    <i class="bi bi-bank"></i>
+                                    <span data-lang-key="payment_transfer">银行转账</span>
+                                </div>
+                            </div>
+
+                            <!-- 支付宝 -->
+                            <div class="payment-panel active" data-panel="alipay">
+                                <div class="qr-placeholder">
+                                    <i class="bi bi-alipay"></i>
+                                    <span data-lang-key="payment_qr_placeholder">支付宝收款二维码</span>
+                                    <span style="font-size:12px;color:var(--text-muted)" data-lang-key="payment_qr_note">（实际部署时替换为真实二维码）</span>
+                                </div>
+                                <p style="text-align:center;color:var(--text-secondary);font-size:14px;" data-lang-key="payment_alipay_hint">打开支付宝扫一扫完成支付</p>
+                            </div>
+
+                            <!-- 微信支付 -->
+                            <div class="payment-panel" data-panel="wechat">
+                                <div class="qr-placeholder">
+                                    <i class="bi bi-wechat"></i>
+                                    <span data-lang-key="payment_qr_placeholder">微信支付收款二维码</span>
+                                    <span style="font-size:12px;color:var(--text-muted)" data-lang-key="payment_qr_note">（实际部署时替换为真实二维码）</span>
+                                </div>
+                                <p style="text-align:center;color:var(--text-secondary);font-size:14px;" data-lang-key="payment_wechat_hint">打开微信扫一扫完成支付</p>
+                            </div>
+
+                            <!-- 银行转账 -->
+                            <div class="payment-panel" data-panel="transfer">
+                                <div class="bank-info">
+                                    <div class="bank-info-row">
+                                        <span class="label" data-lang-key="bank_name">收款银行</span>
+                                        <span class="value">中国银行 北京分行</span>
+                                    </div>
+                                    <div class="bank-info-row">
+                                        <span class="label" data-lang-key="bank_account">收款账户</span>
+                                        <span class="value">6235 8600 1234 5678</span>
+                                    </div>
+                                    <div class="bank-info-row">
+                                        <span class="label" data-lang-key="bank_holder">收款人</span>
+                                        <span class="value">中韩出海数智港（上海）科技有限公司</span>
+                                    </div>
+                                    <div class="bank-info-row">
+                                        <span class="label" data-lang-key="bank_swift">SWIFT Code</span>
+                                        <span class="value">BKCHCNBJ</span>
+                                    </div>
+                                    <div class="bank-info-row">
+                                        <span class="label" data-lang-key="bank_remark">转账备注</span>
+                                        <span class="value" id="bankRemark">订单号：-</span>
+                                    </div>
+                                </div>
+                                <p style="text-align:center;color:var(--text-secondary);font-size:14px;" data-lang-key="payment_transfer_hint">请使用网银或手机银行完成转账</p>
+                            </div>
+
+                            <!-- 上传付款凭证 -->
+                            <div style="margin-top: 24px;">
+                                <label style="font-weight:600;font-size:15px;display:block;margin-bottom:8px;" data-lang-key="upload_voucher_title">上传付款凭证</label>
+                                <p style="color:var(--text-secondary);font-size:13px;margin-bottom:12px;" data-lang-key="upload_voucher_hint">完成付款后，请上传付款截图或转账回执</p>
+                                <div class="upload-area" id="uploadArea" onclick="document.getElementById('voucherFile').click()">
+                                    <i class="bi bi-cloud-upload"></i>
+                                    <p data-lang-key="upload_click">点击上传凭证文件</p>
+                                    <p style="font-size:12px;color:var(--text-muted)" data-lang-key="upload_support">支持 JPG、PNG、PDF 格式</p>
+                                    <div class="file-name" id="fileName" style="display:none"></div>
+                                    <input type="file" id="voucherFile" accept="image/jpeg,image/png,application/pdf" onchange="onFileSelected(this)">
+                                </div>
+                            </div>
+
+                            <button class="btn-submit primary" id="submitPaymentBtn" onclick="submitPayment()" data-lang-key="payment_submit">提交付款凭证</button>
+                        </div>
+                    </div>
+
+                    <!-- 提交成功状态 -->
+                    <div class="order-card" id="paymentSuccessBanner" style="display:none">
+                        <div class="success-banner">
+                            <i class="bi bi-check-circle-fill"></i>
+                            <h3 data-lang-key="payment_success_title">付款凭证已提交</h3>
+                            <p data-lang-key="payment_success_desc">您的付款凭证已提交成功，等待管理员审核。审核通过后将通过邮件通知您。</p>
+                            <div class="polling-indicator">
+                                <div class="spinner"></div>
+                                <span data-lang-key="payment_polling">正在查询审核状态...</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 已支付状态 -->
+                    <div class="order-card" id="orderPaidBanner" style="display:none">
+                        <div class="success-banner">
+                            <i class="bi bi-check-circle-fill"></i>
+                            <h3 data-lang-key="order_paid_title">付款已确认</h3>
+                            <p id="orderPaidMessage" data-lang-key="order_paid_desc">您的付款已通过审核。感谢您的购买！</p>
+                            <div id="licenseKeyArea" style="margin-top: 20px; padding: 16px; background: var(--bg-tertiary); border-radius: 12px; display:none;">
+                                <p style="font-size:13px;color:var(--text-secondary);margin-bottom:8px;" data-lang-key="license_key_label">您的 License Key：</p>
+                                <p id="licenseKeyDisplay" style="font-size:18px;font-weight:700;font-family:monospace;color:var(--accent);letter-spacing:2px;"></p>
+                            </div>
+                            <a href="index.html" class="btn btn--primary" style="display:inline-block;margin-top:24px;padding:12px 32px;text-decoration:none;" data-lang-key="order_back_home">返回首页</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer__bottom">
+                <p class="footer__copyright">© 2026 中韩出海数智港. 保留所有权利.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/toast.js"></script>
+    <script src="js/main.js"></script>
+    <script>
+        // 订单页面翻译扩展
+        (function() {
+            if (typeof translations !== 'undefined') {
+                var extra = {
+                    'zh-CN': {
+                        order_loading: '加载订单信息...',
+                        order_error_title: '订单加载失败',
+                        order_error_msg: '无法加载订单信息，请检查订单号是否正确',
+                        order_back_pricing: '返回定价页',
+                        order_info_title: '订单信息',
+                        order_no: '订单号',
+                        order_status: '订单状态',
+                        order_plan: '方案名称',
+                        order_company: '企业名称',
+                        order_contact: '联系人',
+                        order_email: '邮箱',
+                        order_total: '应付金额',
+                        payment_title: '选择支付方式',
+                        payment_alipay: '支付宝',
+                        payment_wechat: '微信支付',
+                        payment_transfer: '银行转账',
+                        payment_qr_placeholder: '收款二维码',
+                        payment_qr_note: '（实际部署时替换为真实二维码）',
+                        payment_alipay_hint: '打开支付宝扫一扫完成支付',
+                        payment_wechat_hint: '打开微信扫一扫完成支付',
+                        payment_transfer_hint: '请使用网银或手机银行完成转账',
+                        bank_name: '收款银行',
+                        bank_account: '收款账户',
+                        bank_holder: '收款人',
+                        bank_swift: 'SWIFT Code',
+                        bank_remark: '转账备注',
+                        upload_voucher_title: '上传付款凭证',
+                        upload_voucher_hint: '完成付款后，请上传付款截图或转账回执',
+                        upload_click: '点击上传凭证文件',
+                        upload_support: '支持 JPG、PNG、PDF 格式',
+                        payment_submit: '提交付款凭证',
+                        payment_success_title: '付款凭证已提交',
+                        payment_success_desc: '您的付款凭证已提交成功，等待管理员审核。审核通过后将通过邮件通知您。',
+                        payment_polling: '正在查询审核状态...',
+                        order_paid_title: '付款已确认',
+                        order_paid_desc: '您的付款已通过审核。感谢您的购买！',
+                        license_key_label: '您的 License Key：',
+                        order_back_home: '返回首页',
+                        order_status_pending: '待支付',
+                        order_status_paid: '已支付',
+                        order_status_cancelled: '已取消',
+                        plan_free: '免费初评',
+                        plan_depth: '深度方案',
+                        plan_annual: '年订阅',
+                        payment_confirm_hint: '请选择支付方式并上传付款凭证后提交',
+                        file_selected: '已选择文件',
+                    },
+                    'ko-KR': {
+                        order_loading: '주문 정보 로딩 중...',
+                        order_error_title: '주문 로딩 실패',
+                        order_error_msg: '주문 정보를 불러올 수 없습니다. 주문 번호를 확인해 주세요.',
+                        order_back_pricing: '가격 페이지로',
+                        order_info_title: '주문 정보',
+                        order_no: '주문 번호',
+                        order_status: '주문 상태',
+                        order_plan: '플랜',
+                        order_company: '기업명',
+                        order_contact: '연락처',
+                        order_email: '이메일',
+                        order_total: '결제 금액',
+                        payment_title: '결제 방법 선택',
+                        payment_alipay: '알리페이',
+                        payment_wechat: '위챗페이',
+                        payment_transfer: '은행 송금',
+                        payment_qr_placeholder: 'QR 코드',
+                        payment_qr_note: '(실제 배포 시 실제 QR 코드로 교체)',
+                        payment_alipay_hint: '알리페이를 열어 스캔하여 결제하세요',
+                        payment_wechat_hint: '위챗을 열어 스캔하여 결제하세요',
+                        payment_transfer_hint: '인터넷 뱅킹 또는 모바일 뱅킹으로 송금해 주세요',
+                        bank_name: '수취 은행',
+                        bank_account: '계좌 번호',
+                        bank_holder: '예금주',
+                        bank_swift: 'SWIFT 코드',
+                        bank_remark: '송금 참고 사항',
+                        upload_voucher_title: '결제 증빙 업로드',
+                        upload_voucher_hint: '결제 완료 후 스크린샷 또는 송금 확인증을 업로드해 주세요',
+                        upload_click: '클릭하여 증빙 파일 업로드',
+                        upload_support: 'JPG, PNG, PDF 형식 지원',
+                        payment_submit: '결제 증빙 제출',
+                        payment_success_title: '결제 증빙이 제출되었습니다',
+                        payment_success_desc: '결제 증빙이 성공적으로 제출되었습니다. 관리자 승인 후 이메일로 알려드립니다.',
+                        payment_polling: '승인 상태 확인 중...',
+                        order_paid_title: '결제 확인 완료',
+                        order_paid_desc: '결제가 승인되었습니다. 구매해 주셔서 감사합니다!',
+                        license_key_label: '라이선스 키:',
+                        order_back_home: '홈으로',
+                        order_status_pending: '결제 대기',
+                        order_status_paid: '결제 완료',
+                        order_status_cancelled: '취소됨',
+                        plan_free: '무료 초기 평가',
+                        plan_depth: '심층 컨설팅',
+                        plan_annual: '연간 구독',
+                        payment_confirm_hint: '결제 방법을 선택하고 증빙 파일을 업로드한 후 제출하세요',
+                        file_selected: '선택된 파일',
+                    }
+                };
+                for (var lang in extra) {
+                    if (!translations[lang]) translations[lang] = {};
+                    Object.assign(translations[lang], extra[lang]);
+                }
+            }
+        })();
+
+        // 订单ID从URL获取
+        var urlParams = new URLSearchParams(window.location.search);
+        var orderId = urlParams.get('id');
+
+        // 订单数据
+        var orderData = null;
+        var selectedPayment = 'alipay';
+        var selectedFile = null;
+        var pollTimer = null;
+
+        // 方案名称映射
+        var planNames = {
+            'zh-CN': { 'free': '免费初评', 'depth': '深度方案', 'annual': '年订阅' },
+            'ko-KR': { 'free': '무료 초기 평가', 'depth': '심층 컨설팅 패키지', 'annual': '연간 구독' }
+        };
+
+        document.addEventListener('DOMContentLoaded', function() {
+            if (!orderId) {
+                document.getElementById('orderLoading').style.display = 'none';
+                document.getElementById('orderError').style.display = 'block';
+                document.getElementById('orderErrorMsg').textContent = '缺少订单号参数';
+                return;
+            }
+            loadOrder();
+        });
+
+        // 加载订单信息
+        async function loadOrder() {
+            try {
+                var response = await fetch('/api/v1/orders/' + orderId);
+                var result = await response.json();
+
+                if (response.ok && result.success) {
+                    orderData = result.data;
+                    renderOrder();
+                } else {
+                    showError(result.detail || '订单不存在');
+                }
+            } catch (err) {
+                showError('网络错误：' + err.message);
+            }
+        }
+
+        function showError(msg) {
+            document.getElementById('orderLoading').style.display = 'none';
+            document.getElementById('orderError').style.display = 'block';
+            document.getElementById('orderErrorMsg').textContent = msg;
+        }
+
+        // 渲染订单信息
+        function renderOrder() {
+            document.getElementById('orderLoading').style.display = 'none';
+            document.getElementById('orderContent').style.display = 'block';
+
+            var lang = localStorage.getItem('lang') || 'zh-CN';
+            var planName = planNames[lang] && planNames[lang][orderData.plan_type]
+                ? planNames[lang][orderData.plan_type]
+                : orderData.plan_type;
+
+            var statusMap = {
+                'zh-CN': { 'pending': '待支付', 'paid': '已支付', 'cancelled': '已取消' },
+                'ko-KR': { 'pending': '결제 대기', 'paid': '결제 완료', 'cancelled': '취소됨' }
+            };
+
+            document.getElementById('orderNo').textContent = orderData.order_no || ('ORD' + String(orderId).padStart(6, '0'));
+            document.getElementById('orderPlan').textContent = planName;
+            document.getElementById('orderCompany').textContent = orderData.user_company || '-';
+            document.getElementById('orderName').textContent = orderData.user_name || '-';
+            document.getElementById('orderEmail').textContent = orderData.user_email || '-';
+
+            var price = parseFloat(orderData.price || 0);
+            document.getElementById('orderPrice').textContent = '¥' + price.toLocaleString();
+
+            // 状态标签
+            var statusEl = document.getElementById('orderStatusBadge');
+            var statusText = (statusMap[lang] && statusMap[lang][orderData.status]) || orderData.status;
+            var statusClassMap = { 'pending': 'pending', 'paid': 'paid', 'cancelled': 'cancelled' };
+            var cls = statusClassMap[orderData.status] || 'pending';
+            statusEl.innerHTML = '<span class="order-status ' + cls + '"><i class="bi ' +
+                (orderData.status === 'paid' ? 'bi-check-circle' : orderData.status === 'cancelled' ? 'bi-x-circle' : 'bi-clock') +
+                '"></i>' + statusText + '</span>';
+
+            // 转账备注中的订单号
+            document.getElementById('bankRemark').textContent = '订单号：' + (orderData.order_no || ('ORD' + String(orderId).padStart(6, '0')));
+
+            if (orderData.status === 'paid') {
+                showPaidBanner();
+            } else if (orderData.status === 'cancelled') {
+                document.getElementById('paymentSection').style.display = 'none';
+            } else {
+                document.getElementById('paymentSection').style.display = 'block';
+            }
+
+            // 如果已经有付款记录且是待审核状态
+            if (orderData.payment_status === 'pending' && orderData.status === 'pending') {
+                document.getElementById('paymentSection').style.display = 'none';
+                document.getElementById('paymentSuccessBanner').style.display = 'block';
+                startPolling();
+            }
+        }
+
+        // 切换支付方式
+        function switchPayment(method) {
+            selectedPayment = method;
+
+            document.querySelectorAll('.payment-tab').forEach(function(tab) {
+                tab.classList.toggle('active', tab.dataset.payment === method);
+            });
+            document.querySelectorAll('.payment-panel').forEach(function(panel) {
+                panel.classList.toggle('active', panel.dataset.panel === method);
+            });
+        }
+
+        // 文件选择
+        function onFileSelected(input) {
+            if (input.files && input.files[0]) {
+                selectedFile = input.files[0];
+                var fileNameEl = document.getElementById('fileName');
+                fileNameEl.textContent = selectedFile.name + ' (' + (selectedFile.size / 1024).toFixed(1) + ' KB)';
+                fileNameEl.style.display = 'block';
+            }
+        }
+
+        // 提交付款凭证
+        async function submitPayment() {
+            if (!selectedFile) {
+                showToast(window.getToastMessage('validation_required') || '请先上传付款凭证', 'error');
+                return;
+            }
+
+            var btn = document.getElementById('submitPaymentBtn');
+            btn.disabled = true;
+            var lang = localStorage.getItem('lang') || 'zh-CN';
+            btn.textContent = lang === 'ko-KR' ? '제출 중...' : '提交中...';
+
+            try {
+                var formData = new FormData();
+                formData.append('method', selectedPayment);
+                formData.append('file', selectedFile);
+
+                var response = await fetch('/api/v1/orders/' + orderId + '/payment', {
+                    method: 'POST',
+                    body: formData
+                });
+                var result = await response.json();
+
+                if (response.ok && result.success) {
+                    showToast(result.message || '付款凭证已提交', 'success');
+                    document.getElementById('paymentSection').style.display = 'none';
+                    document.getElementById('paymentSuccessBanner').style.display = 'block';
+                    startPolling();
+                } else {
+                    var errMsg = result.detail || result.message || '提交失败';
+                    showToast(errMsg, 'error');
+                }
+            } catch (err) {
+                showToast(window.getToastMessage('error_network'), 'error');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = lang === 'ko-KR' ? '결제 증빙 제출' : '提交付款凭证';
+            }
+        }
+
+        // 开始轮询
+        function startPolling() {
+            if (pollTimer) clearInterval(pollTimer);
+            pollTimer = setInterval(pollOrderStatus, 5000);
+            // 5秒后开始第一次轮询
+            setTimeout(pollOrderStatus, 5000);
+        }
+
+        // 轮询订单状态
+        async function pollOrderStatus() {
+            try {
+                var response = await fetch('/api/v1/orders/' + orderId);
+                var result = await response.json();
+
+                if (response.ok && result.success) {
+                    orderData = result.data;
+                    if (orderData.status === 'paid') {
+                        clearInterval(pollTimer);
+                        pollTimer = null;
+                        showPaidBanner();
+                    }
+                }
+            } catch (e) {
+                // 静默处理轮询错误
+            }
+        }
+
+        // 显示已支付横幅
+        function showPaidBanner() {
+            document.getElementById('paymentSection').style.display = 'none';
+            document.getElementById('paymentSuccessBanner').style.display = 'none';
+            document.getElementById('orderPaidBanner').style.display = 'block';
+
+            // 如果有 License Key
+            if (orderData.license_key) {
+                document.getElementById('licenseKeyArea').style.display = 'block';
+                document.getElementById('licenseKeyDisplay').textContent = orderData.license_key;
+            }
+        }
+    </script>
+</body>
+</html>
+logout
+logout

@@ -1,6 +1,6 @@
 """
 管理后台API路由
-包含：登录认证、线索CRUD、状态管理、统计
+包含：登录认证、线索CRUD、状态管理、统计、订单管理
 """
 import sqlite3
 import hashlib
@@ -12,6 +12,7 @@ from fastapi import APIRouter, HTTPException, Header, Query
 from pydantic import BaseModel
 from typing import Optional
 from backend.database import get_db, DB_PATH
+from backend.license import generate_license
 
 router = APIRouter(tags=["admin"])
 
@@ -27,6 +28,21 @@ TABLE_LABELS = {
     "contacts": "联系咨询",
     "demo_requests": "预约演示",
     "pricing_inquiries": "定价咨询",
+}
+
+# 套餐定价映射（与 payment.py 一致）
+PLAN_PRICES = {
+    "free": 0,
+    "depth": 999.00,
+    "annual": 9999.00,
+    "source": 29999.00,
+}
+
+PLAN_NAMES = {
+    "free": "免费初评",
+    "depth": "深度方案",
+    "annual": "年订阅",
+    "source": "源码授权",
 }
 
 TABLE_COLUMNS = {}
@@ -265,3 +281,135 @@ async def get_stats(authorization: str = Header(None)):
             "by_table": stats,
         },
     }
+
+
+# ── 订单管理接口 ──────────────────────────────────────
+
+
+@router.get("/api/v1/admin/orders")
+async def get_orders(
+    status: Optional[str] = Query(None),
+    authorization: str = Header(None),
+):
+    """获取订单列表，可按状态筛选"""
+    _require_auth(authorization)
+
+    conn = get_db()
+    try:
+        if status:
+            cursor = conn.execute(
+                "SELECT * FROM orders WHERE status = ? ORDER BY created_at DESC",
+                (status,),
+            )
+        else:
+            cursor = conn.execute(
+                "SELECT * FROM orders ORDER BY created_at DESC"
+            )
+
+        columns = [desc[0] for desc in cursor.description]
+        orders = [dict(zip(columns, row)) for row in cursor.fetchall()]
+
+        # 为每个订单附带付款信息
+        for order in orders:
+            pc = conn.execute(
+                "SELECT id, method, amount, status, confirmed_at FROM payments WHERE order_id = ? ORDER BY id DESC LIMIT 1",
+                (order["id"],),
+            )
+            p_row = pc.fetchone()
+            if p_row:
+                p_cols = [desc[0] for desc in pc.description]
+                order["latest_payment"] = dict(zip(p_cols, p_row))
+            else:
+                order["latest_payment"] = None
+
+        return {"success": True, "data": orders, "total": len(orders)}
+    finally:
+        conn.close()
+
+
+class OrderStatusRequest(BaseModel):
+    """订单状态更新请求"""
+    status: str
+
+
+@router.patch("/api/v1/admin/orders/{order_id}/status")
+async def update_order_status(
+    order_id: int,
+    req: OrderStatusRequest,
+    authorization: str = Header(None),
+):
+    """确认/拒绝订单 — 确认时自动生成License"""
+    _require_auth(authorization)
+
+    valid_statuses = ["paid", "cancelled"]
+    if req.status not in valid_statuses:
+        raise HTTPException(
+            status_code=400,
+            detail=f"状态无效，有效值: {', '.join(valid_statuses)}",
+        )
+
+    conn = get_db()
+    try:
+        # 查询订单
+        cursor = conn.execute("SELECT * FROM orders WHERE id = ?", (order_id,))
+        row = cursor.fetchone()
+        if not row:
+            raise HTTPException(status_code=404, detail="订单不存在")
+
+        columns = [desc[0] for desc in cursor.description]
+        order = dict(zip(columns, row))
+
+        if order["status"] != "pending":
+            raise HTTPException(
+                status_code=400,
+                detail=f"订单当前状态为 {order['status']}，无法修改",
+            )
+
+        # 更新订单状态
+        conn.execute(
+            "UPDATE orders SET status = ? WHERE id = ?",
+            (req.status, order_id),
+        )
+
+        license_key = None
+        if req.status == "paid":
+            # 确认支付 —— 自动生成License
+            licensee = order["user_company"] or order["user_name"]
+            plan = order["plan_type"]
+
+            # 根据套餐类型设置授权天数
+            days_map = {
+                "free": 30,
+                "depth": 365,
+                "annual": 365,
+                "source": 730,  # 源码授权2年
+            }
+            days = days_map.get(plan, 365)
+
+            license_key = generate_license(licensee, plan, days)
+
+            # 查找该订单最近的付款记录并标记为已确认
+            cursor = conn.execute(
+                "SELECT id FROM payments WHERE order_id = ? AND status = 'pending' ORDER BY id DESC LIMIT 1",
+                (order_id,),
+            )
+            payment_row = cursor.fetchone()
+            if payment_row:
+                conn.execute(
+                    "UPDATE payments SET status = 'confirmed', confirmed_at = CURRENT_TIMESTAMP WHERE id = ?",
+                    (payment_row[0],),
+                )
+
+        conn.commit()
+
+        return {
+            "success": True,
+            "message": f"订单状态已更新为: {req.status}",
+            "data": {
+                "order_id": order_id,
+                "status": req.status,
+                "license_key": license_key,
+            },
+        }
+    finally:
+        conn.close()

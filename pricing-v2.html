@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>定价方案 - 中韩出海数智港</title>
+    <meta name="description" content="选择适合您的中韩出海方案：免费初评、深度方案（¥9,800）、年订阅（¥58,000）。AI数字员工驱动的跨境合规服务，按需选择。">
+    <meta name="keywords" content="韩企中国合规,中韩出海,合规咨询,中国合规,深度方案,年订阅,中韩跨境服务,数字员工">
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="定价方案 - 中韩出海数智港">
+    <meta property="og:description" content="AI数字员工驱动的跨境合规服务，免费初评、深度方案、年订阅，按需选择。">
+    <meta property="og:image" content="https://go-aiport.com/favicon.ico">
+    <meta property="og:url" content="https://go-aiport.com/pricing-v2.html">
+    <meta property="og:locale" content="zh_CN">
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="定价方案 - 中韩出海数智港">
+    <meta name="twitter:description" content="AI数字员工驱动的跨境合规服务，免费初评、深度方案、年订阅，按需选择。">
+    <!-- Hreflang -->
+    <link rel="alternate" hreflang="zh-CN" href="https://go-aiport.com/pricing-v2.html">
+    <link rel="alternate" hreflang="ko-KR" href="https://go-aiport.com/pricing-v2.html?lang=ko-KR">
+    <link rel="alternate" hreflang="x-default" href="https://go-aiport.com/pricing-v2.html">
+    <link rel="icon" href="favicon.ico">
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        .pricing-page { padding-top: 120px; padding-bottom: 80px; }
+        .pricing-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 30px; max-width: 1100px; margin: 0 auto; }
+        .pricing-card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 20px; padding: 40px 30px; text-align: center; transition: all .3s ease; position: relative; }
+        .pricing-card:hover { transform: translateY(-5px); box-shadow: 0 20px 40px rgba(0,0,0,.1); }
+        .pricing-card.featured { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+        .pricing-card.featured .pricing-badge { background: var(--accent); color: #fff; padding: 6px 16px; border-radius: 20px; font-size: 13px; position: absolute; top: -12px; left: 50%; transform: translateX(-50%); white-space: nowrap; }
+        .pricing-name { font-size: 20px; font-weight: 600; margin-bottom: 8px; }
+        .pricing-name-ko { font-size: 14px; color: var(--text-secondary); margin-bottom: 20px; }
+        .pricing-price { font-size: 48px; font-weight: 700; margin-bottom: 20px; }
+        .pricing-price span { font-size: 18px; font-weight: 400; color: var(--text-secondary); }
+        .pricing-desc { color: var(--text-secondary); margin-bottom: 30px; line-height: 1.6; }
+        .pricing-features { list-style: none; padding: 0; margin: 0 0 30px; text-align: left; }
+        .pricing-features li { padding: 10px 0; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; gap: 10px; }
+        .pricing-features li i { color: #22c55e; font-size: 18px; }
+        .pricing-cta { display: inline-block; padding: 14px 40px; border: none; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer; transition: all .3s ease; text-decoration: none; width: 100%; }
+        .pricing-cta.primary { background: var(--accent); color: #fff; }
+        .pricing-cta.primary:hover { opacity: .9; }
+        .pricing-cta.secondary { background: transparent; border: 2px solid var(--accent); color: var(--accent); }
+        .pricing-cta.secondary:hover { background: var(--accent); color: #fff; }
+        .pricing-faq { max-width: 800px; margin: 60px auto 0; }
+        .pricing-faq h2 { text-align: center; margin-bottom: 30px; }
+        .faq-item { padding: 20px 0; border-bottom: 1px solid var(--border-color); }
+        .faq-q { font-weight: 600; margin-bottom: 8px; }
+        .faq-a { color: var(--text-secondary); line-height: 1.6; }
+        .back-link { text-align: center; margin-top: 40px; }
+        .back-link a { color: var(--accent); text-decoration: none; }
+        .back-link a:hover { text-decoration: underline; }
+        :root { --accent: #6366f1; }
+        body.light-mode { --accent: #4f46e5; }
+        /* 下单弹窗 */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 1000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
+        .modal-overlay.active { display: flex; }
+        .modal-content { background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 20px; padding: 36px; max-width: 500px; width: 92%; max-height: 85vh; overflow-y: auto; box-shadow: 0 25px 50px rgba(0,0,0,0.3); }
+        .modal-content h3 { font-size: 22px; font-weight: 700; margin-bottom: 8px; }
+        .modal-content .modal-sub { color: var(--text-secondary); margin-bottom: 24px; font-size: 14px; }
+        .modal-content .form__group { margin-bottom: 16px; }
+        .modal-content .form__label { display: block; margin-bottom: 6px; font-size: 14px; font-weight: 500; }
+        .modal-content .form__input, .modal-content .form__select { width: 100%; padding: 12px 16px; border-radius: 10px; border: 1px solid var(--border-color); background: var(--bg-primary); color: var(--text-primary); font-size: 15px; outline: none; transition: border-color .2s; }
+        .modal-content .form__input:focus, .modal-content .form__select:focus { border-color: var(--accent); }
+        .modal-content .form__input--readonly { opacity: 0.7; cursor: not-allowed; }
+        .modal-content .btn { width: 100%; padding: 14px; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer; border: none; }
+        .modal-content .btn--primary { background: var(--accent); color: #fff; }
+        .modal-content .btn--primary:hover { opacity: .9; }
+        .modal-content .btn--secondary { background: transparent; border: 1px solid var(--border-color); color: var(--text-primary); margin-top: 8px; }
+        .modal-content .btn--secondary:hover { background: var(--bg-tertiary); }
+        .modal-close { float: right; font-size: 24px; cursor: pointer; color: var(--text-secondary); line-height: 1; }
+        .modal-close:hover { color: var(--text-primary); }
+        .modal-pricing-info { background: var(--bg-tertiary); border-radius: 12px; padding: 16px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
+        .modal-pricing-info .plan-label { font-weight: 600; }
+        .modal-pricing-info .plan-price { font-size: 24px; font-weight: 700; color: var(--accent); }
+    </style>
+</head>
+<body>
+    <!-- 导航 -->
+    <header class="header">
+        <div class="container">
+            <div class="header__content">
+                <div class="header__logo">
+                    <h1 class="logo__text">中韩出海数智港</h1>
+                </div>
+                <nav class="header__nav">
+                    <ul class="nav__list">
+                        <li class="nav__item"><a href="index.html" class="nav__link" data-lang-key="home">首页</a></li>
+                        <li class="nav__item"><a href="index.html#services" class="nav__link" data-lang-key="services">服务内容</a></li>
+                        <li class="nav__item"><a href="index.html#features" class="nav__link" data-lang-key="features">核心功能</a></li>
+                        <li class="nav__item"><a href="index.html#contact" class="nav__link" data-lang-key="contact">联系我们</a></li>
+                        <li class="nav__item"><a href="pricing-v2.html" class="nav__link" data-lang-key="footer_pricing">定价/购买</a></li>
+                    </ul>
+                </nav>
+                <div class="header__lang">
+                    <button class="lang-btn" data-lang="zh-CN">中文</button>
+                    <button class="lang-btn" data-lang="ko-KR">한국어</button>
+                </div>
+                <div class="header__theme">
+                    <button class="theme-btn" id="themeToggle" aria-label="切换主题">
+                        <i class="bi bi-moon"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- 定价页面 -->
+    <section class="pricing-page">
+        <div class="container">
+            <div class="section__header">
+                <h2 class="section__title" data-lang-key="pricing_title">选择适合您的方案</h2>
+                <p class="section__subtitle" data-lang-key="pricing_subtitle">AI数字员工驱动的跨境合规服务，按需选择</p>
+            </div>
+            <div class="pricing-grid">
+                <!-- 免费初评 -->
+                <div class="pricing-card">
+                    <div class="pricing-name">免费初评</div>
+                    <div class="pricing-name-ko">무료 초기 평가</div>
+                    <div class="pricing-price">¥0</div>
+                    <div class="pricing-desc" data-lang-key="pricing_free_desc">适合初步了解中国市场的韩企</div>
+                    <ul class="pricing-features">
+                        <li><i class="bi bi-check-circle"></i> <span data-lang-key="pricing_free_f1">30分钟在线咨询</span></li>
+                        <li><i class="bi bi-check-circle"></i> <span data-lang-key="pricing_free_f2">中国市场概况报告</span></li>
+                        <li><i class="bi bi-check-circle"></i> <span data-lang-key="pricing_free_f3">基础合规清单</span></li>
+                    </ul>
+                    <button class="pricing-cta secondary" onclick="openOrderModal('free')" data-lang-key="pricing_buy_free">免费获取</button>
+                </div>
+
+                <!-- 深度方案 -->
+                <div class="pricing-card featured">
+                    <div class="pricing-badge" data-lang-key="pricing_recommended">推荐</div>
+                    <div class="pricing-name">深度方案</div>
+                    <div class="pricing-name-ko">심층 컨설팅 패키지</div>
+                    <div class="pricing-price">¥9,800 <span data-lang-key="pricing_one_time">一次性</span></div>
+                    <div class="pricing-desc" data-lang-key="pricing_depth_desc">适合已决定进入中国市场的韩企</div>
+                    <ul class="pricing-features">
+                        <li><i class="bi bi-check-circle"></i> <span data-lang-key="pricing_depth_f1">全案市场进入策划</span></li>
+                        <li><i class="bi bi-check-circle"></i> <span data-lang-key="pricing_depth_f2">中韩双语品牌内容</span></li>
+                        <li><i class="bi bi-check-circle"></i> <span data-lang-key="pricing_depth_f3">SEO优化方案</span></li>
+                        <li><i class="bi bi-check-circle"></i> <span data-lang-key="pricing_depth_f4">竞品深度分析</span></li>
+                        <li><i class="bi bi-check-circle"></i> <span data-lang-key="pricing_depth_f5">合规完整诊断（6位数字员工）</span></li>
+                    </ul>
+                    <button class="pricing-cta primary" onclick="openOrderModal('depth')" data-lang-key="pricing_buy_depth">立即购买</button>
+                </div>
+
+                <!-- 年订阅 -->
+                <div class="pricing-card">
+                    <div class="pricing-name">年订阅</div>
+                    <div class="pricing-name-ko">연간 구독</div>
+                    <div class="pricing-price">¥58,000 <span data-lang-key="pricing_per_year">/年</span></div>
+                    <div class="pricing-desc" data-lang-key="pricing_annual_desc">适合持续运营中国业务的韩企</div>
+                    <ul class="pricing-features">
+                        <li><i class="bi bi-check-circle"></i> <span data-lang-key="pricing_annual_f1">含深度方案全部内容</span></li>
+                        <li><i class="bi bi-check-circle"></i> <span data-lang-key="pricing_annual_f2">不限次AI数字员工分析</span></li>
+                        <li><i class="bi bi-check-circle"></i> <span data-lang-key="pricing_annual_f3">实时市场情报监控</span></li>
+                        <li><i class="bi bi-check-circle"></i> <span data-lang-key="pricing_annual_f4">优先技术支持</span></li>
+                        <li><i class="bi bi-check-circle"></i> <span data-lang-key="pricing_annual_f5">季度战略复盘</span></li>
+                    </ul>
+                    <button class="pricing-cta secondary" onclick="openOrderModal('annual')" data-lang-key="pricing_buy_annual">立即订阅</button>
+                </div>
+            </div>
+
+            <!-- FAQ -->
+            <div class="pricing-faq">
+                <h2 data-lang-key="pricing_faq_title">常见问题</h2>
+                <div class="faq-item">
+                    <div class="faq-q" data-lang-key="faq_q1">Q: 深度方案和年订阅有什么区别？</div>
+                    <div class="faq-a" data-lang-key="faq_a1">深度方案是一次性交付的完整方案，适合短期内完成市场进入的韩企。年订阅包含全年持续服务，包括不限次的AI数字员工分析、实时情报监控和季度复盘，适合长期运营中国业务的韩企。</div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-q" data-lang-key="faq_q2">Q: 数字员工具体能做什么？</div>
+                    <div class="faq-a" data-lang-key="faq_a2">6位AI数字合规官分别覆盖：行业准入（徐准）、数据安全（刘真）、知识产权（志浩）、跨境财税（宰贤）、劳动用工（贤宇）、签证移民（美英），提供一站式合规诊断和方案输出。</div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-q" data-lang-key="faq_q3">Q: 付款方式和发票？</div>
+                    <div class="faq-a" data-lang-key="faq_a3">支持支付宝、微信支付和银行转账，提供增值税专用发票。跨境支付支持美元和韩元结算。</div>
+                </div>
+            </div>
+
+            <div class="back-link">
+                <a href="index.html" data-lang-key="pricing_back">← 返回首页</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- 下单弹窗 -->
+    <div class="modal-overlay" id="orderModal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeOrderModal()">&times;</span>
+            <h3 data-lang-key="order_modal_title">创建订单</h3>
+            <p class="modal-sub" data-lang-key="order_modal_sub">填写以下信息，完成下单</p>
+            <div class="modal-pricing-info">
+                <div>
+                    <div class="plan-label" id="modalPlanLabel">深度方案</div>
+                    <div style="font-size:13px;color:var(--text-secondary)" id="modalPlanType">depth</div>
+                </div>
+                <div class="plan-price" id="modalPlanPrice">¥9,800</div>
+            </div>
+            <form id="orderForm">
+                <input type="hidden" name="plan_type" id="orderPlanType" value="depth">
+                <input type="hidden" name="price" id="orderPrice" value="9800">
+                <div class="form__group">
+                    <label class="form__label" data-lang-key="form_company">企业名称</label>
+                    <input type="text" class="form__input" name="user_company" required placeholder="请输入企业名称">
+                </div>
+                <div class="form__group">
+                    <label class="form__label" data-lang-key="form_contact">联系人</label>
+                    <input type="text" class="form__input" name="user_name" required placeholder="请输入联系人姓名">
+                </div>
+                <div class="form__group">
+                    <label class="form__label" data-lang-key="form_phone">电话</label>
+                    <input type="tel" class="form__input" name="user_phone" placeholder="请输入联系电话">
+                </div>
+                <div class="form__group">
+                    <label class="form__label" data-lang-key="form_email">邮箱</label>
+                    <input type="email" class="form__input" name="user_email" required placeholder="请输入邮箱地址">
+                </div>
+                <button type="submit" class="btn btn--primary" data-lang-key="order_submit_btn">确认下单</button>
+                <button type="button" class="btn btn--secondary" onclick="closeOrderModal()" data-lang-key="order_cancel_btn">取消</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer__bottom">
+                <p class="footer__copyright">© 2026 中韩出海数智港. 保留所有权利.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/toast.js"></script>
+    <script src="js/main.js"></script>
+    <script>
+        // 定价页面扩展翻译
+        (function() {
+            if (typeof translations !== 'undefined') {
+                var extra = {
+                    'zh-CN': {
+                        pricing_title: '选择适合您的方案',
+                        pricing_subtitle: 'AI数字员工驱动的跨境合规服务，按需选择',
+                        pricing_free_desc: '适合初步了解中国市场的韩企',
+                        pricing_free_f1: '30分钟在线咨询',
+                        pricing_free_f2: '中国市场概况报告',
+                        pricing_free_f3: '基础合规清单',
+                        pricing_buy_free: '免费获取',
+                        pricing_recommended: '推荐',
+                        pricing_one_time: '一次性',
+                        pricing_depth_desc: '适合已决定进入中国市场的韩企',
+                        pricing_depth_f1: '全案市场进入策划',
+                        pricing_depth_f2: '中韩双语品牌内容',
+                        pricing_depth_f3: 'SEO优化方案',
+                        pricing_depth_f4: '竞品深度分析',
+                        pricing_depth_f5: '合规完整诊断（6位数字员工）',
+                        pricing_buy_depth: '立即购买',
+                        pricing_per_year: '/年',
+                        pricing_annual_desc: '适合持续运营中国业务的韩企',
+                        pricing_annual_f1: '含深度方案全部内容',
+                        pricing_annual_f2: '不限次AI数字员工分析',
+                        pricing_annual_f3: '实时市场情报监控',
+                        pricing_annual_f4: '优先技术支持',
+                        pricing_annual_f5: '季度战略复盘',
+                        pricing_buy_annual: '立即订阅',
+                        pricing_faq_title: '常见问题',
+                        faq_q1: 'Q: 深度方案和年订阅有什么区别？',
+                        faq_a1: '深度方案是一次性交付的完整方案，适合短期内完成市场进入的韩企。年订阅包含全年持续服务，包括不限次的AI数字员工分析、实时情报监控和季度复盘，适合长期运营中国业务的韩企。',
+                        faq_q2: 'Q: 数字员工具体能做什么？',
+                        faq_a2: '6位AI数字合规官分别覆盖：行业准入（徐准）、数据安全（刘真）、知识产权（志浩）、跨境财税（宰贤）、劳动用工（贤宇）、签证移民（美英），提供一站式合规诊断和方案输出。',
+                        faq_q3: 'Q: 付款方式和发票？',
+                        faq_a3: '支持支付宝、微信支付和银行转账，提供增值税专用发票。跨境支付支持美元和韩元结算。',
+                        pricing_back: '← 返回首页',
+                        order_modal_title: '创建订单',
+                        order_modal_sub: '填写以下信息，完成下单',
+                        order_submit_btn: '确认下单',
+                        order_cancel_btn: '取消',
+                    },
+                    'ko-KR': {
+                        pricing_title: '적합한 플랜을 선택하세요',
+                        pricing_subtitle: 'AI 디지털 직원 기반 크로스보더 규제 서비스',
+                        pricing_free_desc: '중국 시장을 처음 알아보는 한국 기업에 적합',
+                        pricing_free_f1: '30분 온라인 상담',
+                        pricing_free_f2: '중국 시장 개황 보고서',
+                        pricing_free_f3: '기본 규제 체크리스트',
+                        pricing_buy_free: '무료로 받기',
+                        pricing_recommended: '추천',
+                        pricing_one_time: '일회성',
+                        pricing_depth_desc: '중국 시장 진출을 결정한 한국 기업에 적합',
+                        pricing_depth_f1: '전체 시장 진출 기획',
+                        pricing_depth_f2: '중한 이중 언어 브랜드 콘텐츠',
+                        pricing_depth_f3: 'SEO 최적화 방안',
+                        pricing_depth_f4: '경쟁사 심층 분석',
+                        pricing_depth_f5: '규제 완전 진단 (6명 디지털 직원)',
+                        pricing_buy_depth: '지금 구매',
+                        pricing_per_year: '/년',
+                        pricing_annual_desc: '중국 사업을 지속 운영하는 한국 기업에 적합',
+                        pricing_annual_f1: '심층 컨설팅 패키지 전체 내용 포함',
+                        pricing_annual_f2: '무제한 AI 디지털 직원 분석',
+                        pricing_annual_f3: '실시간 시장 정보 모니터링',
+                        pricing_annual_f4: '우선 기술 지원',
+                        pricing_annual_f5: '분기별 전략 검토',
+                        pricing_buy_annual: '지금 구독',
+                        pricing_faq_title: '자주 묻는 질문',
+                        faq_q1: 'Q: 심층 컨설팅과 연간 구독의 차이점은?',
+                        faq_a1: '심층 컨설팅은 일회성 완전 패키지로 단기간에 시장 진출을 완료하려는 기업에 적합합니다. 연간 구독은 연중 지속 서비스로 무제한 AI 분석, 실시간 모니터링, 분기별 검토를 포함합니다.',
+                        faq_q2: 'Q: 디지털 직원은 무엇을 할 수 있나요?',
+                        faq_a2: '6명의 AI 디지털 규제 전문가가 산업 허가, 데이터 보안, 지식재산권, 재무세무, 고용, 비자를 각각 담당합니다.',
+                        faq_q3: 'Q: 결제 방법과 세금 계산서는?',
+                        faq_a3: '알리페이, 위챗페이, 은행 송금을 지원합니다. 부가가치세 전용 세금 계산서를 제공합니다.',
+                        pricing_back: '← 홈으로',
+                        order_modal_title: '주문 생성',
+                        order_modal_sub: '정보를 입력하여 주문을 완료하세요',
+                        order_submit_btn: '주문 확인',
+                        order_cancel_btn: '취소',
+                    }
+                };
+                for (var lang in extra) {
+                    if (!translations[lang]) translations[lang] = {};
+                    Object.assign(translations[lang], extra[lang]);
+                }
+            }
+        })();
+
+        // 定价方案数据
+        var planData = {
+            'free': { name: '免费初评', name_ko: '무료 초기 평가', price: 0, price_display: '¥0', type: 'free' },
+            'depth': { name: '深度方案', name_ko: '심층 컨설팅 패키지', price: 9800, price_display: '¥9,800', type: 'depth' },
+            'annual': { name: '年订阅', name_ko: '연간 구독', price: 58000, price_display: '¥58,000', type: 'annual' },
+        };
+
+        // 打开下单弹窗
+        function openOrderModal(planType) {
+            var plan = planData[planType];
+            if (!plan) return;
+
+            var lang = localStorage.getItem('lang') || 'zh-CN';
+            var planName = lang === 'ko-KR' ? plan.name_ko : plan.name;
+
+            document.getElementById('modalPlanLabel').textContent = planName;
+            document.getElementById('modalPlanType').textContent = plan.type;
+            document.getElementById('modalPlanPrice').textContent = plan.price_display;
+            document.getElementById('orderPlanType').value = plan.type;
+            document.getElementById('orderPrice').value = plan.price;
+
+            document.getElementById('orderModal').classList.add('active');
+        }
+
+        function closeOrderModal() {
+            document.getElementById('orderModal').classList.remove('active');
+        }
+
+        // 点击遮罩关闭
+        document.getElementById('orderModal').addEventListener('click', function(e) {
+            if (e.target === this) closeOrderModal();
+        });
+
+        // 订单表单提交
+        document.addEventListener('DOMContentLoaded', function() {
+            var orderForm = document.getElementById('orderForm');
+            if (orderForm) {
+                orderForm.addEventListener('submit', async function(e) {
+                    e.preventDefault();
+
+                    var formData = {};
+                    orderForm.querySelectorAll('input').forEach(function(el) {
+                        if (el.name) formData[el.name] = el.value;
+                    });
+
+                    // 客户端校验
+                    var lang = localStorage.getItem('lang') || 'zh-CN';
+                    var requiredFields = orderForm.querySelectorAll('[required]');
+                    var valid = true;
+                    requiredFields.forEach(function(el) {
+                        if (!el.value.trim()) {
+                            valid = false;
+                            el.style.borderColor = '#dc2626';
+                        } else {
+                            el.style.borderColor = '';
+                        }
+                    });
+                    if (!valid) {
+                        showToast(window.getToastMessage('validation_required'), 'error');
+                        return;
+                    }
+
+                    if (formData.user_email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.user_email)) {
+                        showToast(window.getToastMessage('validation_email'), 'error');
+                        return;
+                    }
+
+                    var submitBtn = orderForm.querySelector('button[type="submit"]');
+                    submitBtn.disabled = true;
+                    var originalText = submitBtn.textContent;
+                    submitBtn.textContent = lang === 'ko-KR' ? '제출 중...' : '提交中...';
+
+                    try {
+                        var response = await fetch('/api/v1/orders', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(formData)
+                        });
+                        var result = await response.json();
+
+                        if (response.ok && result.success) {
+                            showToast('订单创建成功！正在跳转到支付页面...', 'success');
+                            setTimeout(function() {
+                                window.location.href = '/order.html?id=' + result.order_id;
+                            }, 1000);
+                        } else {
+                            var errMsg = result.detail || result.message || '创建订单失败';
+                            showToast(errMsg, 'error');
+                        }
+                    } catch (err) {
+                        showToast(window.getToastMessage('error_network'), 'error');
+                    } finally {
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = originalText;
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>
+logout

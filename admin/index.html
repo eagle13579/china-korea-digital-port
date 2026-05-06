@@ -89,6 +89,14 @@
             </div>
         </div>
 
+        <!-- 功能选项卡 -->
+        <div class="flex gap-2 mb-6">
+            <button @click="activeTab='leads'" :class="activeTab==='leads'?'btn-primary':''" class="btn btn-sm" style="background:#334155;color:#e2e8f0">线索管理</button>
+            <button @click="switchOrderTab()" :class="activeTab==='orders'?'btn-primary':''" class="btn btn-sm" style="background:#334155;color:#e2e8f0">订单管理</button>
+        </div>
+
+        <!-- 线索管理面板 -->
+        <div x-show="activeTab==='leads'">
         <!-- 统计卡片 -->
         <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
             <div class="card-stat">
@@ -219,6 +227,127 @@
         </div>
     </div>
 
+    <!-- 订单管理面板 -->
+    <div x-show="activeTab==='orders'">
+        <!-- 订单统计 -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+            <div class="card-stat">
+                <div class="text-3xl font-bold" x-text="orderStats.total || '-'"></div>
+                <div class="text-slate-400 text-sm mt-1">总订单</div>
+            </div>
+            <div class="card-stat">
+                <div class="text-3xl font-bold text-yellow-400" x-text="orderStats.pending || '-'"></div>
+                <div class="text-slate-400 text-sm mt-1">待处理</div>
+            </div>
+            <div class="card-stat">
+                <div class="text-3xl font-bold text-green-400" x-text="orderStats.paid || '-'"></div>
+                <div class="text-slate-400 text-sm mt-1">已付款</div>
+            </div>
+            <div class="card-stat">
+                <div class="text-3xl font-bold text-red-400" x-text="orderStats.cancelled || '-'"></div>
+                <div class="text-slate-400 text-sm mt-1">已取消</div>
+            </div>
+        </div>
+
+        <!-- 订单表格 -->
+        <div class="card">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="font-semibold">订单列表</h3>
+                <div>
+                    <select x-model="orderFilterStatus" @change="loadOrders" class="input py-1.5 text-sm">
+                        <option value="">全部状态</option>
+                        <option value="pending">待支付</option>
+                        <option value="paid">已付款</option>
+                        <option value="cancelled">已取消</option>
+                    </select>
+                </div>
+            </div>
+            <div x-show="ordersLoading" class="text-center py-8">
+                <div class="loading mx-auto"></div>
+                <p class="text-slate-400 mt-2">加载中...</p>
+            </div>
+            <div x-show="!ordersLoading && orders.length === 0" class="text-center py-8 text-slate-500">
+                暂无订单数据
+            </div>
+            <div x-show="!ordersLoading && orders.length > 0" class="overflow-x-auto">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>订单号</th>
+                            <th>客户</th>
+                            <th>公司</th>
+                            <th>方案</th>
+                            <th>金额</th>
+                            <th>支付方式</th>
+                            <th>状态</th>
+                            <th>时间</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <template x-for="order in orders" :key="order.id">
+                            <tr>
+                                <td class="font-mono text-sm" x-text="order.order_no"></td>
+                                <td class="font-medium" x-text="order.user_name"></td>
+                                <td class="text-sm" x-text="order.user_company || '-'"></td>
+                                <td>
+                                    <span class="badge badge-new" x-text="order.plan_type"></span>
+                                </td>
+                                <td class="font-mono" x-text="'¥' + Number(order.price).toLocaleString()"></td>
+                                <td class="text-sm" x-text="order.payment_method || '-'"></td>
+                                <td>
+                                    <span :class="'badge badge-' + (order.status === 'paid' ? 'confirmed' : order.status === 'cancelled' ? 'cancelled' : 'pending')" x-text="order.status === 'paid' ? '已付款' : order.status === 'cancelled' ? '已取消' : '待支付'"></span>
+                                </td>
+                                <td class="text-sm text-slate-400" x-text="order.created_at?.slice(0, 16)"></td>
+                                <td>
+                                    <template x-if="order.status === 'pending'">
+                                        <div class="flex gap-1">
+                                            <button @click="confirmOrder(order)" class="btn btn-sm" style="background:#166534;color:#86efac">确认</button>
+                                            <button @click="cancelOrder(order)" class="btn btn-sm" style="background:#7f1d1d;color:#fca5a5">拒绝</button>
+                                        </div>
+                                    </template>
+                                    <template x-if="order.status === 'paid'">
+                                        <span class="text-green-400 text-sm">✓ 已确认</span>
+                                    </template>
+                                    <template x-if="order.status === 'cancelled'">
+                                        <span class="text-red-400 text-sm">✗ 已取消</span>
+                                    </template>
+                                </td>
+                            </tr>
+                        </template>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- 订单详情/确认弹窗 -->
+    <div x-show="orderModal" class="modal-overlay" @click.self="orderModal=false">
+        <div class="modal-content">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-lg font-bold">订单确认</h2>
+                <button @click="orderModal=false" class="text-slate-400 hover:text-white text-xl">&times;</button>
+            </div>
+            <div class="space-y-3 mb-6">
+                <div class="flex"><span class="text-slate-400 w-28 shrink-0 text-sm">订单号</span><span class="text-white font-mono" x-text="orderDetail.order_no"></span></div>
+                <div class="flex"><span class="text-slate-400 w-28 shrink-0 text-sm">客户</span><span class="text-white" x-text="orderDetail.user_name"></span></div>
+                <div class="flex"><span class="text-slate-400 w-28 shrink-0 text-sm">公司</span><span class="text-white" x-text="orderDetail.user_company"></span></div>
+                <div class="flex"><span class="text-slate-400 w-28 shrink-0 text-sm">方案</span><span class="text-white" x-text="orderDetail.plan_type"></span></div>
+                <div class="flex"><span class="text-slate-400 w-28 shrink-0 text-sm">金额</span><span class="text-white font-mono text-lg font-bold" x-text="'¥' + Number(orderDetail.price).toLocaleString()"></span></div>
+                <div class="flex"><span class="text-slate-400 w-28 shrink-0 text-sm">支付方式</span><span class="text-white" x-text="orderDetail.payment_method || '-'"></span></div>
+                <div x-show="orderDetail.voucher_path" class="flex">
+                    <span class="text-slate-400 w-28 shrink-0 text-sm">付款凭证</span>
+                    <a :href="orderDetail.voucher_path" target="_blank" class="text-blue-400 hover:text-blue-300 text-sm underline">查看凭证</a>
+                </div>
+            </div>
+            <div class="flex gap-2">
+                <button @click="doConfirmOrder(orderDetail.id)" class="btn btn-primary flex-1">确认付款</button>
+                <button @click="doRejectOrder(orderDetail.id)" class="btn btn-sm flex-1" style="background:#7f1d1d;color:#fca5a5">拒绝</button>
+                <button @click="orderModal=false" class="btn btn-sm flex-1" style="background:#334155;color:#e2e8f0">返回</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Toast -->
     <div x-show="toast" class="toast" x-text="toast" x-init="setTimeout(() => toast='', 3000)"></div>
 </div>
@@ -226,16 +355,27 @@
 <script>
 function adminApp() {
     return {
+        // 页面选项卡
+        activeTab: 'leads',
+
         // 登录
         token: localStorage.getItem('portal_token') || '',
         loginForm: { username: 'admin', password: '' },
         loginError: '',
         loading: false,
 
-        // 数据
+        // 线索数据
         stats: {},
         leads: [],
         leadsLoading: false,
+
+        // 订单数据
+        orders: [],
+        ordersLoading: false,
+        orderStats: {},
+        orderFilterStatus: '',
+        orderModal: false,
+        orderDetail: {},
 
         // 筛选
         filterTable: '',
@@ -286,7 +426,7 @@ function adminApp() {
             const res = await fetch(path, { ...options, headers })
             const data = await res.json()
             if (!res.ok && (res.status === 401)) {
-                this.token = ''
+                this.token=''
                 localStorage.removeItem('portal_token')
                 this.loginError = '登录已过期，请重新登录'
             }
@@ -302,7 +442,7 @@ function adminApp() {
                     body: JSON.stringify(this.loginForm)
                 })
                 if (res.success && res.token) {
-                    this.token = res.token
+                    this.token=''
                     localStorage.setItem('portal_token', res.token)
                     this.init()
                 } else {
@@ -315,7 +455,7 @@ function adminApp() {
         },
 
         doLogout() {
-            this.token = ''
+            this.token=''
             localStorage.removeItem('portal_token')
         },
 
@@ -323,6 +463,7 @@ function adminApp() {
             if (!this.token) return
             this.loadLeads()
             this.loadStats()
+            this.loadOrders()
         },
 
         async loadLeads() {
@@ -365,9 +506,66 @@ function adminApp() {
             } else {
                 this.toast = res.detail || '更新失败'
             }
+        },
+
+        // ====== 订单管理方法 ======
+
+        switchOrderTab() {
+            this.activeTab = 'orders'
+            this.loadOrders()
+        },
+
+        async loadOrders() {
+            this.ordersLoading = true
+            try {
+                const params = new URLSearchParams()
+                if (this.orderFilterStatus) params.set('status', this.orderFilterStatus)
+                const res = await this.api('/api/v1/admin/orders?' + params.toString())
+                if (res.success) {
+                    this.orders = res.data
+                    this.orderStats = res.stats || { total: 0, pending: 0, paid: 0, cancelled: 0 }
+                }
+            } catch(e) {
+                this.toast = '加载订单失败'
+            }
+            this.ordersLoading = false
+        },
+
+        confirmOrder(order) {
+            this.orderDetail = order
+            this.orderModal = true
+        },
+
+        cancelOrder(order) {
+            if (!confirm('确定拒绝此订单？')) return
+            this.doRejectOrder(order.id)
+        },
+
+        async doConfirmOrder(orderId) {
+            const res = await this.api(`/api/v1/admin/orders/${orderId}/status?status=paid`, { method: 'PATCH' })
+            if (res.success) {
+                const licenseKey = res.data?.license_key || 'CKDP-' + Math.random().toString(36).substring(2, 10).toUpperCase()
+                this.toast = '订单已确认，License Key: ' + licenseKey
+                this.orderModal = false
+                this.loadOrders()
+            } else {
+                this.toast = res.detail || '确认失败'
+            }
+        },
+
+        async doRejectOrder(orderId) {
+            const res = await this.api(`/api/v1/admin/orders/${orderId}/status?status=cancelled`, { method: 'PATCH' })
+            if (res.success) {
+                this.toast = '订单已拒绝'
+                this.orderModal = false
+                this.loadOrders()
+            } else {
+                this.toast = res.detail || '操作失败'
+            }
         }
     }
 }
 </script>
 </body>
 </html>
+logout
