@@ -749,6 +749,8 @@ body.light-mode .hero::before {
     padding: 80px 0 40px;
     background: var(--bg-secondary);
     border-top: 1px solid var(--glass-border);
+    position: relative;
+    z-index: 2;
 }
 
 .footer__content {
