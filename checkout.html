@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>收银台 - 中韩出海数智港</title>
+    <meta name="description" content="订单确认与支付 - 中韩出海数智港">
+    <link rel="icon" href="favicon.ico">
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        .checkout-page { padding-top: 120px; padding-bottom: 80px; }
+        .checkout-container { max-width: 600px; margin: 0 auto; }
+        .checkout-card { background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 20px; padding: 36px; margin-bottom: 24px; }
+        .checkout-card h2 { font-size: 22px; font-weight: 700; margin-bottom: 8px; }
+        .checkout-card .subtitle { color: var(--text-secondary); font-size: 14px; margin-bottom: 24px; }
+
+        /* 方案摘要 */
+        .plan-summary { background: var(--bg-tertiary); border-radius: 16px; padding: 20px; margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center; }
+        .plan-summary .plan-info { flex: 1; }
+        .plan-summary .plan-name { font-size: 18px; font-weight: 600; }
+        .plan-summary .plan-desc { font-size: 13px; color: var(--text-secondary); margin-top: 4px; }
+        .plan-summary .plan-price { font-size: 32px; font-weight: 700; color: var(--accent); }
+        .plan-summary .plan-price .currency { font-size: 18px; }
+
+        /* 表单 */
+        .form__group { margin-bottom: 16px; }
+        .form__label { display: block; margin-bottom: 6px; font-size: 14px; font-weight: 500; }
+        .form__input { width: 100%; padding: 12px 16px; border-radius: 10px; border: 1px solid var(--border-color); background: var(--bg-primary); color: var(--text-primary); font-size: 15px; outline: none; transition: border-color .2s; }
+        .form__input:focus { border-color: var(--accent); }
+
+        /* 支付按钮 */
+        .btn-pay { width: 100%; padding: 16px; border: none; border-radius: 12px; font-size: 17px; font-weight: 600; cursor: pointer; transition: all .2s; margin-top: 8px; background: var(--accent); color: #fff; }
+        .btn-pay:hover { opacity: .9; }
+        .btn-pay:disabled { opacity: .5; cursor: not-allowed; }
+        .btn-pay .spinner { display: inline-block; width: 18px; height: 18px; border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: spin .6s linear infinite; vertical-align: middle; margin-right: 8px; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* 二维码展示 */
+        .qr-section { display: none; text-align: center; padding: 20px 0; }
+        .qr-section.active { display: block; }
+        .qr-section .qr-img { width: 220px; height: 220px; margin: 16px auto; border-radius: 12px; background: var(--bg-tertiary); display: flex; align-items: center; justify-content: center; border: 2px dashed var(--border-color); }
+        .qr-section .qr-img img { width: 200px; height: 200px; border-radius: 8px; }
+        .qr-section .qr-img .placeholder { color: var(--text-secondary); font-size: 14px; text-align: center; padding: 20px; }
+        .qr-section .qr-img .placeholder i { font-size: 48px; display: block; margin-bottom: 8px; }
+        .qr-section .amount { font-size: 28px; font-weight: 700; color: var(--accent); margin-bottom: 8px; }
+        .qr-section .hint { color: var(--text-secondary); font-size: 14px; margin-bottom: 4px; }
+
+        /* 倒计时 */
+        .countdown { display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 16px; font-size: 14px; color: var(--text-secondary); }
+        .countdown .timer { font-weight: 600; color: var(--accent); font-family: monospace; font-size: 16px; }
+
+        /* 支付状态指示器 */
+        .status-indicator { display: none; text-align: center; padding: 40px 20px; }
+        .status-indicator.active { display: block; }
+        .status-indicator i { font-size: 56px; margin-bottom: 16px; }
+        .status-indicator .status-icon.success { color: #22c55e; }
+        .status-indicator .status-icon.fail { color: #ef4444; }
+        .status-indicator .status-icon.pending { color: var(--accent); }
+        .status-indicator h3 { font-size: 22px; font-weight: 700; margin-bottom: 8px; }
+        .status-indicator p { color: var(--text-secondary); margin-bottom: 20px; }
+        .status-indicator .spinner { width: 40px; height: 40px; border: 4px solid var(--border-color); border-top-color: var(--accent); border-radius: 50%; animation: spin .6s linear infinite; margin: 0 auto 16px; }
+
+        /* 已支付状态 */
+        .paid-banner { display: none; text-align: center; padding: 40px 20px; }
+        .paid-banner.active { display: block; }
+        .paid-banner i { font-size: 64px; color: #22c55e; margin-bottom: 16px; }
+        .paid-banner h3 { font-size: 24px; font-weight: 700; margin-bottom: 8px; }
+        .paid-banner p { color: var(--text-secondary); margin-bottom: 8px; }
+        .paid-banner .license-box { margin-top: 20px; padding: 16px; background: var(--bg-tertiary); border-radius: 12px; display: inline-block; }
+        .paid-banner .license-box .label { font-size: 13px; color: var(--text-secondary); margin-bottom: 8px; }
+        .paid-banner .license-box .key { font-size: 18px; font-weight: 700; font-family: monospace; color: var(--accent); letter-spacing: 2px; }
+        .paid-banner .btn-home { display: inline-block; margin-top: 24px; padding: 12px 32px; background: var(--accent); color: #fff; border-radius: 12px; text-decoration: none; font-weight: 600; }
+
+        /* 模拟支付按钮（开发模式） */
+        .simulate-pay { display: none; margin-top: 16px; }
+        .simulate-pay.active { display: block; }
+        .simulate-pay .btn-simulate { width: 100%; padding: 14px; border: 2px dashed var(--accent); border-radius: 12px; background: transparent; color: var(--accent); font-size: 15px; font-weight: 600; cursor: pointer; transition: all .2s; }
+        .simulate-pay .btn-simulate:hover { background: var(--accent); color: #fff; }
+        .simulate-pay .simulate-note { text-align: center; font-size: 12px; color: var(--text-muted); margin-top: 8px; }
+
+        .order-error { text-align: center; padding: 80px 20px; }
+        .order-error i { font-size: 48px; color: #ef4444; margin-bottom: 16px; }
+        .order-error h3 { font-size: 20px; margin-bottom: 8px; }
+        .order-error p { color: var(--text-secondary); margin-bottom: 24px; }
+
+        .order-loading { text-align: center; padding: 80px 20px; }
+        .order-loading .spinner { width: 40px; height: 40px; border: 4px solid var(--border-color); border-top-color: var(--accent); border-radius: 50%; animation: spin .6s linear infinite; margin: 0 auto 16px; }
+    </style>
+</head>
+<body>
+    <!-- 导航 -->
+    <header class="header">
+        <div class="container">
+            <div class="header__content">
+                <div class="header__logo">
+                    <h1 class="logo__text">中韩出海数智港</h1>
+                </div>
+                <nav class="header__nav">
+                    <ul class="nav__list">
+                        <li class="nav__item"><a href="index.html" class="nav__link" data-lang-key="home">首页</a></li>
+                        <li class="nav__item"><a href="pricing-v2.html" class="nav__link" data-lang-key="footer_pricing">定价/购买</a></li>
+                        <li class="nav__item"><a href="index.html#contact" class="nav__link" data-lang-key="contact">联系我们</a></li>
+                    </ul>
+                </nav>
+                <div class="header__lang">
+                    <button class="lang-btn" data-lang="zh-CN">中文</button>
+                    <button class="lang-btn" data-lang="ko-KR">한국어</button>
+                </div>
+                <div class="header__theme">
+                    <button class="theme-btn" id="themeToggle" aria-label="切换主题">
+                        <i class="bi bi-moon"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <section class="checkout-page">
+        <div class="container">
+            <div class="checkout-container" id="checkoutApp">
+                <!-- 加载中 -->
+                <div class="order-loading" id="loadingView">
+                    <div class="spinner"></div>
+                    <p data-lang-key="checkout_loading">正在加载...</p>
+                </div>
+
+                <!-- 错误 -->
+                <div class="order-error" id="errorView" style="display:none">
+                    <i class="bi bi-exclamation-circle"></i>
+                    <h3 id="errorTitle" data-lang-key="checkout_error_title">加载失败</h3>
+                    <p id="errorMsg" data-lang-key="checkout_error_msg">无效的套餐参数</p>
+                    <a href="pricing-v2.html" class="btn btn--primary" data-lang-key="checkout_back_pricing">返回定价页</a>
+                </div>
+
+                <!-- 支付表单 -->
+                <div id="checkoutForm" style="display:none">
+                    <div class="checkout-card">
+                        <h2 data-lang-key="checkout_title">确认订单</h2>
+                        <p class="subtitle" data-lang-key="checkout_subtitle">请填写信息，完成下单支付</p>
+
+                        <!-- 方案摘要 -->
+                        <div class="plan-summary">
+                            <div class="plan-info">
+                                <div class="plan-name" id="planName">深度方案</div>
+                                <div class="plan-desc" id="planType">depth</div>
+                            </div>
+                            <div class="plan-price">
+                                <span class="currency">¥</span><span id="planPrice">9,800</span>
+                            </div>
+                        </div>
+
+                        <!-- 表单 -->
+                        <form id="checkoutOrderForm">
+                            <input type="hidden" name="plan_type" id="formPlanType" value="">
+                            <div class="form__group">
+                                <label class="form__label" data-lang-key="form_company">企业名称</label>
+                                <input type="text" class="form__input" name="customer_company" required placeholder="请输入企业名称">
+                            </div>
+                            <div class="form__group">
+                                <label class="form__label" data-lang-key="form_contact">联系人</label>
+                                <input type="text" class="form__input" name="customer_name" required placeholder="请输入联系人姓名">
+                            </div>
+                            <div class="form__group">
+                                <label class="form__label" data-lang-key="form_phone">电话</label>
+                                <input type="tel" class="form__input" name="customer_phone" placeholder="请输入联系电话">
+                            </div>
+                            <div class="form__group">
+                                <label class="form__label" data-lang-key="form_email">邮箱</label>
+                                <input type="email" class="form__input" name="customer_email" required placeholder="请输入邮箱地址">
+                            </div>
+                            <button type="submit" class="btn-pay" id="submitBtn" data-lang-key="checkout_pay_btn">确认支付 ¥9,800</button>
+                        </form>
+                    </div>
+
+                    <!-- 二维码展示区 -->
+                    <div class="checkout-card qr-section" id="qrSection">
+                        <div class="amount" id="qrAmount">¥9,800.00</div>
+                        <div class="hint" data-lang-key="checkout_qr_hint">打开支付宝扫一扫完成支付</div>
+                        <div class="qr-img" id="qrContainer">
+                            <div class="placeholder" id="qrPlaceholder">
+                                <i class="bi bi-alipay"></i>
+                                <span data-lang-key="checkout_qr_waiting">正在生成二维码...</span>
+                            </div>
+                            <img id="qrImage" style="display:none" alt="支付宝收款二维码">
+                        </div>
+                        <div class="countdown">
+                            <i class="bi bi-clock"></i>
+                            <span data-lang-key="checkout_countdown">支付剩余时间</span>
+                            <span class="timer" id="countdownTimer">30:00</span>
+                        </div>
+
+                        <!-- 模拟支付按钮（仅开发模式） -->
+                        <div class="simulate-pay" id="simulatePaySection">
+                            <button class="btn-simulate" onclick="simulatePayment()" data-lang-key="checkout_simulate_btn">模拟支付（开发模式）</button>
+                            <div class="simulate-note" data-lang-key="checkout_simulate_note">仅用于测试演示，实际部署时自动隐藏</div>
+                        </div>
+                    </div>
+
+                    <!-- 等待支付状态 -->
+                    <div class="checkout-card status-indicator" id="waitingPayment">
+                        <div class="spinner"></div>
+                        <h3 data-lang-key="checkout_waiting_title">等待扫码支付...</h3>
+                        <p data-lang-key="checkout_waiting_desc">请使用支付宝扫描二维码完成支付</p>
+                    </div>
+                </div>
+
+                <!-- 支付成功 -->
+                <div class="checkout-card paid-banner" id="paidView">
+                    <i class="bi bi-check-circle-fill"></i>
+                    <h3 data-lang-key="checkout_paid_title">支付成功！</h3>
+                    <p data-lang-key="checkout_paid_desc">感谢您的购买，您的方案已激活。</p>
+                    <div class="license-box" id="licenseBox" style="display:none">
+                        <div class="label" data-lang-key="checkout_license_label">License Key：</div>
+                        <div class="key" id="licenseKeyDisplay"></div>
+                    </div>
+                    <a href="index.html" class="btn-home" data-lang-key="checkout_back_home">返回首页</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer__bottom">
+                <p class="footer__copyright">© 2026 中韩出海数智港. 保留所有权利.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/toast.js"></script>
+    <script src="js/main.js"></script>
+    <script>
+    // ═════════════════════════════════════════════════════════
+    // checkout 页面翻译
+    // ═════════════════════════════════════════════════════════
+    (function() {
+        if (typeof translations !== 'undefined') {
+            var extra = {
+                'zh-CN': {
+                    checkout_loading: '正在加载...',
+                    checkout_error_title: '加载失败',
+                    checkout_error_msg: '无效的套餐参数',
+                    checkout_back_pricing: '返回定价页',
+                    checkout_title: '确认订单',
+                    checkout_subtitle: '请填写信息，完成下单支付',
+                    checkout_pay_btn: '确认支付',
+                    checkout_qr_hint: '打开支付宝扫一扫完成支付',
+                    checkout_qr_waiting: '正在生成二维码...',
+                    checkout_countdown: '支付剩余时间',
+                    checkout_simulate_btn: '模拟支付（开发模式）',
+                    checkout_simulate_note: '仅用于测试演示，实际部署时自动隐藏',
+                    checkout_waiting_title: '等待扫码支付...',
+                    checkout_waiting_desc: '请使用支付宝扫描二维码完成支付',
+                    checkout_paid_title: '支付成功！',
+                    checkout_paid_desc: '感谢您的购买，您的方案已激活。',
+                    checkout_license_label: 'License Key：',
+                    checkout_back_home: '返回首页',
+                    checkout_free_success: '免费方案已激活',
+                    checkout_free_desc: '您的免费方案已自动激活，可立即使用。',
+                },
+                'ko-KR': {
+                    checkout_loading: '로딩 중...',
+                    checkout_error_title: '로딩 실패',
+                    checkout_error_msg: '유효하지 않은 플랜',
+                    checkout_back_pricing: '가격 페이지로',
+                    checkout_title: '주문 확인',
+                    checkout_subtitle: '정보를 입력하여 결제를 완료하세요',
+                    checkout_pay_btn: '확인 및 결제',
+                    checkout_qr_hint: '알리페이를 열어 스캔하여 결제하세요',
+                    checkout_qr_waiting: 'QR 코드 생성 중...',
+                    checkout_countdown: '결제 남은 시간',
+                    checkout_simulate_btn: '시뮬레이션 결제 (개발 모드)',
+                    checkout_simulate_note: '테스트 전용, 실제 배포 시 숨겨짐',
+                    checkout_waiting_title: 'QR 코드 스캔 대기 중...',
+                    checkout_waiting_desc: '알리페이로 QR 코드를 스캔하여 결제하세요',
+                    checkout_paid_title: '결제 성공!',
+                    checkout_paid_desc: '구매해 주셔서 감사합니다. 플랜이 활성화되었습니다.',
+                    checkout_license_label: '라이선스 키:',
+                    checkout_back_home: '홈으로',
+                    checkout_free_success: '무료 플랜 활성화 완료',
+                    checkout_free_desc: '무료 플랜이 자동으로 활성화되었습니다. 지금 바로 사용하세요.',
+                }
+            };
+            for (var lang in extra) {
+                if (!translations[lang]) translations[lang] = {};
+                Object.assign(translations[lang], extra[lang]);
+            }
+        }
+    })();
+
+    // ═════════════════════════════════════════════════════════
+    // 核心逻辑
+    // ═════════════════════════════════════════════════════════
+
+    // 方案数据
+    var PLAN_DATA = {
+        'free':  { name: '免费初评', name_ko: '무료 초기 평가', price: 0, desc: '适合初步了解中国市场的韩企' },
+        'depth': { name: '深度方案', name_ko: '심층 컨설팅 패키지', price: 9800, desc: '适合已决定进入中国市场的韩企' },
+        'annual': { name: '年订阅', name_ko: '연간 구독', price: 58000, desc: '适合持续运营中国业务的韩企' },
+    };
+
+    var urlParams = new URLSearchParams(window.location.search);
+    var planType = urlParams.get('plan') || 'depth';
+    var orderId = null;
+    var orderNo = null;
+    var isFreePlan = false;
+    var pollTimer = null;
+    var countdownTimer = null;
+    var countdownSeconds = 1800; // 30分钟
+
+    document.addEventListener('DOMContentLoaded', function() {
+        initCheckout();
+    });
+
+    function initCheckout() {
+        // 验证套餐类型
+        var plan = PLAN_DATA[planType];
+        if (!plan) {
+            showError('无效的套餐类型: ' + planType);
+            return;
+        }
+
+        var lang = localStorage.getItem('lang') || 'zh-CN';
+        var planName = lang === 'ko-KR' ? plan.name_ko : plan.name;
+        var priceDisplay = plan.price === 0 ? '免费' : '¥' + plan.price.toLocaleString();
+
+        document.getElementById('planName').textContent = planName;
+        document.getElementById('planType').textContent = plan.type || planType;
+        document.getElementById('planPrice').textContent = plan.price === 0 ? '0' : plan.price.toLocaleString();
+        document.getElementById('formPlanType').value = planType;
+        document.getElementById('submitBtn').textContent = (lang === 'ko-KR' ? '확인 및 결제 ' : '确认支付 ') + priceDisplay;
+
+        isFreePlan = (plan.price === 0);
+
+        document.getElementById('loadingView').style.display = 'none';
+        document.getElementById('checkoutForm').style.display = 'block';
+    }
+
+    function showError(msg) {
+        document.getElementById('loadingView').style.display = 'none';
+        document.getElementById('checkoutForm').style.display = 'none';
+        document.getElementById('errorView').style.display = 'block';
+        document.getElementById('errorMsg').textContent = msg;
+    }
+
+    // ═════════════════════════════════════════════════════════
+    // 表单提交 — 创建支付订单
+    // ═════════════════════════════════════════════════════════
+    document.addEventListener('DOMContentLoaded', function() {
+        var form = document.getElementById('checkoutOrderForm');
+        if (form) {
+            form.addEventListener('submit', async function(e) {
+                e.preventDefault();
+
+                // 收集表单数据
+                var formData = {};
+                form.querySelectorAll('input').forEach(function(el) {
+                    if (el.name) formData[el.name] = el.value;
+                });
+                formData.plan_type = planType;
+
+                // 客户端校验
+                var lang = localStorage.getItem('lang') || 'zh-CN';
+                var requiredFields = form.querySelectorAll('[required]');
+                var valid = true;
+                requiredFields.forEach(function(el) {
+                    if (!el.value.trim()) {
+                        valid = false;
+                        el.style.borderColor = '#dc2626';
+                    } else {
+                        el.style.borderColor = '';
+                    }
+                });
+                if (!valid) {
+                    showToast(window.getToastMessage('validation_required'), 'error');
+                    return;
+                }
+                if (formData.customer_email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.customer_email)) {
+                    showToast(window.getToastMessage('validation_email'), 'error');
+                    return;
+                }
+
+                var btn = document.getElementById('submitBtn');
+                btn.disabled = true;
+                btn.innerHTML = '<span class="spinner"></span>' + (lang === 'ko-KR' ? '처리 중...' : '处理中...');
+
+                try {
+                    var response = await fetch('/api/v1/payment/create', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(formData)
+                    });
+                    var result = await response.json();
+
+                    if (response.ok && result.success) {
+                        orderId = result.order_id;
+                        orderNo = result.order_no;
+
+                        if (result.is_free) {
+                            // 免费方案自动成功
+                            showPaidView(result);
+                        } else if (result.qr_code_url) {
+                            // 显示二维码
+                            showQRCode(result);
+                        } else if (result.simulate_mode) {
+                            // 模拟模式
+                            showQRCode(result);
+                        } else {
+                            showToast(result.message || '订单创建成功', 'success');
+                        }
+                    } else {
+                        var errMsg = result.detail || result.message || '创建订单失败';
+                        showToast(errMsg, 'error');
+                        btn.disabled = false;
+                        btn.textContent = lang === 'ko-KR' ? '확인 및 결제 ' : '确认支付 ' + (PLAN_DATA[planType] ? '¥' + PLAN_DATA[planType].price.toLocaleString() : '');
+                    }
+                } catch (err) {
+                    showToast(window.getToastMessage('error_network'), 'error');
+                    btn.disabled = false;
+                    btn.textContent = lang === 'ko-KR' ? '확인 및 결제 ' : '确认支付 ' + (PLAN_DATA[planType] ? '¥' + PLAN_DATA[planType].price.toLocaleString() : '');
+                }
+            });
+        }
+    });
+
+    // ═════════════════════════════════════════════════════════
+    // 显示二维码
+    // ═════════════════════════════════════════════════════════
+    function showQRCode(result) {
+        document.getElementById('checkoutForm').style.display = 'none';
+
+        var lang = localStorage.getItem('lang') || 'zh-CN';
+        document.getElementById('qrAmount').textContent = '¥' + (result.price || 0).toLocaleString();
+
+        var qrSection = document.getElementById('qrSection');
+        var qrImg = document.getElementById('qrImage');
+        var qrPlaceholder = document.getElementById('qrPlaceholder');
+
+        if (result.qr_code_url) {
+            // 有真实的支付宝二维码
+            qrImg.src = 'data:image/png;base64,' + result.qr_code_url;
+            // 检查是否为 base64 格式，如果不是可能是 URL
+            if (!result.qr_code_url.startsWith('data:')) {
+                // 可能是 URL 格式，尝试直接显示
+                qrImg.src = result.qr_code_url;
+            }
+            qrImg.style.display = 'block';
+            qrPlaceholder.style.display = 'none';
+        } else {
+            // 模拟模式：生成一个模拟二维码
+            generateSimulatedQR(orderNo);
+            qrImg.style.display = 'none';
+            qrPlaceholder.style.display = 'block';
+            qrPlaceholder.innerHTML = '<i class="bi bi-alipay"></i><span>' + (lang === 'ko-KR' ? '데모 모드' : '演示模式') + '</span><span style="font-size:12px;margin-top:8px;color:var(--text-muted)">' + orderNo + '</span>';
+        }
+
+        qrSection.classList.add('active');
+
+        // 显示模拟支付按钮（开发模式）
+        var simulateSection = document.getElementById('simulatePaySection');
+        if (!result.qr_code_url || result.simulate_mode) {
+            simulateSection.classList.add('active');
+        } else {
+            simulateSection.classList.remove('active');
+        }
+
+        // 开始倒计时
+        startCountdown();
+        // 开始轮询支付状态
+        startPolling();
+    }
+
+    // ═════════════════════════════════════════════════════════
+    // 生成模拟二维码
+    // ═════════════════════════════════════════════════════════
+    function generateSimulatedQR(orderNo) {
+        // 使用 canvas 生成一个包含订单号的简单二维码样式图片
+        var canvas = document.createElement('canvas');
+        canvas.width = 200;
+        canvas.height = 200;
+        var ctx = canvas.getContext('2d');
+
+        // 背景
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, 200, 200);
+
+        // 边框
+        ctx.strokeStyle = '#6366f1';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(4, 4, 192, 192);
+
+        // 三个定位图案
+        function drawPositionMarker(x, y) {
+            ctx.fillStyle = '#6366f1';
+            ctx.fillRect(x, y, 40, 40);
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(x+6, y+6, 28, 28);
+            ctx.fillStyle = '#6366f1';
+            ctx.fillRect(x+12, y+12, 16, 16);
+        }
+        drawPositionMarker(10, 10);
+        drawPositionMarker(150, 10);
+        drawPositionMarker(10, 150);
+
+        // 中心显示支付宝图标
+        ctx.fillStyle = '#6366f1';
+        ctx.font = '16px Arial';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('Alipay', 100, 100);
+
+        // 小字显示订单号
+        ctx.fillStyle = '#94a3b8';
+        ctx.font = '8px Arial';
+        ctx.fillText(orderNo, 100, 185);
+
+        // 将 canvas 转为 data URL
+        var dataUrl = canvas.toDataURL('image/png');
+        var qrImg = document.getElementById('qrImage');
+        qrImg.src = dataUrl;
+        qrImg.style.display = 'block';
+    }
+
+    // ═════════════════════════════════════════════════════════
+    // 倒计时
+    // ═════════════════════════════════════════════════════════
+    function startCountdown() {
+        var timerEl = document.getElementById('countdownTimer');
+        countdownSeconds = 1800; // 30分钟
+
+        if (countdownTimer) clearInterval(countdownTimer);
+        countdownTimer = setInterval(function() {
+            countdownSeconds--;
+            if (countdownSeconds <= 0) {
+                clearInterval(countdownTimer);
+                timerEl.textContent = '00:00';
+                return;
+            }
+            var min = Math.floor(countdownSeconds / 60);
+            var sec = countdownSeconds % 60;
+            timerEl.textContent = String(min).padStart(2, '0') + ':' + String(sec).padStart(2, '0');
+        }, 1000);
+    }
+
+    // ═════════════════════════════════════════════════════════
+    // 轮询支付状态
+    // ═════════════════════════════════════════════════════════
+    function startPolling() {
+        if (pollTimer) clearInterval(pollTimer);
+        pollTimer = setInterval(pollStatus, 3000);
+        setTimeout(pollStatus, 2000);
+    }
+
+    async function pollStatus() {
+        if (!orderId) return;
+
+        try {
+            var response = await fetch('/api/v1/payment/status/' + orderId);
+            var result = await response.json();
+
+            if (response.ok && result.success && result.data) {
+                if (result.data.status === 'paid') {
+                    clearInterval(pollTimer);
+                    pollTimer = null;
+                    if (countdownTimer) {
+                        clearInterval(countdownTimer);
+                        countdownTimer = null;
+                    }
+                    showPaidView(result.data);
+                }
+            }
+        } catch (e) {
+            // 静默处理
+        }
+    }
+
+    // ═════════════════════════════════════════════════════════
+    // 模拟支付
+    // ═════════════════════════════════════════════════════════
+    async function simulatePayment() {
+        if (!orderNo) return;
+
+        var btn = document.querySelector('.btn-simulate');
+        btn.disabled = true;
+        btn.textContent = '处理中...';
+
+        try {
+            var response = await fetch('/api/v1/payment/simulate/notify', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ order_no: orderNo })
+            });
+            var result = await response.json();
+
+            if (response.ok && result.success) {
+                showToast('模拟支付成功', 'success');
+                // 延迟一下再查询状态
+                setTimeout(pollStatus, 1000);
+            } else {
+                showToast(result.detail || '模拟支付失败', 'error');
+                btn.disabled = false;
+                btn.textContent = '模拟支付（开发模式）';
+            }
+        } catch (err) {
+            showToast('网络错误', 'error');
+            btn.disabled = false;
+            btn.textContent = '模拟支付（开发模式）';
+        }
+    }
+
+    // ═════════════════════════════════════════════════════════
+    // 支付成功视图
+    // ═════════════════════════════════════════════════════════
+    function showPaidView(data) {
+        document.getElementById('qrSection').classList.remove('active');
+        document.getElementById('waitingPayment').classList.remove('active');
+
+        var paidView = document.getElementById('paidView');
+        paidView.classList.add('active');
+
+        if (data.license_key) {
+            document.getElementById('licenseBox').style.display = 'block';
+            document.getElementById('licenseKeyDisplay').textContent = data.license_key;
+        }
+
+        if (isFreePlan) {
+            var lang = localStorage.getItem('lang') || 'zh-CN';
+            paidView.querySelector('h3').textContent = lang === 'ko-KR' ? '무료 플랜 활성화 완료' : '免费方案已激活';
+            paidView.querySelector('p').textContent = lang === 'ko-KR' ? '지금 바로 사용하세요.' : '您的免费方案已自动激活，可立即使用。';
+        }
+    }
+    </script>
+</body>
+</html>

@@ -1,7 +1,9 @@
 # Python
 __pycache__/
 *.py[cod]
+*.pyc
 venv/
+test_venv/
 backend/venv/
 *.egg-info/
 
@@ -9,6 +11,7 @@ backend/venv/
 *.db
 *.db-shm
 *.db-wal
+data/*.db
 
 # IDE
 .idea/
@@ -21,3 +24,9 @@ Thumbs.db
 
 # Environment
 .env
+
+# Certificates
+certs/
+
+# Logs
+*.log

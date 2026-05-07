@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-lang-key="demo_title">预约演示 - 中韩出海数智港</title>
+    <link href="css/style.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="js/main.js" defer></script>
+    <script src="js/toast.js" defer></script>
+    <style>
+        .demo-page {
+            padding: 140px 0 80px;
+            min-height: 100vh;
+        }
+        .demo-container {
+            max-width: 720px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+        .demo-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: var(--glass-shadow);
+        }
+        .demo-card h1 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            text-align: center;
+        }
+        .demo-card .subtitle {
+            text-align: center;
+            color: var(--text-secondary);
+            margin-bottom: 32px;
+            font-size: 16px;
+        }
+        .form-row {
+            margin-bottom: 20px;
+        }
+        .form-row label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 500;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+        .form-row input,
+        .form-row textarea,
+        .form-row select {
+            width: 100%;
+            padding: 12px 16px;
+            border-radius: 8px;
+            border: 1px solid var(--glass-border);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-size: 15px;
+            outline: none;
+            transition: var(--transition-fast);
+            font-family: inherit;
+        }
+        .form-row input:focus,
+        .form-row textarea:focus,
+        .form-row select:focus {
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.15);
+        }
+        .form-row textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+        .form-row .hint {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+        .date-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+        .date-btn {
+            padding: 10px 8px;
+            border: 1px solid var(--glass-border);
+            background: var(--glass-bg);
+            color: var(--text-primary);
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: center;
+            transition: var(--transition-fast);
+            font-size: 13px;
+        }
+        .date-btn:hover {
+            border-color: var(--accent-primary);
+        }
+        .date-btn.selected {
+            background: var(--accent-gradient);
+            color: white;
+            border-color: transparent;
+        }
+        .date-btn .day {
+            font-weight: 600;
+            font-size: 15px;
+        }
+        .date-btn .date {
+            font-size: 11px;
+            opacity: 0.7;
+        }
+        .date-btn.disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+        .time-grid {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        .time-btn {
+            flex: 1;
+            padding: 12px;
+            border: 1px solid var(--glass-border);
+            background: var(--glass-bg);
+            color: var(--text-primary);
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: center;
+            transition: var(--transition-fast);
+            font-size: 14px;
+            font-weight: 500;
+        }
+        .time-btn:hover {
+            border-color: var(--accent-primary);
+        }
+        .time-btn.selected {
+            background: var(--accent-gradient);
+            color: white;
+            border-color: transparent;
+        }
+        .btn--submit {
+            width: 100%;
+            padding: 14px;
+            font-size: 16px;
+            margin-top: 8px;
+        }
+        .btn--submit:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        .success-card {
+            text-align: center;
+            padding: 60px 40px;
+        }
+        .success-card .icon {
+            font-size: 64px;
+            color: var(--accent-primary);
+            margin-bottom: 20px;
+        }
+        .success-card h2 {
+            font-size: 24px;
+            margin-bottom: 12px;
+        }
+        .success-card p {
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+            line-height: 1.6;
+        }
+        .body.light-mode input,
+        .body.light-mode textarea,
+        .body.light-mode select {
+            background: #fff;
+            color: #1e293b;
+        }
+        @media (max-width: 640px) {
+            .demo-card { padding: 24px; }
+            .date-grid { grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)); }
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏（复用主站导航结构） -->
+    <header class="header">
+        <div class="container header__content">
+            <a href="/" class="logo__text" data-lang-key="logo">中韩出海数智港</a>
+            <nav class="nav">
+                <ul class="nav__list">
+                    <li><a href="/" class="nav__link" data-lang-key="home">首页</a></li>
+                    <li><a href="/pricing.html" class="nav__link" data-lang-key="footer_pricing">定价/购买</a></li>
+                    <li><a href="/demo.html" class="nav__link" data-lang-key="consult">预约演示</a></li>
+                </ul>
+            </nav>
+            <div class="header__lang">
+                <button class="lang-btn active" data-lang="zh-CN">中</button>
+                <button class="lang-btn" data-lang="ko-KR">한</button>
+            </div>
+            <div class="header__theme">
+                <button id="themeToggle" class="theme-btn"><i class="bi bi-moon"></i></button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Demo 预约页面 -->
+    <section class="demo-page">
+        <div class="demo-container">
+            <!-- 预约表单 -->
+            <div id="demoForm" class="demo-card">
+                <h1 data-lang-key="demo_title">预约演示</h1>
+                <p class="subtitle" data-lang-key="demo_subtitle">选择日期和时间，我们的团队将为您演示产品</p>
+
+                <!-- 日期选择 -->
+                <div class="form-row">
+                    <label data-lang-key="demo_date">选择日期</label>
+                    <div class="date-grid" id="dateGrid"></div>
+                </div>
+
+                <!-- 时间段选择 -->
+                <div class="form-row">
+                    <label data-lang-key="demo_time">选择时间段</label>
+                    <div class="time-grid">
+                        <button class="time-btn" data-time="morning" onclick="selectTime(this)">
+                            <span data-lang-key="demo_morning">上午 9:00-12:00</span>
+                        </button>
+                        <button class="time-btn" data-time="afternoon" onclick="selectTime(this)">
+                            <span data-lang-key="demo_afternoon">下午 14:00-17:00</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 联系信息 -->
+                <form id="demoFormFields" onsubmit="return submitDemo(event)">
+                    <div class="form-row">
+                        <label for="name" data-lang-key="form_contact">联系人 *</label>
+                        <input type="text" id="name" name="name" required placeholder="" data-lang-key="form_contact">
+                    </div>
+                    <div class="form-row">
+                        <label for="company" data-lang-key="form_company">企业名称 *</label>
+                        <input type="text" id="company" name="company" required placeholder="" data-lang-key="form_company">
+                    </div>
+                    <div class="form-row">
+                        <label for="email" data-lang-key="form_email">邮箱 *</label>
+                        <input type="email" id="email" name="email" required placeholder="" data-lang-key="form_email">
+                    </div>
+                    <div class="form-row">
+                        <label for="phone" data-lang-key="form_phone">电话</label>
+                        <input type="tel" id="phone" name="phone" placeholder="" data-lang-key="form_phone">
+                    </div>
+                    <div class="form-row">
+                        <label for="notes" data-lang-key="form_message">备注</label>
+                        <textarea id="notes" name="notes" placeholder="" data-lang-key="form_message"></textarea>
+                    </div>
+
+                    <button type="submit" class="btn btn--primary btn--submit" id="demoSubmitBtn">
+                        <span data-lang-key="demo_submit">提交预约</span>
+                    </button>
+                </form>
+            </div>
+
+            <!-- 成功页面 -->
+            <div id="demoSuccess" class="demo-card success-card" style="display:none;">
+                <div class="icon">&#x2705;</div>
+                <h2 data-lang-key="demo_success_title">预约成功！</h2>
+                <p data-lang-key="demo_success_desc">感谢您的预约，我们的团队将在24小时内与您联系确认具体时间。</p>
+                <p><strong data-lang-key="demo_success_ref">预约编号:</strong> <span id="bookingRef" class="text-purple-400 font-mono"></span></p>
+                <p style="margin-top:24px">
+                    <a href="/" class="btn btn--primary" data-lang-key="hero_learn">返回首页</a>
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <script>
+    // 全局变量
+    let selectedDate = null;
+    let selectedTimeSlot = null;
+
+    // 生成未来7天的日期
+    function generateDates() {
+        const grid = document.getElementById('dateGrid');
+        grid.innerHTML = '';
+        const today = new Date();
+        const weekdays = ['日', '一', '二', '三', '四', '五', '六'];
+        const weekdaysKo = ['일', '월', '화', '수', '목', '금', '토'];
+
+        for (let i = 0; i < 7; i++) {
+            const d = new Date(today);
+            d.setDate(d.getDate() + i);
+            const dateStr = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+            const dayOfWeek = d.getDay();
+            const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
+
+            const btn = document.createElement('button');
+            btn.className = 'date-btn' + (isWeekend ? ' disabled' : '');
+            btn.dataset.date = dateStr;
+            btn.onclick = function() { selectDate(this); };
+
+            const lang = localStorage.getItem('lang') || 'zh-CN';
+            const wd = lang === 'ko-KR' ? weekdaysKo[dayOfWeek] : weekdays[dayOfWeek];
+
+            btn.innerHTML = '<div class="day">' + d.getDate() + '</div><div class="date">' + wd + '</div>';
+
+            if (!isWeekend) {
+                btn.title = dateStr;
+            } else {
+                btn.title = lang === 'ko-KR' ? '주말은 선택 불가' : '周末不可选';
+            }
+
+            grid.appendChild(btn);
+        }
+    }
+
+    function selectDate(el) {
+        if (el.classList.contains('disabled')) return;
+        document.querySelectorAll('.date-btn').forEach(b => b.classList.remove('selected'));
+        el.classList.add('selected');
+        selectedDate = el.dataset.date;
+    }
+
+    function selectTime(el) {
+        document.querySelectorAll('.time-btn').forEach(b => b.classList.remove('selected'));
+        el.classList.add('selected');
+        selectedTimeSlot = el.dataset.time;
+    }
+
+    async function submitDemo(e) {
+        e.preventDefault();
+
+        // 验证必填项
+        if (!selectedDate) {
+            const lang = localStorage.getItem('lang') || 'zh-CN';
+            showToast(lang === 'ko-KR' ? '날짜를 선택하세요' : '请选择日期', 'error');
+            return;
+        }
+        if (!selectedTimeSlot) {
+            const lang = localStorage.getItem('lang') || 'zh-CN';
+            showToast(lang === 'ko-KR' ? '시간대를 선택하세요' : '请选择时间段', 'error');
+            return;
+        }
+
+        const form = document.getElementById('demoFormFields');
+        const name = form.querySelector('#name').value.trim();
+        const company = form.querySelector('#company').value.trim();
+        const email = form.querySelector('#email').value.trim();
+        const phone = form.querySelector('#phone').value.trim();
+        const notes = form.querySelector('#notes').value.trim();
+
+        if (!name || !company || !email) {
+            const lang = localStorage.getItem('lang') || 'zh-CN';
+            showToast(lang === 'ko-KR' ? '필수 항목을 입력하세요' : '请填写必填字段', 'error');
+            return;
+        }
+
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+            const lang = localStorage.getItem('lang') || 'zh-CN';
+            showToast(lang === 'ko-KR' ? '유효한 이메일을 입력하세요' : '请输入有效的邮箱地址', 'error');
+            return;
+        }
+
+        const lang = localStorage.getItem('lang') || 'zh-CN';
+        const timeLabel = selectedTimeSlot === 'morning'
+            ? (lang === 'ko-KR' ? '오전 9:00-12:00' : '上午 9:00-12:00')
+            : (lang === 'ko-KR' ? '오후 14:00-17:00' : '下午 14:00-17:00');
+
+        const preferredDate = selectedDate + ' ' + timeLabel;
+
+        const btn = document.getElementById('demoSubmitBtn');
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner"></span> ' + (lang === 'ko-KR' ? '제출 중...' : '提交中...');
+
+        try {
+            const res = await fetch('/api/v1/demo', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    name,
+                    company,
+                    email,
+                    phone,
+                    preferred_date: preferredDate,
+                    notes
+                })
+            });
+
+            const data = await res.json();
+
+            if (res.ok && data.success) {
+                // 显示成功页面
+                document.getElementById('demoForm').style.display = 'none';
+                document.getElementById('demoSuccess').style.display = 'block';
+                const ref = 'DEMO-' + Date.now().toString(36).toUpperCase();
+                document.getElementById('bookingRef').textContent = ref;
+
+                // 语言切换适配
+                const switchLang = window.switchLang || function() {};
+            } else {
+                showToast(data.detail || data.message || (lang === 'ko-KR' ? '제출 실패' : '提交失败'), 'error');
+            }
+        } catch (err) {
+            showToast(lang === 'ko-KR' ? '네트워크 오류' : '网络错误，请稍后重试', 'error');
+        }
+
+        btn.disabled = false;
+        const submitText = lang === 'ko-KR' ? '제출하기' : '提交预约';
+        btn.innerHTML = '<span>' + submitText + '</span>';
+    }
+
+    // 页面加载初始化
+    document.addEventListener('DOMContentLoaded', function() {
+        generateDates();
+
+        // 语言切换增强：更新日期显示
+        const origSwitchLang = window.switchLang;
+        window.switchLang = function(lang) {
+            if (origSwitchLang) origSwitchLang(lang);
+            generateDates();
+        };
+    });
+    </script>
+</body>
+</html>

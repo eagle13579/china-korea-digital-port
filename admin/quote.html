@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-lang-key="quote_title">报价管理 - 管理后台</title>
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        body { background: #0f172a; color: #e2e8f0; font-family: 'Inter', system-ui, sans-serif; }
+        .card { background: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 20px; }
+        .btn { padding: 8px 16px; border-radius: 8px; border: none; font-weight: 500; cursor: pointer; transition: all .2s; }
+        .btn-primary { background: #6366f1; color: #fff; }
+        .btn-primary:hover { background: #4f46e5; }
+        .btn-sm { padding: 4px 12px; font-size: 13px; }
+        .badge { padding: 3px 10px; border-radius: 12px; font-size: 12px; font-weight: 500; }
+        .badge-draft { background: #1e293b; color: #94a3b8; }
+        .badge-sent { background: #1e40af; color: #93c5fd; }
+        .badge-accepted { background: #166534; color: #86efac; }
+        .badge-rejected { background: #7f1d1d; color: #fca5a5; }
+        table { width: 100%; border-collapse: collapse; }
+        th { text-align: left; padding: 12px 16px; border-bottom: 1px solid #334155; color: #94a3b8; font-weight: 500; font-size: 13px; }
+        td { padding: 12px 16px; border-bottom: 1px solid #1e293b; }
+        tr:hover td { background: #1e293b; }
+        .input { background: #0f172a; border: 1px solid #334155; border-radius: 8px; padding: 10px 14px; color: #e2e8f0; width: 100%; outline: none; }
+        .input:focus { border-color: #6366f1; }
+        select.input { appearance: auto; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #0f172a; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+        .toast { position: fixed; bottom: 24px; right: 24px; background: #166534; color: #fff; padding: 12px 24px; border-radius: 8px; z-index: 100; animation: slideIn .3s; }
+        @keyframes slideIn { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .loading { display: inline-block; width: 20px; height: 20px; border: 2px solid #334155; border-top-color: #6366f1; border-radius: 50%; animation: spin .6s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+<div x-data="quoteApp()" x-init="init()" class="min-h-screen p-4 md:p-6 max-w-7xl mx-auto">
+    <!-- 顶部导航 -->
+    <div class="flex items-center justify-between mb-6">
+        <div>
+            <h1 class="text-xl font-bold" data-lang-key="quote_title">报价管理</h1>
+            <p class="text-slate-400 text-sm" data-lang-key="quote_subtitle">中韩出海数智港 · 报价单管理</p>
+        </div>
+        <div class="flex items-center gap-3">
+            <a href="/admin/funnel.html" class="btn btn-sm" style="background:#334155;color:#e2e8f0" data-lang-key="quote_back_funnel">← 返回漏斗</a>
+            <a href="/admin/index.html" class="btn btn-sm" style="background:#334155;color:#e2e8f0" data-lang-key="quote_back_admin">← 返回后台</a>
+        </div>
+    </div>
+
+    <!-- 报价统计 -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+        <div class="card text-center">
+            <div class="text-3xl font-bold" x-text="stats.total || '0'"></div>
+            <div class="text-slate-400 text-sm mt-1" data-lang-key="quote_total">总报价数</div>
+        </div>
+        <div class="card text-center">
+            <div class="text-3xl font-bold text-gray-400" x-text="stats.draft || '0'"></div>
+            <div class="text-slate-400 text-sm mt-1" data-lang-key="quote_draft">草稿</div>
+        </div>
+        <div class="card text-center">
+            <div class="text-3xl font-bold text-blue-400" x-text="stats.sent || '0'"></div>
+            <div class="text-slate-400 text-sm mt-1" data-lang-key="quote_sent">已发送</div>
+        </div>
+        <div class="card text-center">
+            <div class="text-3xl font-bold text-green-400" x-text="stats.accepted || '0'"></div>
+            <div class="text-slate-400 text-sm mt-1" data-lang-key="quote_accepted">已接受</div>
+        </div>
+    </div>
+
+    <!-- 报价表格 -->
+    <div class="card">
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="font-semibold" data-lang-key="quote_list">报价列表</h3>
+        </div>
+        <div x-show="loading" class="text-center py-8">
+            <div class="loading mx-auto"></div>
+            <p class="text-slate-400 mt-2" data-lang-key="loading">加载中...</p>
+        </div>
+        <div x-show="!loading && quotes.length === 0" class="text-center py-8 text-slate-500" data-lang-key="quote_empty">
+            暂无报价数据
+        </div>
+        <div x-show="!loading && quotes.length > 0" class="overflow-x-auto">
+            <table>
+                <thead>
+                    <tr>
+                        <th data-lang-key="quote_no">报价编号</th>
+                        <th data-lang-key="quote_lead">线索</th>
+                        <th data-lang-key="quote_company">公司</th>
+                        <th data-lang-key="quote_plan">方案</th>
+                        <th data-lang-key="quote_price">金额</th>
+                        <th data-lang-key="quote_status">状态</th>
+                        <th data-lang-key="quote_time">时间</th>
+                        <th data-lang-key="quote_action">操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <template x-for="q in quotes" :key="q.id">
+                        <tr>
+                            <td class="font-mono text-sm" x-text="q.quote_no"></td>
+                            <td x-text="q.lead_name"></td>
+                            <td class="text-sm" x-text="q.lead_company || '-'"></td>
+                            <td><span class="badge badge-sent" x-text="q.plan_name"></span></td>
+                            <td class="font-mono" x-text="'¥' + Number(q.plan_price).toLocaleString()"></td>
+                            <td>
+                                <span :class="'badge badge-' + q.status"
+                                      x-text="q.status === 'draft' ? '草稿' : q.status === 'sent' ? '已发送' : q.status === 'accepted' ? '已接受' : '已拒绝'"></span>
+                            </td>
+                            <td class="text-sm text-slate-400" x-text="q.created_at?.slice(0, 16)"></td>
+                            <td>
+                                <template x-if="q.status === 'draft' || q.status === 'sent'">
+                                    <div class="flex gap-1">
+                                        <button @click="updateQuote(q.id, 'send')" x-show="q.status === 'draft'" class="btn btn-sm btn-primary" data-lang-key="quote_send_btn">发送</button>
+                                        <button @click="updateQuote(q.id, 'accept')" class="btn btn-sm" style="background:#166534;color:#86efac" data-lang-key="quote_accept_btn">接受</button>
+                                        <button @click="updateQuote(q.id, 'reject')" class="btn btn-sm" style="background:#7f1d1d;color:#fca5a5" data-lang-key="quote_reject_btn">拒绝</button>
+                                    </div>
+                                </template>
+                                <template x-if="q.status === 'accepted'">
+                                    <span class="text-green-400 text-sm">✓</span>
+                                </template>
+                                <template x-if="q.status === 'rejected'">
+                                    <span class="text-red-400 text-sm">✗</span>
+                                </template>
+                            </td>
+                        </tr>
+                    </template>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div x-show="toast" class="toast" x-text="toast" x-init="setTimeout(() => toast='', 3000)"></div>
+</div>
+
+<script>
+function quoteApp() {
+    return {
+        quotes: [],
+        loading: false,
+        toast: '',
+        token: localStorage.getItem('portal_token') || '',
+
+        get stats() {
+            const s = { total: this.quotes.length, draft: 0, sent: 0, accepted: 0, rejected: 0 }
+            for (const q of this.quotes) {
+                if (s[q.status] !== undefined) s[q.status]++
+            }
+            return s
+        },
+
+        async api(path, options = {}) {
+            const headers = { 'Content-Type': 'application/json' }
+            if (this.token) headers['Authorization'] = 'Bearer ' + this.token
+            try {
+                const res = await fetch(path, { ...options, headers })
+                const data = await res.json()
+                if (!res.ok && res.status === 401) {
+                    this.token = ''
+                    localStorage.removeItem('portal_token')
+                    window.location.href = '/admin/index.html'
+                }
+                return data
+            } catch(e) {
+                return { success: false, detail: '网络错误: ' + e.message }
+            }
+        },
+
+        async loadQuotes() {
+            this.loading = true
+            try {
+                const res = await this.api('/api/v1/admin/quotes')
+                if (res.success) this.quotes = res.data
+            } catch(e) {
+                this.toast = '加载报价失败'
+            }
+            this.loading = false
+        },
+
+        async updateQuote(quoteId, action) {
+            const confirmMsg = action === 'send' ? '确认发送此报价？' : action === 'accept' ? '确认接受此报价？将自动将线索标记为已成交。' : '确认拒绝此报价？'
+            if (!confirm(confirmMsg)) return
+            const res = await this.api(`/api/v1/admin/quotes/${quoteId}`, {
+                method: 'PATCH',
+                body: JSON.stringify({ action })
+            })
+            if (res.success) {
+                const msgs = { send: '报价已发送', accept: '报价已接受', reject: '报价已拒绝' }
+                this.toast = msgs[action] || '操作成功'
+                this.loadQuotes()
+            } else {
+                this.toast = res.detail || '操作失败'
+            }
+        },
+
+        init() {
+            if (!this.token) {
+                window.location.href = '/admin/index.html'
+                return
+            }
+            this.loadQuotes()
+        }
+    }
+}
+</script>
+</body>
+</html>

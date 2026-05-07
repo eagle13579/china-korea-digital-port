@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-lang-key="funnel_title">销售漏斗 - 管理后台</title>
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        body { background: #0f172a; color: #e2e8f0; font-family: 'Inter', system-ui, sans-serif; }
+        .card { background: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 20px; }
+        .btn { padding: 8px 16px; border-radius: 8px; border: none; font-weight: 500; cursor: pointer; transition: all .2s; }
+        .btn-primary { background: #6366f1; color: #fff; }
+        .btn-primary:hover { background: #4f46e5; }
+        .btn-sm { padding: 4px 12px; font-size: 13px; }
+        .badge { padding: 3px 10px; border-radius: 12px; font-size: 12px; font-weight: 500; }
+        .badge-new_lead { background: #1e40af; color: #93c5fd; }
+        .badge-contacting { background: #854d0e; color: #fde68a; }
+        .badge-quoting { background: #7c3aed; color: #c4b5fd; }
+        .badge-closed_won { background: #166534; color: #86efac; }
+        .funnel-col { min-height: 300px; }
+        .lead-card { background: #0f172a; border: 1px solid #334155; border-radius: 8px; padding: 12px; margin-bottom: 8px; cursor: grab; transition: all .2s; }
+        .lead-card:hover { border-color: #6366f1; transform: translateY(-1px); }
+        .lead-card:active { cursor: grabbing; }
+        .lead-card.dragging { opacity: 0.5; }
+        .drop-target { transition: all .2s; }
+        .drop-target.drag-over { border-color: #6366f1; background: rgba(99,102,241,0.1); }
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 50; display: flex; align-items: center; justify-content: center; }
+        .modal-content { background: #1e293b; border: 1px solid #334155; border-radius: 16px; padding: 32px; max-width: 500px; width: 90%; max-height: 80vh; overflow-y: auto; }
+        .input { background: #0f172a; border: 1px solid #334155; border-radius: 8px; padding: 10px 14px; color: #e2e8f0; width: 100%; outline: none; }
+        .input:focus { border-color: #6366f1; }
+        select.input { appearance: auto; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #0f172a; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+        .toast { position: fixed; bottom: 24px; right: 24px; background: #166534; color: #fff; padding: 12px 24px; border-radius: 8px; z-index: 100; animation: slideIn .3s; }
+        @keyframes slideIn { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .loading { display: inline-block; width: 20px; height: 20px; border: 2px solid #334155; border-top-color: #6366f1; border-radius: 50%; animation: spin .6s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+<div x-data="funnelApp()" x-init="init()" class="min-h-screen p-4 md:p-6 max-w-7xl mx-auto">
+    <!-- 顶部导航 -->
+    <div class="flex items-center justify-between mb-6">
+        <div>
+            <h1 class="text-xl font-bold" data-lang-key="funnel_title">销售漏斗</h1>
+            <p class="text-slate-400 text-sm" data-lang-key="funnel_subtitle">中韩出海数智港 · 销售漏斗管理</p>
+        </div>
+        <div class="flex items-center gap-3">
+            <a href="/admin/index.html" class="btn btn-sm" style="background:#334155;color:#e2e8f0" data-lang-key="funnel_back">← 返回后台</a>
+            <button @click="refreshFunnel" class="btn btn-sm btn-primary" data-lang-key="funnel_refresh">刷新</button>
+        </div>
+    </div>
+
+    <!-- 漏斗概览统计 -->
+    <div class="grid grid-cols-4 gap-4 mb-6">
+        <template x-for="(col, stage) in funnel" :key="stage">
+            <div class="card text-center" :style="stage === 'new_lead' ? 'border-top:3px solid #6366f1' : stage === 'contacting' ? 'border-top:3px solid #f59e0b' : stage === 'quoting' ? 'border-top:3px solid #8b5cf6' : 'border-top:3px solid #10b981'">
+                <div class="text-2xl font-bold" x-text="col.count"></div>
+                <div class="text-sm text-slate-400" x-text="lang === 'zh' ? col.label_zh : col.label_ko"></div>
+            </div>
+        </template>
+    </div>
+
+    <!-- 漏斗列 -->
+    <div class="grid grid-cols-4 gap-4">
+        <template x-for="(col, stage) in funnel" :key="stage">
+            <div class="card funnel-col drop-target"
+                 @dragover.prevent="onDragOver($event)"
+                 @dragleave="onDragLeave($event)"
+                 @drop="onDrop($event, stage)">
+                <div class="flex items-center justify-between mb-3">
+                    <h3 class="font-semibold" x-text="lang === 'zh' ? col.label_zh : col.label_ko"></h3>
+                    <span class="text-sm text-slate-400" x-text="col.count + '条'"></span>
+                </div>
+                <div>
+                    <template x-for="item in col.items" :key="item._table + '-' + item.id">
+                        <div class="lead-card"
+                             draggable="true"
+                             @dragstart="onDragStart($event, item, stage)"
+                             @dragend="onDragEnd($event)">
+                            <div class="flex items-center justify-between mb-1">
+                                <span class="text-xs badge" :class="'badge-' + item._table === 'contacts' ? 'badge-new_lead' : 'badge-contacting'" x-text="item._label"></span>
+                                <span class="text-xs text-slate-500" x-text="item.stage_days + '天'"></span>
+                            </div>
+                            <div class="font-medium text-sm truncate" x-text="item.company || item.name"></div>
+                            <div class="text-xs text-slate-400 truncate" x-text="item.name + (item.email ? ' · ' + item.email : '')"></div>
+                            <div class="text-xs text-slate-500 mt-1" x-text="(item.created_at || '').slice(0,10)"></div>
+                            <div class="flex gap-1 mt-2">
+                                <button @click.stop="moveStage(item, stage, 'prev')" x-show="canMovePrev(stage)" class="btn btn-sm" style="background:#334155;color:#e2e8f0;padding:2px 6px;font-size:11px" title="上一步">◀</button>
+                                <button @click.stop="moveStage(item, stage, 'next')" x-show="canMoveNext(stage)" class="btn btn-sm" style="background:#334155;color:#e2e8f0;padding:2px 6px;font-size:11px" title="下一步">▶</button>
+                                <button @click.stop="openQuoteModal(item)" x-show="stage === 'contacting'" class="btn btn-sm btn-primary" style="padding:2px 6px;font-size:11px" data-lang-key="funnel_quote">报价</button>
+                            </div>
+                        </div>
+                    </template>
+                    <div x-show="!col.items || col.items.length === 0" class="text-center py-8 text-slate-500 text-sm">
+                        <i class="bi bi-inbox text-2xl block mb-2"></i>
+                        <span data-lang-key="funnel_empty">暂无数据</span>
+                    </div>
+                </div>
+            </div>
+        </template>
+    </div>
+
+    <!-- 报价弹窗 -->
+    <div x-show="quoteModal" class="modal-overlay" @click.self="quoteModal=false">
+        <div class="modal-content">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-lg font-bold" data-lang-key="funnel_quote_title">生成报价</h2>
+                <button @click="quoteModal=false" class="text-slate-400 hover:text-white text-xl">&times;</button>
+            </div>
+            <div class="space-y-4 mb-4">
+                <div><span class="text-slate-400 text-sm" data-lang-key="funnel_quote_lead">线索</span><br><span class="font-medium" x-text="quoteLead?.name + ' - ' + (quoteLead?.company || '')"></span></div>
+                <div>
+                    <label class="block text-sm text-slate-400 mb-1" data-lang-key="funnel_quote_select">选择方案</label>
+                    <select x-model="selectedPlan" class="input">
+                        <option value="free" data-lang-key="plan_free">免费初评 ¥0</option>
+                        <option value="depth" data-lang-key="plan_depth">深度方案 ¥9,800</option>
+                        <option value="annual" data-lang-key="plan_annual">年度订阅 ¥58,000</option>
+                    </select>
+                </div>
+                <div class="text-center">
+                    <span class="text-2xl font-bold text-purple-400" x-text="'¥' + planPrice.toLocaleString()"></span>
+                </div>
+            </div>
+            <div class="flex gap-2">
+                <button @click="createQuote" class="btn btn-primary flex-1" :disabled="loading">
+                    <span x-show="!loading" data-lang-key="funnel_quote_generate">生成报价并发送</span>
+                    <span x-show="loading" class="loading inline-block"></span>
+                </button>
+                <button @click="quoteModal=false" class="btn btn-sm" style="background:#334155;color:#e2e8f0" data-lang-key="cancel">取消</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div x-show="toast" class="toast" x-text="toast" x-init="setTimeout(() => toast='', 3000)"></div>
+</div>
+
+<script>
+function funnelApp() {
+    return {
+        funnel: {},
+        loading: false,
+        toast: '',
+        token: localStorage.getItem('portal_token') || '',
+        lang: localStorage.getItem('lang') === 'ko-KR' ? 'ko' : 'zh',
+
+        // 报价相关
+        quoteModal: false,
+        quoteLead: null,
+        quoteStage: '',
+        selectedPlan: 'free',
+
+        get planPrice() {
+            const prices = { free: 0, depth: 9800, annual: 58000 }
+            return prices[this.selectedPlan] || 0
+        },
+
+        get planPriceLabel() {
+            const prices = { free: '¥0', depth: '¥9,800', annual: '¥58,000' }
+            return prices[this.selectedPlan] || '¥0'
+        },
+
+        getFunnelStageOrder() {
+            return ['new_lead', 'contacting', 'quoting', 'closed_won']
+        },
+
+        canMovePrev(stage) {
+            const order = this.getFunnelStageOrder()
+            return order.indexOf(stage) > 0
+        },
+
+        canMoveNext(stage) {
+            const order = this.getFunnelStageOrder()
+            return order.indexOf(stage) < order.length - 1
+        },
+
+        moveStage(item, currentStage, direction) {
+            const order = this.getFunnelStageOrder()
+            const idx = order.indexOf(currentStage)
+            const nextIdx = direction === 'next' ? idx + 1 : idx - 1
+            if (nextIdx < 0 || nextIdx >= order.length) return
+            this.updateStage(item, order[nextIdx])
+        },
+
+        onDragStart(e, item, stage) {
+            e.dataTransfer.setData('text/plain', JSON.stringify({ item, stage }))
+            e.target.classList.add('dragging')
+        },
+
+        onDragEnd(e) {
+            e.target.classList.remove('dragging')
+        },
+
+        onDragOver(e) {
+            e.currentTarget.classList.add('drag-over')
+        },
+
+        onDragLeave(e) {
+            e.currentTarget.classList.remove('drag-over')
+        },
+
+        onDrop(e, targetStage) {
+            e.currentTarget.classList.remove('drag-over')
+            try {
+                const data = JSON.parse(e.dataTransfer.getData('text/plain'))
+                if (data.stage !== targetStage) {
+                    this.updateStage(data.item, targetStage)
+                }
+            } catch(err) {
+                console.error(err)
+            }
+        },
+
+        async updateStage(item, targetStage) {
+            const res = await this.api(`/api/v1/admin/leads/${item.id}/stage?table=${item._table}&stage=${targetStage}`, { method: 'PATCH' })
+            if (res.success) {
+                this.toast = this.lang === 'zh' ? `已移至: ${targetStage}` : `이동됨: ${targetStage}`
+                this.refreshFunnel()
+            } else {
+                this.toast = res.detail || '更新失败'
+            }
+        },
+
+        openQuoteModal(item) {
+            this.quoteLead = item
+            this.quoteModal = true
+        },
+
+        async createQuote() {
+            if (!this.quoteLead) return
+            this.loading = true
+            try {
+                const res = await this.api('/api/v1/admin/quotes', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        lead_table: this.quoteLead._table,
+                        lead_id: this.quoteLead.id,
+                        plan_key: this.selectedPlan,
+                    })
+                })
+                if (res.success) {
+                    this.toast = this.lang === 'zh'
+                        ? `报价已生成: ${res.data.quote_no}`
+                        : `견적 생성됨: ${res.data.quote_no}`
+                    this.quoteModal = false
+                    this.refreshFunnel()
+                } else {
+                    this.toast = res.detail || '报价生成失败'
+                }
+            } catch(e) {
+                this.toast = '网络错误'
+            }
+            this.loading = false
+        },
+
+        async api(path, options = {}) {
+            const headers = { 'Content-Type': 'application/json' }
+            if (this.token) headers['Authorization'] = 'Bearer ' + this.token
+            try {
+                const res = await fetch(path, { ...options, headers })
+                const data = await res.json()
+                if (!res.ok && res.status === 401) {
+                    this.token = ''
+                    localStorage.removeItem('portal_token')
+                    window.location.href = '/admin/index.html'
+                }
+                return data
+            } catch(e) {
+                return { success: false, detail: '网络错误: ' + e.message }
+            }
+        },
+
+        async refreshFunnel() {
+            this.loading = true
+            try {
+                const res = await this.api('/api/v1/admin/funnel')
+                if (res.success) this.funnel = res.data
+            } catch(e) {
+                this.toast = '加载漏斗数据失败'
+            }
+            this.loading = false
+        },
+
+        init() {
+            if (!this.token) {
+                window.location.href = '/admin/index.html'
+                return
+            }
+            this.refreshFunnel()
+        }
+    }
+}
+</script>
+</body>
+</html>

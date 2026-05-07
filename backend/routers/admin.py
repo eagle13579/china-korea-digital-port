@@ -16,9 +16,19 @@ from backend.license import generate_license
 
 router = APIRouter(tags=["admin"])
 
-# 简单认证 — 从环境变量读取（Phase 2 换JWT）
-ADMIN_USER = os.environ.get("ADMIN_USER", "admin")
-ADMIN_PASS = os.environ.get("ADMIN_PASS", "admin123")
+# 安全认证 — 必须从环境变量读取 ADMIN_USERNAME 和 ADMIN_PASSWORD
+# 如果环境变量未设置，则抛出错误，强制要求配置，杜绝默认密码风险
+# 生产环境必须通过 .env 或系统环境变量设置强密码！
+_ADMIN_USER = os.environ.get("ADMIN_USERNAME")
+_ADMIN_PASS = os.environ.get("ADMIN_PASSWORD")
+if not _ADMIN_USER or not _ADMIN_PASS:
+    raise RuntimeError(
+        "请设置环境变量 ADMIN_USERNAME 和 ADMIN_PASSWORD！"
+        "请在 .env 文件中配置管理员用户名和密码，"
+        "生产环境务必使用强密码。"
+    )
+ADMIN_USER = _ADMIN_USER
+ADMIN_PASS = _ADMIN_PASS
 TOKEN_SECRET = os.environ.get("TOKEN_SECRET", "china-korea-digital-port-2026")
 TOKENS = {}  # token -> expiry
 
@@ -402,6 +412,22 @@ async def update_order_status(
 
         conn.commit()
 
+        # 发送支付成功通知
+        if req.status == "paid":
+            try:
+                from backend.services.email_service import (
+                    send_payment_success_notification,
+                    send_payment_notification_to_sales,
+                )
+                order_with_key = dict(order)
+                order_with_key["license_key"] = license_key
+                send_payment_success_notification(order_with_key)
+                send_payment_notification_to_sales(order_with_key)
+            except ImportError:
+                pass
+            except Exception:
+                pass
+
         return {
             "success": True,
             "message": f"订单状态已更新为: {req.status}",
@@ -411,5 +437,307 @@ async def update_order_status(
                 "license_key": license_key,
             },
         }
+    finally:
+        conn.close()
+
+
+# ═══════════════════════════════════════════════════════
+# 销售漏斗 API
+# ═══════════════════════════════════════════════════════
+
+FUNNEL_STAGES = ["new_lead", "contacting", "quoting", "closed_won"]
+
+FUNNEL_LABELS = {
+    "new_lead": ("新线索", "새 리드"),
+    "contacting": ("跟进中", "연락 중"),
+    "quoting": ("报价中", "견적 중"),
+    "closed_won": ("已成交", "계약 완료"),
+}
+
+
+@router.patch("/api/v1/admin/leads/{lead_id}/stage")
+async def update_lead_stage(
+    lead_id: int,
+    table: str = Query(...),
+    stage: str = Query(...),
+    authorization: str = Header(None),
+):
+    """更新线索的销售漏斗阶段"""
+    _require_auth(authorization)
+
+    if table not in TABLE_NAMES:
+        raise HTTPException(status_code=404, detail="表不存在")
+    if stage not in FUNNEL_STAGES:
+        raise HTTPException(status_code=400, detail=f"阶段无效，有效值: {', '.join(FUNNEL_STAGES)}")
+
+    conn = get_db()
+    try:
+        cursor = conn.execute(
+            f"UPDATE {table} SET stage = ?, stage_changed_at = CURRENT_TIMESTAMP, updated_at = CURRENT_TIMESTAMP WHERE id = ?",
+            (stage, lead_id),
+        )
+        if cursor.rowcount == 0:
+            raise HTTPException(status_code=404, detail="线索不存在")
+        conn.commit()
+        return {"success": True, "message": f"阶段已更新为: {stage}"}
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"更新阶段失败: {str(e)}")
+    finally:
+        conn.close()
+
+
+@router.get("/api/v1/admin/funnel")
+async def get_funnel(authorization: str = Header(None)):
+    """获取销售漏斗各阶段数据"""
+    _require_auth(authorization)
+
+    conn = get_db()
+    try:
+        result = {}
+        for stage in FUNNEL_STAGES:
+            items = []
+            for tbl in TABLE_NAMES:
+                columns = TABLE_COLUMNS.get(tbl, [])
+                if not columns:
+                    cursor = conn.execute(f"PRAGMA table_info({tbl})")
+                    columns = [row[1] for row in cursor.fetchall()]
+                    TABLE_COLUMNS[tbl] = columns
+
+                col_str = ", ".join(columns)
+                cursor = conn.execute(
+                    f"SELECT {col_str} FROM {tbl} WHERE stage = ? ORDER BY created_at DESC",
+                    (stage,),
+                )
+                for row in cursor.fetchall():
+                    item = dict(zip(columns, row))
+                    item["_table"] = tbl
+                    item["_label"] = TABLE_LABELS.get(tbl, tbl)
+                    # 计算阶段停留天数
+                    changed_at = item.get("stage_changed_at") or item.get("created_at")
+                    if changed_at:
+                        try:
+                            from datetime import datetime
+                            changed_dt = datetime.strptime(changed_at[:19], "%Y-%m-%d %H:%M:%S")
+                            item["stage_days"] = (datetime.now() - changed_dt).days
+                        except Exception:
+                            item["stage_days"] = 0
+                    else:
+                        item["stage_days"] = 0
+                    items.append(item)
+
+            label = FUNNEL_LABELS.get(stage, (stage, stage))
+            result[stage] = {
+                "label_zh": label[0],
+                "label_ko": label[1],
+                "count": len(items),
+                "items": items,
+            }
+
+        return {"success": True, "data": result}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"获取漏斗数据失败: {str(e)}")
+    finally:
+        conn.close()
+
+
+# ═══════════════════════════════════════════════════════
+# 报价管理 API
+# ═══════════════════════════════════════════════════════
+
+QUOTE_PLANS = [
+    {"name": "免费初评", "name_ko": "무료 초기 평가", "price": 0, "key": "free"},
+    {"name": "深度方案", "name_ko": "심층 컨설팅", "price": 9800, "key": "depth"},
+    {"name": "年度订阅", "name_ko": "연간 구독", "price": 58000, "key": "annual"},
+]
+
+
+class QuoteCreate(BaseModel):
+    lead_table: str
+    lead_id: int
+    plan_key: str
+
+
+@router.get("/api/v1/admin/quotes")
+async def get_quotes(authorization: str = Header(None)):
+    """获取报价列表"""
+    _require_auth(authorization)
+
+    conn = get_db()
+    try:
+        cursor = conn.execute("SELECT * FROM quotes ORDER BY created_at DESC")
+        columns = [desc[0] for desc in cursor.description]
+        quotes = [dict(zip(columns, row)) for row in cursor.fetchall()]
+        return {"success": True, "data": quotes, "total": len(quotes)}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"获取报价失败: {str(e)}")
+    finally:
+        conn.close()
+
+
+@router.post("/api/v1/admin/quotes")
+async def create_quote(req: QuoteCreate, authorization: str = Header(None)):
+    """创建报价"""
+    _require_auth(authorization)
+
+    if req.lead_table not in TABLE_NAMES:
+        raise HTTPException(status_code=400, detail="无效的线索表")
+
+    plan = None
+    for p in QUOTE_PLANS:
+        if p["key"] == req.plan_key:
+            plan = p
+            break
+    if not plan:
+        raise HTTPException(status_code=400, detail="无效的方案")
+
+    conn = get_db()
+    try:
+        # 查询线索
+        columns = TABLE_COLUMNS.get(req.lead_table, [])
+        if not columns:
+            cursor = conn.execute(f"PRAGMA table_info({req.lead_table})")
+            columns = [row[1] for row in cursor.fetchall()]
+            TABLE_COLUMNS[req.lead_table] = columns
+
+        col_str = ", ".join(columns)
+        cursor = conn.execute(f"SELECT {col_str} FROM {req.lead_table} WHERE id = ?", (req.lead_id,))
+        row = cursor.fetchone()
+        if not row:
+            raise HTTPException(status_code=404, detail="线索不存在")
+
+        lead = dict(zip(columns, row))
+
+        # 生成报价编号
+        cursor = conn.execute("SELECT COUNT(*) FROM quotes")
+        count = cursor.fetchone()[0]
+        quote_no = f"QTE{datetime.now().strftime('%Y%m%d')}{count + 1:04d}"
+
+        cursor = conn.execute(
+            """INSERT INTO quotes (quote_no, lead_table, lead_id, lead_name, lead_company, lead_email, plan_name, plan_price, status)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'draft')""",
+            (quote_no, req.lead_table, req.lead_id,
+             lead.get("name", ""), lead.get("company", ""),
+             lead.get("email", ""), plan["name"], plan["price"]),
+        )
+        conn.commit()
+        quote_id = cursor.lastrowid
+
+        # 自动将线索阶段改为"报价中"
+        conn.execute(
+            f"UPDATE {req.lead_table} SET stage = 'quoting', stage_changed_at = CURRENT_TIMESTAMP, updated_at = CURRENT_TIMESTAMP WHERE id = ?",
+            (req.lead_id,),
+        )
+        conn.commit()
+
+        # 尝试发送报价邮件
+        try:
+            from backend.services.email_service import send_quote_to_customer
+            quote_info = {
+                "company": lead.get("company", ""),
+                "plan_name": plan["name"],
+                "price": plan["price"],
+                "quote_no": quote_no,
+                "items": [
+                    {"name": plan["name"], "price": plan["price"]},
+                ],
+            }
+            send_quote_to_customer(lead.get("email", ""), lead.get("name", ""), quote_info)
+        except ImportError:
+            pass
+        except Exception:
+            pass
+
+        return {
+            "success": True,
+            "data": {
+                "id": quote_id,
+                "quote_no": quote_no,
+                "plan_name": plan["name"],
+                "plan_price": plan["price"],
+            },
+            "message": f"报价已生成: {quote_no}",
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"创建报价失败: {str(e)}")
+    finally:
+        conn.close()
+
+
+class QuoteSendRequest(BaseModel):
+    action: str  # "send" or "accept" or "reject"
+
+
+@router.patch("/api/v1/admin/quotes/{quote_id}")
+async def update_quote(
+    quote_id: int,
+    req: QuoteSendRequest,
+    authorization: str = Header(None),
+):
+    """更新报价状态（发送/接受/拒绝）"""
+    _require_auth(authorization)
+
+    valid_actions = {"send": "sent", "accept": "accepted", "reject": "rejected"}
+    if req.action not in valid_actions:
+        raise HTTPException(status_code=400, detail=f"无效操作: {req.action}")
+
+    new_status = valid_actions[req.action]
+
+    conn = get_db()
+    try:
+        cursor = conn.execute("SELECT * FROM quotes WHERE id = ?", (quote_id,))
+        row = cursor.fetchone()
+        if not row:
+            raise HTTPException(status_code=404, detail="报价不存在")
+
+        columns = [desc[0] for desc in cursor.description]
+        quote = dict(zip(columns, row))
+
+        if req.action == "send":
+            conn.execute(
+                "UPDATE quotes SET status = ?, sent_at = CURRENT_TIMESTAMP, updated_at = CURRENT_TIMESTAMP WHERE id = ?",
+                (new_status, quote_id),
+            )
+
+            # 发送报价邮件
+            try:
+                from backend.services.email_service import send_quote_to_customer
+                send_quote_to_customer(
+                    quote["lead_email"],
+                    quote["lead_name"],
+                    {
+                        "company": quote["lead_company"],
+                        "plan_name": quote["plan_name"],
+                        "price": quote["plan_price"],
+                        "quote_no": quote["quote_no"],
+                        "items": [{"name": quote["plan_name"], "price": quote["plan_price"]}],
+                    },
+                )
+            except ImportError:
+                pass
+            except Exception:
+                pass
+        else:
+            conn.execute(
+                "UPDATE quotes SET status = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?",
+                (new_status, quote_id),
+            )
+
+            # 如果接受报价，将线索阶段改为"已成交"
+            if req.action == "accept":
+                conn.execute(
+                    f"UPDATE {quote['lead_table']} SET stage = 'closed_won', stage_changed_at = CURRENT_TIMESTAMP, updated_at = CURRENT_TIMESTAMP WHERE id = ?",
+                    (quote["lead_id"],),
+                )
+
+        conn.commit()
+        return {"success": True, "message": f"报价已{req.action}"}
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"更新报价失败: {str(e)}")
     finally:
         conn.close()

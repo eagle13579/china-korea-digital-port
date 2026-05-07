@@ -1,0 +1,899 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-lang-key="compliance_title">AI合规咨询 · 徐准 - 中韩出海数智港</title>
+    <link rel="icon" href="favicon.ico">
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* ========== Compliance Demo Page Styles ========== */
+        .compliance-page {
+            padding-top: 100px;
+            padding-bottom: 80px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .compliance-container {
+            max-width: 860px;
+            margin: 0 auto;
+            padding: 0 20px;
+            width: 100%;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ===== 徐准名片 ===== */
+        .xuzhun-profile {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            padding: 24px 28px;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            margin-bottom: 20px;
+            box-shadow: var(--glass-shadow);
+        }
+
+        .xuzhun-avatar {
+            flex-shrink: 0;
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #8B5CF6, #06B6D4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .xuzhun-avatar svg {
+            width: 44px;
+            height: 44px;
+            fill: #fff;
+        }
+
+        .xuzhun-avatar .online-badge {
+            position: absolute;
+            bottom: 2px;
+            right: 2px;
+            width: 16px;
+            height: 16px;
+            background: #10B981;
+            border: 3px solid var(--bg-secondary);
+            border-radius: 50%;
+        }
+
+        .xuzhun-info h2 {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .xuzhun-info h2 span.employee-level {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--accent-primary);
+            background: rgba(139, 92, 246, 0.15);
+            padding: 2px 10px;
+            border-radius: 10px;
+            margin-left: 8px;
+            vertical-align: middle;
+        }
+
+        .xuzhun-info .xuzhun-title {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 2px;
+        }
+
+        .xuzhun-info .xuzhun-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 6px;
+        }
+
+        .xuzhun-info .xuzhun-tags span {
+            font-size: 12px;
+            color: var(--text-muted);
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            padding: 2px 10px;
+            border-radius: 10px;
+        }
+
+        /* ===== 聊天区域 ===== */
+        .chat-container {
+            flex: 1;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            box-shadow: var(--glass-shadow);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            min-height: 400px;
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            scroll-behavior: smooth;
+        }
+
+        .chat-messages::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .chat-messages::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .chat-messages::-webkit-scrollbar-thumb {
+            background: var(--text-muted);
+            border-radius: 3px;
+        }
+
+        /* ===== 消息气泡 ===== */
+        .message {
+            display: flex;
+            gap: 12px;
+            max-width: 85%;
+            animation: messageIn 0.3s ease;
+        }
+
+        @keyframes messageIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .message.bot {
+            align-self: flex-start;
+        }
+
+        .message.user {
+            align-self: flex-end;
+            flex-direction: row-reverse;
+        }
+
+        .message-avatar {
+            flex-shrink: 0;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .message.bot .message-avatar {
+            background: linear-gradient(135deg, #8B5CF6, #06B6D4);
+        }
+
+        .message.user .message-avatar {
+            background: var(--accent-primary);
+        }
+
+        .message-bubble {
+            padding: 12px 16px;
+            border-radius: 12px;
+            font-size: 14px;
+            line-height: 1.7;
+            position: relative;
+        }
+
+        .message.bot .message-bubble {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--glass-border);
+            color: var(--text-primary);
+            border-top-left-radius: 4px;
+        }
+
+        .message.user .message-bubble {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(6, 182, 212, 0.2));
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            color: var(--text-primary);
+            border-top-right-radius: 4px;
+        }
+
+        .message-bubble .signature {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 8px;
+            padding-top: 8px;
+            border-top: 1px solid var(--glass-border);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .message-bubble .signature i {
+            color: var(--accent-primary);
+        }
+
+        .typing-indicator {
+            display: flex;
+            gap: 4px;
+            padding: 6px 0;
+        }
+
+        .typing-indicator span {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--text-muted);
+            animation: typing 1.4s infinite ease-in-out;
+        }
+
+        .typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
+        .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes typing {
+            0%, 60%, 100% { opacity: 0.3; transform: translateY(0); }
+            30% { opacity: 1; transform: translateY(-4px); }
+        }
+
+        /* ===== 快捷问题 ===== */
+        .quick-questions {
+            padding: 12px 24px;
+            border-top: 1px solid var(--glass-border);
+            background: var(--bg-secondary);
+        }
+
+        .quick-questions-label {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+
+        .quick-questions-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .quick-question-btn {
+            padding: 8px 16px;
+            font-size: 13px;
+            color: var(--text-secondary);
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 100%;
+        }
+
+        .quick-question-btn:hover {
+            border-color: var(--accent-primary);
+            color: var(--accent-primary);
+            background: rgba(139, 92, 246, 0.1);
+        }
+
+        .quick-question-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* ===== 输入区域 ===== */
+        .chat-input-area {
+            display: flex;
+            gap: 10px;
+            padding: 16px 24px;
+            border-top: 1px solid var(--glass-border);
+            background: var(--bg-secondary);
+        }
+
+        .chat-input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            background: var(--glass-bg);
+            color: var(--text-primary);
+            font-size: 14px;
+            outline: none;
+            transition: border-color var(--transition-fast);
+        }
+
+        .chat-input:focus {
+            border-color: var(--accent-primary);
+        }
+
+        .chat-input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .chat-send-btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #8B5CF6, #06B6D4);
+            color: #fff;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .chat-send-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 16px rgba(139, 92, 246, 0.4);
+        }
+
+        .chat-send-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* ===== 空状态 ===== */
+        .chat-empty-state {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 24px;
+            text-align: center;
+        }
+
+        .chat-empty-state .empty-icon {
+            font-size: 48px;
+            color: var(--text-muted);
+            margin-bottom: 16px;
+            opacity: 0.4;
+        }
+
+        .chat-empty-state h3 {
+            font-size: 18px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .chat-empty-state p {
+            font-size: 14px;
+            color: var(--text-muted);
+            max-width: 360px;
+            line-height: 1.6;
+        }
+
+        /* ===== 返回按钮 ===== */
+        .compliance-back {
+            margin-bottom: 16px;
+        }
+
+        .compliance-back a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 14px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: color var(--transition-fast);
+        }
+
+        .compliance-back a:hover {
+            color: var(--accent-primary);
+        }
+
+        /* ===== 响应式 ===== */
+        @media (max-width: 600px) {
+            .compliance-page {
+                padding-top: 80px;
+                padding-bottom: 40px;
+            }
+
+            .xuzhun-profile {
+                padding: 16px 18px;
+                gap: 14px;
+            }
+
+            .xuzhun-avatar {
+                width: 56px;
+                height: 56px;
+            }
+
+            .xuzhun-avatar svg {
+                width: 32px;
+                height: 32px;
+            }
+
+            .xuzhun-info h2 {
+                font-size: 17px;
+            }
+
+            .message {
+                max-width: 95%;
+            }
+
+            .chat-messages {
+                padding: 16px;
+            }
+
+            .quick-questions, .chat-input-area {
+                padding: 12px 16px;
+            }
+
+            .quick-question-btn {
+                font-size: 12px;
+                padding: 6px 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <header class="header">
+        <div class="container">
+            <div class="header__content">
+                <div class="header__logo">
+                    <h1 class="logo__text" data-lang-key="logo">中韩出海数智港</h1>
+                </div>
+                <nav class="header__nav">
+                    <ul class="nav__list">
+                        <li class="nav__item"><a href="index.html" class="nav__link" data-lang-key="home">首页</a></li>
+                        <li class="nav__item"><a href="index.html#services" class="nav__link" data-lang-key="services">服务内容</a></li>
+                        <li class="nav__item"><a href="index.html#features" class="nav__link" data-lang-key="features">核心功能</a></li>
+                        <li class="nav__item"><a href="team.html" class="nav__link" data-lang-key="team_nav">数字员工团队</a></li>
+                        <li class="nav__item"><a href="index.html#contact" class="nav__link" data-lang-key="contact">联系我们</a></li>
+                    </ul>
+                </nav>
+                <div class="header__lang">
+                    <button class="lang-btn" data-lang="zh-CN">中文</button>
+                    <button class="lang-btn" data-lang="ko-KR">한국어</button>
+                </div>
+                <div class="header__theme">
+                    <button class="theme-btn" id="themeToggle" aria-label="切换主题">
+                        <i class="bi bi-moon"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- 合规咨询Demo页面 -->
+    <section class="compliance-page">
+        <div class="compliance-container">
+            <!-- 返回链接 -->
+            <div class="compliance-back">
+                <a href="team.html"><i class="bi bi-arrow-left"></i> <span data-lang-key="compliance_back">返回团队</span></a>
+            </div>
+
+            <!-- 徐准名片 -->
+            <div class="xuzhun-profile">
+                <div class="xuzhun-avatar">
+                    <svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="20" cy="14" r="8" fill="rgba(255,255,255,0.9)"/>
+                        <ellipse cx="20" cy="34" rx="14" ry="12" fill="rgba(255,255,255,0.9)"/>
+                        <circle cx="16" cy="12" r="2" fill="var(--bg-primary)"/>
+                        <circle cx="24" cy="12" r="2" fill="var(--bg-primary)"/>
+                        <path d="M14 16 Q20 20 26 16" stroke="var(--bg-primary)" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+                    </svg>
+                    <span class="online-badge"></span>
+                </div>
+                <div class="xuzhun-info">
+                    <h2>
+                        <span class="employee-name" data-lang-key="xuzhun_name">徐准</span>
+                        <span class="employee-level">P9</span>
+                    </h2>
+                    <div class="xuzhun-title" data-lang-key="xuzhun_title">合规官 · 行业准入专家 · 精通中韩外商投资法规</div>
+                    <div class="xuzhun-tags">
+                        <span data-lang-key="xuzhun_tag1">🏛️ 行业准入</span>
+                        <span data-lang-key="xuzhun_tag2">📋 负面清单</span>
+                        <span data-lang-key="xuzhun_tag3">🏢 WFOE/JV</span>
+                        <span data-lang-key="xuzhun_tag4">⚖️ 外商投资法</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 聊天界面 -->
+            <div class="chat-container">
+                <div class="chat-messages" id="chatMessages">
+                    <!-- 空状态：默认显示欢迎消息 -->
+                    <div class="chat-empty-state" id="chatEmptyState">
+                        <div class="empty-icon"><i class="bi bi-chat-dots"></i></div>
+                        <h3 data-lang-key="compliance_welcome_title">您好，我是徐准</h3>
+                        <p data-lang-key="compliance_welcome_desc">我是中韩出海数智港的首席合规官，精通外商投资法规与行业准入政策。请选择下方问题或输入您的合规咨询需求。</p>
+                    </div>
+                </div>
+
+                <!-- 快捷问题 -->
+                <div class="quick-questions">
+                    <div class="quick-questions-label" data-lang-key="compliance_quick_label">💡 快捷提问</div>
+                    <div class="quick-questions-buttons" id="quickQuestions">
+                        <button class="quick-question-btn" data-question="韩企进入中国需要哪些审批流程？" data-lang-key="compliance_q1">
+                            韩企进入中国需要哪些审批流程？
+                        </button>
+                        <button class="quick-question-btn" data-question="外资准入负面清单是什么？哪些行业受限？" data-lang-key="compliance_q2">
+                            外资准入负面清单是什么？哪些行业受限？
+                        </button>
+                        <button class="quick-question-btn" data-question="WFOE和JV分别适合什么类型的韩企？" data-lang-key="compliance_q3">
+                            WFOE和JV分别适合什么类型的韩企？
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 输入区域 -->
+                <div class="chat-input-area">
+                    <input type="text" class="chat-input" id="chatInput"
+                           data-lang-key="compliance_input_placeholder"
+                           placeholder="输入您的合规问题..."
+                           autocomplete="off">
+                    <button class="chat-send-btn" id="chatSendBtn">
+                        <i class="bi bi-send"></i>
+                        <span data-lang-key="compliance_send">发送</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer__content">
+                <div class="footer__logo">
+                    <h3 class="logo__text" data-lang-key="logo">中韩出海数智港</h3>
+                    <p class="footer__tagline" data-lang-key="footer_tagline">AI赋能企业跨境发展</p>
+                </div>
+                <div class="footer__links">
+                    <h4 class="footer__heading" data-lang-key="footer_services">服务</h4>
+                    <ul class="footer__list">
+                        <li><a href="index.html#services" data-lang-key="service_china_to_korea">中国企业进韩国</a></li>
+                        <li><a href="index.html#services" data-lang-key="service_korea_to_china">韩国企业进中国</a></li>
+                        <li><a href="index.html#features" data-lang-key="footer_ai_services">AI赋能服务</a></li>
+                        <li><a href="#" data-lang-key="footer_opc_ai">OPC+AI模式</a></li>
+                    </ul>
+                </div>
+                <div class="footer__links">
+                    <h4 class="footer__heading" data-lang-key="footer_about">关于</h4>
+                    <ul class="footer__list">
+                        <li><a href="index.html#about" data-lang-key="footer_company">公司介绍</a></li>
+                        <li><a href="index.html#features" data-lang-key="footer_advantages">核心优势</a></li>
+                        <li><a href="index.html#contact" data-lang-key="contact">联系我们</a></li>
+                        <li><a href="#" data-lang-key="footer_partners">合作伙伴</a></li>
+                    </ul>
+                </div>
+                <div class="footer__social">
+                    <h4 class="footer__heading" data-lang-key="footer_follow">关注我们</h4>
+                    <div class="social__icons">
+                        <a href="#" class="social__icon"><i class="bi bi-weixin"></i></a>
+                        <a href="#" class="social__icon"><i class="bi bi-weibo"></i></a>
+                        <a href="#" class="social__icon"><i class="bi bi-linkedin"></i></a>
+                        <a href="#" class="social__icon"><i class="bi bi-youtube"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer__bottom">
+                <p class="footer__copyright" data-lang-key="footer_copyright">© 2026 中韩出海数智港. 保留所有权利. <a href="https://beian.miit.gov.cn" target="_blank" rel="nofollow" style="color:inherit;text-decoration:none;">沪ICP备2026007459号</a></p>
+                <div class="footer__legal">
+                    <a href="privacy.html" data-lang-key="footer_privacy">隐私政策</a>
+                    <a href="terms.html" data-lang-key="footer_terms">服务条款</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+    <script>
+        // ========== Compliance Demo Page Logic ==========
+
+        // 翻译扩展
+        (function extendTranslations() {
+            const extraTranslations = {
+                'zh-CN': {
+                    compliance_title: 'AI合规咨询 · 徐准 - 中韩出海数智港',
+                    compliance_back: '返回团队',
+                    compliance_welcome_title: '您好，我是徐准',
+                    compliance_welcome_desc: '我是中韩出海数智港的首席合规官，精通外商投资法规与行业准入政策。请选择下方问题或输入您的合规咨询需求。',
+                    compliance_quick_label: '💡 快捷提问',
+                    compliance_q1: '韩企进入中国需要哪些审批流程？',
+                    compliance_q2: '外资准入负面清单是什么？哪些行业受限？',
+                    compliance_q3: 'WFOE和JV分别适合什么类型的韩企？',
+                    compliance_input_placeholder: '输入您的合规问题...',
+                    compliance_send: '发送',
+                    xuzhun_name: '徐准',
+                    xuzhun_title: '合规官 · 行业准入专家 · 精通中韩外商投资法规',
+                    xuzhun_tag1: '🏛️ 行业准入',
+                    xuzhun_tag2: '📋 负面清单',
+                    xuzhun_tag3: '🏢 WFOE/JV',
+                    xuzhun_tag4: '⚖️ 外商投资法',
+                    compliance_ask_error: '抱歉，咨询系统暂时不可用，请稍后再试。',
+                    compliance_disclaimer: '免责声明：以上内容由AI数字员工徐准基于知识库生成，仅供参考，不构成正式法律意见。',
+                },
+                'ko-KR': {
+                    compliance_title: 'AI 규정준수 컨설팅 · 서준 - 중한 해외진출 디지털 포트',
+                    compliance_back: '팀으로 돌아가기',
+                    compliance_welcome_title: '안녕하세요, 저는 서준입니다',
+                    compliance_welcome_desc: '저는 중한 해외진출 디지털 포트의 수석 규정준수 책임자로, 외국인 투자 법률 및 업종 진입 정책에 정통합니다. 아래 질문을 선택하거나 규정준수 문의 사항을 입력해 주세요.',
+                    compliance_quick_label: '💡 빠른 질문',
+                    compliance_q1: '한국 기업이 중국에 진입하려면 어떤 승인 절차가 필요한가요?',
+                    compliance_q2: '외국인 투자 네거티브 리스트란 무엇인가요? 제한되는 업종은?',
+                    compliance_q3: 'WFOE와 JV는 각각 어떤 유형의 한국 기업에 적합한가요?',
+                    compliance_input_placeholder: '규정준수 질문을 입력하세요...',
+                    compliance_send: '보내기',
+                    xuzhun_name: '서준',
+                    xuzhun_title: '규정준수 책임자 · 업종 진입 전문가 · 한중 외국인 투자 법률 전문',
+                    xuzhun_tag1: '🏛️ 업종 허가',
+                    xuzhun_tag2: '📋 네거티브 리스트',
+                    xuzhun_tag3: '🏢 WFOE/JV',
+                    xuzhun_tag4: '⚖️ 외국인 투자법',
+                    compliance_ask_error: '죄송합니다. 문의 시스템을 일시적으로 사용할 수 없습니다. 나중에 다시 시도해 주세요.',
+                    compliance_disclaimer: '면책 조항: 위 내용은 AI 디지털 직원 서준이 지식 기반을 바탕으로 생성한 것으로, 참고용으로만 제공되며 공식적인 법률 의견을 구성하지 않습니다.',
+                }
+            };
+
+            if (typeof translations !== 'undefined') {
+                for (const lang in extraTranslations) {
+                    if (!translations[lang]) translations[lang] = {};
+                    Object.assign(translations[lang], extraTranslations[lang]);
+                }
+            } else {
+                document.addEventListener('DOMContentLoaded', function() {
+                    if (typeof translations !== 'undefined') {
+                        for (const lang in extraTranslations) {
+                            if (!translations[lang]) translations[lang] = {};
+                            Object.assign(translations[lang], extraTranslations[lang]);
+                        }
+                        const currentLang = localStorage.getItem('lang') || 'zh-CN';
+                        const langBtns = document.querySelectorAll('.lang-btn');
+                        langBtns.forEach(btn => {
+                            if (btn.dataset.lang === currentLang) {
+                                btn.click();
+                            }
+                        });
+                    }
+                });
+            }
+        })();
+
+        // ========== 聊天逻辑 ==========
+
+        const chatMessages = document.getElementById('chatMessages');
+        const chatEmptyState = document.getElementById('chatEmptyState');
+        const chatInput = document.getElementById('chatInput');
+        const chatSendBtn = document.getElementById('chatSendBtn');
+        const quickBtns = document.querySelectorAll('.quick-question-btn');
+
+        // 问答历史
+        let conversationHistory = [];
+
+        // 是否正在请求
+        let isAsking = false;
+
+        function getCurrentLang() {
+            return localStorage.getItem('lang') || 'zh-CN';
+        }
+
+        function scrollToBottom() {
+            setTimeout(() => {
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }, 50);
+        }
+
+        // 添加消息到聊天
+        function addMessage(type, content, signature) {
+            // 隐藏空状态
+            chatEmptyState.style.display = 'none';
+
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message ' + type;
+
+            const avatar = document.createElement('div');
+            avatar.className = 'message-avatar';
+            if (type === 'bot') {
+                avatar.innerHTML = '<i class="bi bi-robot"></i>';
+            } else {
+                avatar.innerHTML = '<i class="bi bi-person"></i>';
+            }
+
+            const bubble = document.createElement('div');
+            bubble.className = 'message-bubble';
+
+            const textP = document.createElement('p');
+            textP.textContent = content;
+            bubble.appendChild(textP);
+
+            if (type === 'bot' && signature) {
+                const sig = document.createElement('div');
+                sig.className = 'signature';
+                sig.innerHTML = '<i class="bi bi-shield-check"></i> ' + signature;
+                bubble.appendChild(sig);
+            }
+
+            messageDiv.appendChild(avatar);
+            messageDiv.appendChild(bubble);
+            chatMessages.appendChild(messageDiv);
+
+            scrollToBottom();
+        }
+
+        // 显示打字指示器
+        function showTyping() {
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'message bot';
+            typingDiv.id = 'typingIndicator';
+
+            const avatar = document.createElement('div');
+            avatar.className = 'message-avatar';
+            avatar.innerHTML = '<i class="bi bi-robot"></i>';
+
+            const bubble = document.createElement('div');
+            bubble.className = 'message-bubble';
+
+            const indicator = document.createElement('div');
+            indicator.className = 'typing-indicator';
+            indicator.innerHTML = '<span></span><span></span><span></span>';
+
+            bubble.appendChild(indicator);
+            typingDiv.appendChild(avatar);
+            typingDiv.appendChild(bubble);
+            chatMessages.appendChild(typingDiv);
+
+            scrollToBottom();
+        }
+
+        // 隐藏打字指示器
+        function hideTyping() {
+            const typing = document.getElementById('typingIndicator');
+            if (typing) {
+                typing.remove();
+            }
+        }
+
+        // 发送问题
+        async function askQuestion(question) {
+            if (isAsking) return;
+            if (!question || !question.trim()) return;
+
+            const trimmedQuestion = question.trim();
+            isAsking = true;
+
+            // 禁用按钮
+            setButtonsDisabled(true);
+
+            // 添加用户消息
+            addMessage('user', trimmedQuestion);
+            conversationHistory.push({ role: 'user', content: trimmedQuestion });
+
+            // 清空输入框
+            chatInput.value = '';
+
+            // 显示打字指示器
+            showTyping();
+
+            try {
+                const response = await fetch('/api/v1/compliance/ask', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        question: trimmedQuestion,
+                        employee: '徐准'
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error('API returned ' + response.status);
+                }
+
+                const data = await response.json();
+
+                // 隐藏打字指示器
+                hideTyping();
+
+                if (data.success) {
+                    const lang = getCurrentLang();
+                    const signature = lang === 'ko-KR'
+                        ? '서준 · 수석 규정준수 책임자 · AI 디지털 직원'
+                        : '徐准 · 首席合规官 · AI数字员工';
+
+                    addMessage('bot', data.answer, signature);
+                    conversationHistory.push({ role: 'assistant', content: data.answer });
+                } else {
+                    const lang = getCurrentLang();
+                    const errMsg = lang === 'ko-KR'
+                        ? '죄송합니다. 요청을 처리할 수 없습니다. 다시 시도해 주세요.'
+                        : '抱歉，无法处理您的请求，请重试。';
+                    addMessage('bot', errMsg);
+                }
+
+            } catch (err) {
+                hideTyping();
+                const lang = getCurrentLang();
+                const errMsg = lang === 'ko-KR'
+                    ? '죄송합니다. 시스템에 문제가 발생했습니다. 나중에 다시 시도해 주세요.'
+                    : '抱歉，系统出现异常，请稍后再试。';
+                addMessage('bot', errMsg);
+                console.error('Ask error:', err);
+            } finally {
+                isAsking = false;
+                setButtonsDisabled(false);
+            }
+        }
+
+        function setButtonsDisabled(disabled) {
+            quickBtns.forEach(btn => btn.disabled = disabled);
+            chatSendBtn.disabled = disabled;
+            chatInput.disabled = disabled;
+        }
+
+        // 快捷问题点击
+        quickBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                const question = this.getAttribute('data-question');
+                if (question) {
+                    askQuestion(question);
+                }
+            });
+        });
+
+        // 发送按钮点击
+        chatSendBtn.addEventListener('click', function() {
+            const question = chatInput.value.trim();
+            if (question) {
+                askQuestion(question);
+            }
+        });
+
+        // 回车发送
+        chatInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                const question = this.value.trim();
+                if (question) {
+                    askQuestion(question);
+                }
+            }
+        });
+
+        // 语言切换时更新快捷按钮文本（因为data-lang-key机制会自动处理）
+        // 但是data-question属性需要同步更新
+        document.addEventListener('DOMContentLoaded', function() {
+            // 监听语言切换以更新data-question属性
+            const observer = new MutationObserver(function() {
+                // 不需要额外操作，data-lang-key已处理
+            });
+
+            const langBtns = document.querySelectorAll('.lang-btn');
+            langBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    // 快捷问题的data-question在切换语言后保持中文不变，
+                    // 因为API接收中文问题
+                });
+            });
+
+            // 初始化时应用主题
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            if (savedTheme === 'light') {
+                document.body.classList.add('light-mode');
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title data-lang-key="cc_title">合规健康度自检 | 中韩出海数智港</title>
+<meta name="description" content="中韩出海数智港AI合规自检工具 - 8道题快速评估您的企业进入中国市场的合规健康度，获取个性化合规报告">
+<link rel="stylesheet" href="css/style.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* 合规自检页面专属样式 */
+.cc-container { max-width: 800px; margin: 100px auto 60px; padding: 0 20px; }
+.cc-card { background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 24px; padding: 40px; backdrop-filter: blur(20px); box-shadow: var(--glass-shadow); }
+.cc-header { text-align: center; margin-bottom: 40px; }
+.cc-header h1 { font-size: 28px; font-weight: 700; margin-bottom: 12px; background: var(--accent-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.cc-header p { color: var(--text-secondary); font-size: 15px; }
+/* 进度条 */
+.cc-progress { margin-bottom: 36px; }
+.cc-progress-bar { height: 6px; background: var(--bg-tertiary); border-radius: 3px; overflow: hidden; margin-bottom: 8px; }
+.cc-progress-fill { height: 100%; background: var(--accent-gradient); border-radius: 3px; transition: width var(--transition-normal); width: 0%; }
+.cc-progress-text { display: flex; justify-content: space-between; color: var(--text-muted); font-size: 13px; }
+.cc-progress-text span:last-child { color: var(--accent-primary); font-weight: 500; }
+/* 步骤默认隐藏 */
+.cc-step { display: none; }
+.cc-step.active { display: block; }
+.cc-step-label { font-size: 13px; color: var(--accent-primary); font-weight: 500; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; }
+.cc-step-number { font-size: 14px; color: var(--text-muted); margin-bottom: 16px; }
+.cc-question { font-size: 20px; font-weight: 600; margin-bottom: 28px; line-height: 1.5; }
+/* 选项按钮 */
+.cc-option { display: block; width: 100%; padding: 16px 20px; margin-bottom: 12px; background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 16px; color: var(--text-primary); font-size: 15px; cursor: pointer; transition: all var(--transition-fast); text-align: left; font-family: var(--font-body); line-height: 1.5; }
+.cc-option:hover { border-color: var(--accent-primary); background: rgba(139, 92, 246, 0.1); transform: translateX(4px); }
+.cc-option.selected { border-color: var(--accent-primary); background: rgba(139, 92, 246, 0.15); box-shadow: 0 0 20px rgba(139, 92, 246, 0.15); }
+.cc-option .opt-dimension { font-size: 12px; color: var(--text-muted); margin-bottom: 2px; }
+/* 导航按钮 */
+.cc-nav { display: flex; justify-content: space-between; margin-top: 24px; }
+.cc-btn { padding: 12px 28px; border: 1px solid var(--glass-border); background: var(--glass-bg); color: var(--text-primary); border-radius: 12px; cursor: pointer; font-size: 14px; font-family: var(--font-body); transition: all var(--transition-fast); }
+.cc-btn:hover { border-color: var(--accent-primary); }
+.cc-btn.primary { background: var(--accent-gradient); border: none; color: white; font-weight: 600; }
+.cc-btn.primary:hover { opacity: 0.9; transform: translateY(-1px); }
+.cc-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+/* 结果页面 */
+.cc-result { display: none; }
+.cc-result.active { display: block; }
+.cc-score-circle { width: 160px; height: 160px; border-radius: 50%; margin: 0 auto 24px; display: flex; align-items: center; justify-content: center; flex-direction: column; border: 6px solid; }
+.cc-score-circle .score-num { font-size: 48px; font-weight: 800; }
+.cc-score-circle .score-label { font-size: 14px; color: var(--text-secondary); }
+.cc-score-circle.green { border-color: #10B981; }
+.cc-score-circle.green .score-num { color: #10B981; }
+.cc-score-circle.yellow { border-color: #F59E0B; }
+.cc-score-circle.yellow .score-num { color: #F59E0B; }
+.cc-score-circle.red { border-color: #EF4444; }
+.cc-score-circle.red .score-num { color: #EF4444; }
+/* 维度得分 */
+.cc-dimensions { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 32px 0; }
+@media (max-width: 600px) { .cc-dimensions { grid-template-columns: 1fr; } }
+.cc-dim-item { background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 16px; padding: 20px; }
+.cc-dim-header { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 14px; }
+.cc-dim-name { font-weight: 500; }
+.cc-dim-score { font-weight: 600; }
+.cc-dim-bar { height: 6px; background: var(--bg-tertiary); border-radius: 3px; overflow: hidden; }
+.cc-dim-fill { height: 100%; border-radius: 3px; transition: width 1s ease; }
+.cc-dim-fill.green { background: #10B981; }
+.cc-dim-fill.yellow { background: #F59E0B; }
+.cc-dim-fill.red { background: #EF4444; }
+/* 推荐方案 */
+.cc-recommend { background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 16px; padding: 24px; margin: 24px 0; }
+.cc-recommend h3 { font-size: 16px; margin-bottom: 12px; }
+.cc-rec-item { padding: 12px 16px; margin-bottom: 8px; border-radius: 12px; border: 1px solid var(--glass-border); display: flex; justify-content: space-between; align-items: center; }
+.cc-rec-item.active { border-color: var(--accent-primary); background: rgba(139, 92, 246, 0.1); }
+.cc-rec-name { font-weight: 500; }
+.cc-rec-price { color: var(--accent-primary); font-weight: 600; }
+.cc-rec-tag { font-size: 12px; padding: 2px 10px; border-radius: 20px; background: rgba(139, 92, 246, 0.15); color: var(--accent-primary); }
+/* 联系表单 */
+.cc-contact { display: none; margin-top: 24px; }
+.cc-contact.active { display: block; }
+.cc-contact input, .cc-contact textarea { width: 100%; padding: 14px 16px; margin-bottom: 12px; background: var(--bg-tertiary); border: 1px solid var(--glass-border); border-radius: 12px; color: var(--text-primary); font-size: 14px; font-family: var(--font-body); }
+.cc-contact input:focus, .cc-contact textarea:focus { outline: none; border-color: var(--accent-primary); }
+/* 加载动画 */
+.cc-loading { display: none; text-align: center; padding: 40px; }
+.cc-loading.active { display: block; }
+.cc-spinner { width: 40px; height: 40px; border: 3px solid var(--bg-tertiary); border-top: 3px solid var(--accent-primary); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 16px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+/* 语言切换 */
+.lang-switch { position: fixed; top: 20px; right: 20px; z-index: 100; display: flex; gap: 4px; background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 12px; padding: 4px; }
+.lang-btn { padding: 6px 14px; border: none; background: transparent; color: var(--text-muted); border-radius: 8px; cursor: pointer; font-size: 13px; font-family: var(--font-body); transition: all var(--transition-fast); }
+.lang-btn.active { background: var(--accent-primary); color: white; }
+</style>
+</head>
+<body>
+
+<!-- 语言切换 -->
+<div class="lang-switch">
+<button class="lang-btn active" onclick="switchLang('zh-CN')" data-lang-key="cc_lang_zh">中文</button>
+<button class="lang-btn" onclick="switchLang('ko-KR')" data-lang-key="cc_lang_ko">한국어</button>
+</div>
+
+<!-- 导航栏 -->
+<header class="header">
+<div class="header__container">
+<a href="index.html" class="header__logo" data-lang-key="nav_logo">中韩出海数智港</a>
+<nav class="header__nav">
+<a href="index.html#services" data-lang-key="nav_services">服务</a>
+<a href="team.html" data-lang-key="nav_team">团队</a>
+<a href="pricing-v2.html" data-lang-key="nav_pricing">定价</a>
+<a href="compliance-check.html" class="active" data-lang-key="nav_compliance_check">合规自检</a>
+<a href="compliance-demo.html" data-lang-key="nav_ai_consult">AI咨询</a>
+<a href="demo.html" data-lang-key="nav_demo">预约演示</a>
+</nav>
+</div>
+</header>
+
+<div class="cc-container">
+<div class="cc-card" id="quizCard">
+<div class="cc-header">
+<h1 data-lang-key="cc_title">合规健康度自检</h1>
+<p data-lang-key="cc_desc">8道题快速评估您的企业进入中国市场的合规准备情况，获取个性化报告</p>
+</div>
+
+<!-- 进度条 -->
+<div class="cc-progress" id="progressBar">
+<div class="cc-progress-bar"><div class="cc-progress-fill" id="progressFill"></div></div>
+<div class="cc-progress-text">
+<span id="progressLabel" data-lang-key="cc_progress">进度</span>
+<span id="progressCount">0/8</span>
+</div>
+</div>
+
+<!-- 题目区域 -->
+<div id="questionsContainer"></div>
+
+<!-- 导航按钮 -->
+<div class="cc-nav">
+<button class="cc-btn" id="prevBtn" onclick="prevStep()" data-lang-key="cc_prev">上一题</button>
+<button class="cc-btn" id="nextBtn" onclick="nextStep()" style="display:none;" data-lang-key="cc_next">下一题</button>
+<button class="cc-btn primary" id="submitBtn" onclick="submitCheck()" style="display:none;" data-lang-key="cc_submit">提交评估</button>
+</div>
+
+<!-- 加载 -->
+<div class="cc-loading" id="loadingSpinner">
+<div class="cc-spinner"></div>
+<p data-lang-key="cc_analyzing">正在分析您的合规状况...</p>
+</div>
+</div>
+
+<!-- 结果页面 -->
+<div class="cc-card" id="resultCard" style="display:none;">
+<div class="cc-header">
+<h1 data-lang-key="cc_result_title">合规健康度报告</h1>
+</div>
+<div class="cc-score-circle green" id="scoreCircle">
+<div class="score-num" id="scoreNum">0%</div>
+<div class="score-label" data-lang-key="cc_health">健康度</div>
+</div>
+<div id="dimensionsContainer" class="cc-dimensions"></div>
+
+<!-- 推荐方案 -->
+<div class="cc-recommend" id="recommendSection">
+<h3 data-lang-key="cc_recommend_title">推荐方案</h3>
+<div id="recommendList"></div>
+</div>
+
+<!-- 获取完整报告 -->
+<button class="cc-btn primary" onclick="showContactForm()" style="width:100%;padding:16px;font-size:16px;margin-top:16px;" data-lang-key="cc_get_report">获取完整合规报告（含PDF）</button>
+
+<!-- 联系表单 -->
+<div class="cc-contact" id="contactForm">
+<input type="text" id="contactName" placeholder="您的姓名" data-lang-key="cc_name_ph">
+<input type="text" id="contactCompany" placeholder="公司名称" data-lang-key="cc_company_ph">
+<input type="email" id="contactEmail" placeholder="邮箱地址" data-lang-key="cc_email_ph">
+<input type="tel" id="contactPhone" placeholder="联系电话" data-lang-key="cc_phone_ph">
+<button class="cc-btn primary" onclick="getPdfReport()" style="width:100%;padding:14px;font-size:15px;" data-lang-key="cc_send_report">发送报告到邮箱</button>
+</div>
+
+<div style="text-align:center;margin-top:16px;">
+<a href="compliance-demo.html" class="cc-btn" style="text-decoration:none;display:inline-block;" data-lang-key="cc_try_ai">试试徐准AI合规咨询</a>
+</div>
+</div>
+</div>
+
+<script src="js/toast.js"></script>
+<script src="js/main.js"></script>
+<script>
+// ─── 语言数据 ───
+const CC_LANG = {
+'zh-CN': {
+cc_title: '合规健康度自检', cc_desc: '8道题快速评估您的企业进入中国市场的合规准备情况，获取个性化报告',
+cc_progress: '进度', cc_prev: '上一题', cc_next: '下一题', cc_submit: '提交评估',
+cc_analyzing: '正在分析您的合规状况...',
+cc_result_title: '合规健康度报告', cc_health: '健康度',
+cc_recommend_title: '推荐方案', cc_get_report: '获取完整合规报告（含PDF）',
+cc_name_ph: '您的姓名', cc_company_ph: '公司名称', cc_email_ph: '邮箱地址', cc_phone_ph: '联系电话',
+cc_send_report: '发送报告到邮箱', cc_try_ai: '试试徐准AI合规咨询',
+cc_lang_zh: '中文', cc_lang_ko: '한국어',
+nav_logo: '中韩出海数智港', nav_services: '服务', nav_team: '团队',
+nav_pricing: '定价', nav_compliance_check: '合规自检', nav_ai_consult: 'AI咨询', nav_demo: '预约演示',
+cc_start: '开始自检', cc_restart: '重新测评',
+dim_行业准入: '行业准入', dim_数据安全: '数据安全', dim_知识产权: '知识产权',
+dim_财税: '财税', dim_用工: '用工', dim_签证: '签证',
+risk_low: '低风险', risk_med: '中风险', risk_high: '高风险',
+rec_title: '推荐方案', rec_free: '免费初评', rec_depth: '深度方案', rec_year: '年订阅',
+rec_free_desc: '适合合规状况良好的企业', rec_depth_desc: '适合需要针对性合规方案的企业', rec_year_desc: '适合需要持续合规支持的企业',
+cc_score_desc: '得分越低合规越完善', cc_no_data: '暂无数据'
+},
+'ko-KR': {
+cc_title: '컴플라이언스 건강도 자가진단', cc_desc: '8가지 질문으로 귀사의 중국 시장 진출 규정 준비 상태를 빠르게 평가하고 맞춤형 보고서를 받아보세요',
+cc_progress: '진행률', cc_prev: '이전', cc_next: '다음', cc_submit: '제출',
+cc_analyzing: '컴플라이언스 상태를 분석 중입니다...',
+cc_result_title: '컴플라이언스 건강도 보고서', cc_health: '건강도',
+cc_recommend_title: '추천方案', cc_get_report: '전체 규정 준수 보고서 받기 (PDF 포함)',
+cc_name_ph: '성함', cc_company_ph: '회사명', cc_email_ph: '이메일', cc_phone_ph: '전화번호',
+cc_send_report: '이메일로 보고서 보내기', cc_try_ai: 'AI 컴플라이언스 상담体验',
+cc_lang_zh: '中文', cc_lang_ko: '한국어',
+nav_logo: '중한 해외진출 디지털 포트', nav_services: '서비스', nav_team: '팀',
+nav_pricing: '가격', nav_compliance_check: '규정 자가진단', nav_ai_consult: 'AI 상담', nav_demo: '데모 예약',
+cc_start: '시작하기', cc_restart: '다시 평가',
+dim_行业准入: '업종 허가', dim_数据安全: '데이터 보안', dim_知识产权: '지식재산권',
+dim_财税: '재무세무', dim_用工: '고용', dim_签证: '비자',
+risk_low: '저위험', risk_med: '중위험', risk_high: '고위험',
+rec_title: '추천方案', rec_free: '무료 초기 평가', rec_depth: '심층方案', rec_year: '연간 구독',
+rec_free_desc: '컴플라이언스 상태가 양호한 기업에 적합', rec_depth_desc: '맞춤형 규정 준수方案이 필요한 기업에 적합', rec_year_desc: '지속적인 규정 준수 지원이 필요한 기업에 적합',
+cc_score_desc: '점수가 낮을수록 규정 준수가 완벽함', cc_no_data: '데이터 없음'
+}
+};
+
+let currentLang = 'zh-CN';
+function t(key) { const d = CC_LANG[currentLang]; return d && d[key] ? d[key] : key; }
+
+function switchLang(lang) {
+currentLang = lang;
+document.documentElement.lang = lang;
+document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('active', b.textContent.includes(lang === 'zh-CN' ? '中文' : '한국')));
+applyLang();
+}
+
+function applyLang() {
+document.querySelectorAll('[data-lang-key]').forEach(el => {
+const key = el.getAttribute('data-lang-key');
+if (t(key) !== key) el.textContent = t(key);
+});
+// 重绘动态内容
+if (typeof QUESTIONS !== 'undefined') renderQuestions();
+if (quizData) renderResult(quizData);
+}
+
+// ─── 题目数据 ───
+let QUESTIONS = [];
+let currentStep = 0;
+let answers = {};
+let quizData = null;
+
+async function loadQuestions() {
+try {
+const res = await fetch('/api/v1/compliance/questions');
+if (res.ok) { QUESTIONS = await res.json(); }
+} catch(e) { /* ignore */ }
+if (!QUESTIONS.length) {
+QUESTIONS = [
+{ id:'q1', dimension:'行业准入', question_zh:'您的企业是否已完成中国市场的行业准入可行性评估？', question_ko:'귀사는 중국 시장의 업종 진입 가능성 평가를 완료하셨습니까?', options:[{value:0,label_zh:'已完成全面评估',label_ko:'전면 평가 완료'},{value:1,label_zh:'正在进行评估',label_ko:'평가 진행 중'},{value:2,label_zh:'尚未进行任何评估',label_ko:'아직 평가 진행하지 않음'}] },
+{ id:'q2', dimension:'行业准入', question_zh:'您的企业是否已确立进入中国市场的投资架构？', question_ko:'귀사는 중국 시장 진입을 위한 투자 구조를 확립하셨습니까?', options:[{value:0,label_zh:'已确定WFOE架构',label_ko:'WFOE 구조 확정'},{value:1,label_zh:'正在比较不同架构方案',label_ko:'다양한 구조 비교 중'},{value:2,label_zh:'尚未考虑投资架构问题',label_ko:'아직 투자 구조 고려하지 않음'}] },
+{ id:'q3', dimension:'数据安全', question_zh:'您的企业是否涉及个人信息或数据的跨境传输？', question_ko:'귀사는 개인정보 또는 데이터의 국경 간 전송에 관련되어 있습니까?', options:[{value:0,label_zh:'完全不涉及',label_ko:'해당 없음'},{value:1,label_zh:'有少量数据处理',label_ko:'소량 데이터 처리'},{value:2,label_zh:'大量数据跨境需求',label_ko:'대량 데이터 국경 간 전송 필요'}] },
+{ id:'q4', dimension:'知识产权', question_zh:'您的企业在中国是否已完成商标/专利的知识产权布局？', question_ko:'귀사는 중국에서 상표/특허의 지식재산권 포트폴리오를 완료하셨습니까?', options:[{value:0,label_zh:'已完成核心注册',label_ko:'핵심 등록 완료'},{value:1,label_zh:'正在申请中',label_ko:'출원 진행 중'},{value:2,label_zh:'尚未考虑',label_ko:'고려하지 않음'}] },
+{ id:'q5', dimension:'财税', question_zh:'您的企业是否了解中韩税收协定及跨境税务合规要求？', question_ko:'귀사는 한중 조세협정 및 국경 간 세무 규정 준수 요건을 이해하고 계십니까?', options:[{value:0,label_zh:'已有专业税务顾问',label_ko:'전문 세무 자문 보유'},{value:1,label_zh:'了解基本政策',label_ko:'기본 정책 이해'},{value:2,label_zh:'完全不了解',label_ko:'전혀 모름'}] },
+{ id:'q6', dimension:'财税', question_zh:'您的企业是否已完成FDI外汇登记及资本金汇入安排？', question_ko:'귀사는 FDI 외환 등록 및 자본금 송금 준비를 완료하셨습니까?', options:[{value:0,label_zh:'已完成外汇登记',label_ko:'외환 등록 완료'},{value:1,label_zh:'正在办理中',label_ko:'진행 중'},{value:2,label_zh:'不了解流程',label_ko:'절차 미파악'}] },
+{ id:'q7', dimension:'用工', question_zh:'您的企业是否有中国境内的员工或计划派遣韩籍员工？', question_ko:'귀사는 중국 내 직원이 있거나 한국인 직원 파견을 계획하고 계십니까?', options:[{value:0,label_zh:'已有合规团队',label_ko:'合规 팀 보유'},{value:1,label_zh:'计划招聘中',label_ko:'채용 계획'},{value:2,label_zh:'不了解当地用工法规',label_ko:'규정 미파악'}] },
+{ id:'q8', dimension:'签证', question_zh:'您的企业是否了解韩籍员工在华工作签证及居留许可要求？', question_ko:'귀사는 한국인 직원의 중국 취업 비자 및 거류 허가 요건을 이해하고 계십니까?', options:[{value:0,label_zh:'已办妥签证',label_ko:'비자 완료'},{value:1,label_zh:'正在准备材料',label_ko:'서류 준비 중'},{value:2,label_zh:'完全不清楚',label_ko:'전혀 모름'}] }
+];
+}
+renderQuestions();
+}
+
+function renderQuestions() {
+const container = document.getElementById('questionsContainer');
+container.innerHTML = '';
+QUESTIONS.forEach((q, idx) => {
+const step = document.createElement('div');
+step.className = 'cc-step' + (idx === 0 ? ' active' : '');
+step.id = 'step-' + idx;
+let optionsHtml = q.options.map((opt, oi) => {
+const selected = answers[q.id] === oi ? ' selected' : '';
+return `<button class="cc-option${selected}" onclick="selectOption(${idx}, ${oi})">
+<span class="opt-dimension">${currentLang === 'ko-KR' ? (q.dimension_ko || q.dimension) : q.dimension}</span>
+<br>${currentLang === 'ko-KR' ? opt.label_ko : opt.label_zh}
+</button>`;
+}).join('');
+step.innerHTML = `<div class="cc-step-label" data-lang-key="cc_start">${t('cc_start')}</div>
+<div class="cc-step-number">${t('cc_progress')}: ${idx+1}/${QUESTIONS.length}</div>
+<div class="cc-question">${currentLang === 'ko-KR' ? (q.question_ko || q.question_zh) : q.question_zh}</div>
+${optionsHtml}`;
+container.appendChild(step);
+});
+updateProgress();
+updateNavButtons();
+applyLang();
+}
+
+function selectOption(stepIdx, optIdx) {
+const q = QUESTIONS[stepIdx];
+answers[q.id] = optIdx;
+// 视觉反馈
+const step = document.getElementById('step-' + stepIdx);
+step.querySelectorAll('.cc-option').forEach((btn, i) => btn.classList.toggle('selected', i === optIdx));
+// 自动进入下一步
+setTimeout(() => { if (stepIdx < QUESTIONS.length - 1) goToStep(stepIdx + 1); else submitCheck(); }, 300);
+}
+
+function goToStep(idx) {
+currentStep = idx;
+document.querySelectorAll('.cc-step').forEach((s, i) => s.classList.toggle('active', i === idx));
+updateProgress();
+updateNavButtons();
+}
+
+function prevStep() { if (currentStep > 0) goToStep(currentStep - 1); }
+function nextStep() { if (currentStep < QUESTIONS.length - 1) goToStep(currentStep + 1); }
+
+function updateProgress() {
+const answered = Object.keys(answers).length;
+const fill = document.getElementById('progressFill');
+fill.style.width = (answered / QUESTIONS.length * 100) + '%';
+document.getElementById('progressCount').textContent = answered + '/' + QUESTIONS.length;
+}
+
+function updateNavButtons() {
+document.getElementById('prevBtn').style.display = currentStep > 0 ? 'inline-block' : 'none';
+document.getElementById('nextBtn').style.display = (currentStep < QUESTIONS.length - 1 && answers[QUESTIONS[currentStep].id] !== undefined) ? 'inline-block' : 'none';
+document.getElementById('submitBtn').style.display = (currentStep === QUESTIONS.length - 1 && answers[QUESTIONS[currentStep].id] !== undefined) ? 'inline-block' : 'none';
+}
+
+// ─── 提交评估 ───
+async function submitCheck() {
+const allAnswered = QUESTIONS.every(q => answers[q.id] !== undefined);
+if (!allAnswered) {
+showToast('请回答所有题目', 'error');
+return;
+}
+document.getElementById('loadingSpinner').classList.add('active');
+document.getElementById('quizCard').style.display = 'none';
+document.getElementById('resultCard').style.display = 'none';
+
+const payload = { answers: QUESTIONS.map((q, i) => ({ question_id: q.id, option_index: answers[q.id], dimension: q.dimension })) };
+try {
+const res = await fetch('/api/v1/compliance/check', {
+method: 'POST', headers: {'Content-Type':'application/json'},
+body: JSON.stringify(payload)
+});
+if (res.ok) {
+quizData = await res.json();
+document.getElementById('loadingSpinner').classList.remove('active');
+renderResult(quizData);
+} else {
+throw new Error('submit failed');
+}
+} catch(e) {
+// 离线演示模式
+quizData = calculateLocalScore();
+document.getElementById('loadingSpinner').classList.remove('active');
+renderResult(quizData);
+}
+}
+
+function calculateLocalScore() {
+const dims = ['行业准入','数据安全','知识产权','财税','用工','签证'];
+const dimScores = {};
+dims.forEach(d => dimScores[d] = { total:0, max:0, count:0 });
+QUESTIONS.forEach(q => {
+const ans = answers[q.id];
+if (ans !== undefined) {
+if (!dimScores[q.dimension]) dimScores[q.dimension] = { total:0, max:0, count:0 };
+dimScores[q.dimension].total += q.options[ans].value;
+dimScores[q.dimension].max += q.options[q.options.length-1].value;
+dimScores[q.dimension].count++;
+}
+});
+const dimResults = dims.filter(d => dimScores[d] && dimScores[d].count > 0).map(d => {
+const score = dimScores[d].max > 0 ? Math.round((1 - dimScores[d].total / dimScores[d].max) * 100) : 100;
+return { dimension: d, score, status: score >= 80 ? 'low' : score >= 50 ? 'medium' : 'high' };
+});
+const totalScore = dimResults.length > 0 ? Math.round(dimResults.reduce((s, d) => s + d.score, 0) / dimResults.length) : 0;
+return { score: totalScore, dimensions: dimResults, token: 'local-' + Date.now() };
+}
+
+function renderResult(data) {
+const score = data.score || 0;
+document.getElementById('resultCard').style.display = 'block';
+
+const circle = document.getElementById('scoreCircle');
+circle.className = 'cc-score-circle ' + (score >= 80 ? 'green' : score >= 50 ? 'yellow' : 'red');
+document.getElementById('scoreNum').textContent = score + '%';
+
+const dims = data.dimensions || [];
+const container = document.getElementById('dimensionsContainer');
+container.innerHTML = '';
+dims.forEach(d => {
+const scoreVal = d.score || 0;
+const statusCls = scoreVal >= 80 ? 'green' : scoreVal >= 50 ? 'yellow' : 'red';
+const riskKey = scoreVal >= 80 ? 'risk_low' : scoreVal >= 50 ? 'risk_med' : 'risk_high';
+container.innerHTML += `<div class="cc-dim-item"><div class="cc-dim-header">
+<span class="cc-dim-name">${currentLang === 'ko-KR' ? (t('dim_' + d.dimension) || d.dimension) : t('dim_' + d.dimension) || d.dimension}</span>
+<span class="cc-dim-score">${t(riskKey)} (${scoreVal}%)</span></div>
+<div class="cc-dim-bar"><div class="cc-dim-fill ${statusCls}" style="width:${scoreVal}%"></div></div></div>`;
+});
+
+// 推荐方案
+const list = document.getElementById('recommendList');
+const plans = score >= 80
+? [{name:t('rec_free'), price:'¥0', tag:t('rec_free_desc'), active:true},{name:t('rec_depth'), price:'¥9,800', tag:t('rec_depth_desc'), active:false}]
+: score >= 50
+? [{name:t('rec_free'), price:'¥0', tag:t('rec_free_desc'), active:false},{name:t('rec_depth'), price:'¥9,800', tag:t('rec_depth_desc'), active:true},{name:t('rec_year'), price:'¥58,000/年', tag:t('rec_year_desc'), active:false}]
+: [{name:t('rec_free'), price:'¥0', tag:t('rec_free_desc'), active:false},{name:t('rec_depth'), price:'¥9,800', tag:t('rec_depth_desc'), active:false},{name:t('rec_year'), price:'¥58,000/年', tag:t('rec_year_desc'), active:true}];
+list.innerHTML = plans.map(p => `<div class="cc-rec-item${p.active ? ' active' : ''}"><span class="cc-rec-name">${p.name}</span><span class="cc-rec-tag">${p.tag}</span><span class="cc-rec-price">${p.price}</span></div>`).join('');
+applyLang();
+}
+
+function showContactForm() {
+document.getElementById('contactForm').classList.add('active');
+}
+
+async function getPdfReport() {
+const name = document.getElementById('contactName').value.trim();
+const email = document.getElementById('contactEmail').value.trim();
+if (!name || !email) { showToast('请填写姓名和邮箱', 'error'); return; }
+if (quizData && quizData.token) {
+try {
+const res = await fetch(`/api/v1/compliance/report/${quizData.token}/pdf`, { method:'POST',
+headers:{'Content-Type':'application/json'},
+body: JSON.stringify({ name, email, company: document.getElementById('contactCompany').value, phone: document.getElementById('contactPhone').value })
+});
+if (res.ok) {
+showToast('报告已发送到您的邮箱', 'success');
+document.getElementById('contactForm').classList.remove('active');
+return;
+}
+} catch(e) {}
+}
+showToast('报告功能当前为演示模式，请联系我们获取完整报告', 'info');
+}
+
+// ─── 初始化 ───
+document.addEventListener('DOMContentLoaded', loadQuestions);
+window.selectOption = selectOption;
+window.prevStep = prevStep;
+window.nextStep = nextStep;
+window.submitCheck = submitCheck;
+window.showContactForm = showContactForm;
+window.getPdfReport = getPdfReport;
+window.switchLang = switchLang;
+</script>
+</body>
+</html>

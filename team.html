@@ -293,11 +293,32 @@
             color: #fff;
             text-decoration: none;
         }
+.btn-invite:hover {
+    background: linear-gradient(135deg, #7C3AED, #0891B2);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(139, 92, 246, 0.3);
+}
 
-        .btn-invite:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(139, 92, 246, 0.4);
-        }
+.btn-ai-consult {
+    width: 100%;
+    padding: 14px 24px;
+    border: none;
+    border-radius: 12px;
+    color: #fff;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--transition-normal);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.btn-ai-consult:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(139, 92, 246, 0.4);
+}
 
         .btn-invite i {
             font-size: 18px;
@@ -637,6 +658,7 @@
                     team_capabilities: '核心能力',
                     team_monthly: '月薪',
                     team_compare: '对标真人成本',
+                    team_ai_consult: 'AI咨询',
                 },
                 'ko-KR': {
                     home: '홈',
@@ -655,6 +677,7 @@
                     team_capabilities: '핵심 역량',
                     team_monthly: '월급',
                     team_compare: '인건비 대비',
+                    team_ai_consult: 'AI 상담',
                 }
             };
 
@@ -838,6 +861,26 @@
                 // 按钮区
                 const footer = document.createElement('div');
                 footer.className = 'employee-card__footer';
+                // 如果是徐准，添加AI咨询按钮
+                if (employee.id === 1) {
+                    const aiBtn = document.createElement('button');
+                    aiBtn.className = 'btn-invite btn-ai-consult';
+                    aiBtn.setAttribute('data-employee-id', employee.id);
+                    aiBtn.setAttribute('data-employee-name', employee.name_zh);
+                    aiBtn.style.background = 'linear-gradient(135deg,#8B5CF6,#06B6D4)';
+                    aiBtn.style.marginBottom = '8px';
+                    aiBtn.addEventListener('click', function() {
+                        window.location.href = 'compliance-demo.html';
+                    });
+                    const aiIcon = document.createElement('i');
+                    aiIcon.className = 'bi bi-magic';
+                    aiBtn.appendChild(aiIcon);
+                    const aiLabel = document.createElement('span');
+                    aiLabel.setAttribute('data-lang-key', 'team_ai_consult');
+                    aiLabel.textContent = 'AI咨询';
+                    aiBtn.appendChild(aiLabel);
+                    footer.appendChild(aiBtn);
+                }
                 const btn = document.createElement('button');
                 btn.className = 'btn-invite';
                 btn.setAttribute('data-employee-id', employee.id);

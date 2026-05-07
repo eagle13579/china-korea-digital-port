@@ -22,6 +22,23 @@ async def submit_contact(form: ContactForm):
         )
         conn.commit()
         conn.close()
+
+        # 发送新线索通知
+        try:
+            from backend.services.email_service import send_new_lead_notification
+            send_new_lead_notification({
+                "_label": "联系咨询",
+                "name": form.name,
+                "company": form.company,
+                "email": form.email,
+                "phone": form.phone,
+                "message": form.message,
+            })
+        except ImportError:
+            pass
+        except Exception:
+            pass
+
         return APIResponse(
             success=True,
             message="感谢您的咨询！我们将在24小时内与您联系。"

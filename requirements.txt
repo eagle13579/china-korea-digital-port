@@ -1,4 +1,28 @@
+# 中韩出海数智港 — Python 依赖
+# 安装: pip install -r requirements.txt
+
+# --- Web 框架 ---
 fastapi==0.115.6
 uvicorn[standard]==0.34.0
+
+# --- 数据验证 ---
 pydantic==2.10.4
-pydantic[email]
+
+# --- 数据库 ---
+aiosqlite==0.20.0
+
+# --- 环境变量加载 ---
+python-dotenv==1.0.1
+
+# --- 支付宝SDK ---
+alipay-sdk-python>=3.0.0
+
+# --- 二维码生成 (备用, 支付宝SDK自带生成) ---
+qrcode[pil]>=7.4.2
+Pillow>=10.0.0
+
+# --- Stripe SDK (备用) ---
+stripe>=8.0.0
+
+# --- CORS 中间件（FastAPI 内置）---
+# 由 fastapi 自动包含

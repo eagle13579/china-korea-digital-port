@@ -118,6 +118,11 @@ def init_db():
         cursor.execute("UPDATE orders SET order_no = 'ORD' || printf('%06d', id) WHERE order_no IS NULL")
     if 'license_key' not in cols:
         cursor.execute("ALTER TABLE orders ADD COLUMN license_key TEXT")
+    if 'paid_at' not in cols:
+        cursor.execute("ALTER TABLE orders ADD COLUMN paid_at TIMESTAMP")
+    if 'customer_name' not in cols:
+        # user_name already covers this; adding alias column for compatibility
+        pass
 
     # 支付表 — 三种付款方式 + 凭证上传
     cursor.execute("""
@@ -132,6 +137,75 @@ def init_db():
             FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE
         )
     """)
+
+    # 合规自检表
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS compliance_checks (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            token TEXT UNIQUE NOT NULL,
+            answers TEXT NOT NULL,
+            company_name TEXT,
+            contact_name TEXT,
+            email TEXT NOT NULL,
+            phone TEXT,
+            language TEXT DEFAULT 'zh-CN',
+            score INTEGER,
+            score_detail TEXT,
+            report_generated INTEGER DEFAULT 0,
+            report_downloaded INTEGER DEFAULT 0,
+            status TEXT DEFAULT 'completed',
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    """)
+
+    # 合规线索表（销售线索，跟 admin 的 leads 同步）
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS compliance_leads (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            check_id INTEGER NOT NULL,
+            token TEXT NOT NULL,
+            email TEXT NOT NULL,
+            company_name TEXT,
+            contact_name TEXT,
+            phone TEXT,
+            language TEXT DEFAULT 'zh-CN',
+            score INTEGER NOT NULL,
+            score_detail TEXT,
+            priority TEXT DEFAULT 'normal',
+            status TEXT DEFAULT 'new',
+            source TEXT DEFAULT '合规自检',
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (check_id) REFERENCES compliance_checks(id)
+        )
+    """)
+
+    # 报价表（销售漏斗用）
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS quotes (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            quote_no TEXT UNIQUE,
+            lead_table TEXT NOT NULL,
+            lead_id INTEGER NOT NULL,
+            lead_name TEXT,
+            lead_company TEXT,
+            lead_email TEXT,
+            plan_name TEXT NOT NULL,
+            plan_price REAL NOT NULL DEFAULT 0,
+            status TEXT DEFAULT 'draft' CHECK(status IN ('draft','sent','accepted','rejected')),
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            sent_at TIMESTAMP,
+            updated_at TIMESTAMP
+        )
+    """)
+
+    # 为线索表添加 stage 字段（销售漏斗阶段）
+    for tbl in ["contacts", "demo_requests", "pricing_inquiries"]:
+        cursor.execute(f"PRAGMA table_info({tbl})")
+        cols = [r[1] for r in cursor.fetchall()]
+        if "stage" not in cols:
+            cursor.execute(f"ALTER TABLE {tbl} ADD COLUMN stage TEXT DEFAULT 'new_lead'")
+        if "stage_changed_at" not in cols:
+            cursor.execute(f"ALTER TABLE {tbl} ADD COLUMN stage_changed_at TIMESTAMP")
 
     conn.commit()
     conn.close()
