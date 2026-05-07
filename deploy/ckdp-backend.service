@@ -36,8 +36,9 @@ StandardError=append:/var/log/ckdp/backend-error.log
 # 安全设置
 NoNewPrivileges=true
 PrivateTmp=true
-ProtectSystem=full
+ProtectSystem=off
 ProtectHome=false
+ReadWritePaths=/var/www/china-korea-digital-port /var/log/ckdp
 
 [Install]
 WantedBy=multi-user.target
