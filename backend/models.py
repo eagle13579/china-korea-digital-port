@@ -82,4 +82,4 @@ class PaymentCreate(BaseModel):
 class StatusUpdate(BaseModel):
     """订单状态更新请求"""
     status: str = Field(..., pattern=r'^(paid|cancelled)$', description="目标状态: paid/cancelled")
-logout
+
