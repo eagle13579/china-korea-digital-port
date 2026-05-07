@@ -529,6 +529,7 @@
                 <div class="header__lang">
                     <button class="lang-btn" data-lang="zh-CN">中文</button>
                     <button class="lang-btn" data-lang="ko-KR">한국어</button>
+                    <button class="lang-btn" data-lang="en">English</button>
                 </div>
                 <div class="header__theme">
                     <button class="theme-btn" id="themeToggle" aria-label="切换主题">
@@ -585,6 +586,7 @@
         <div class="container">
             <p data-lang-key="team_disclaimer_zh">※ 本页面展示的数字员工均为AI数字员工，经验数据基于AI训练模型模拟，为能力展示参考，非真实服务记录。月薪对标数据基于行业薪资估算，仅供参考。AI数字员工不替代持证律师/会计师/合规师等专业人士的服务。</p>
             <p data-lang-key="team_disclaimer_ko" style="display:none;">※ 본 페이지에 표시된 디지털 직원은 AI 디지털 직원입니다. 경험 데이터는 AI 훈련 모델 시뮬레이션을 기반으로 한 능력 표시 참고 자료이며 실제 서비스 기록이 아닙니다. 월급 비교 데이터는 업계 급여 추정치를 기준으로 한 참고용입니다. AI 디지털 직원은 공인 변호사/회계사/규정 준수 전문가 등의 전문 서비스를 대체하지 않습니다.</p>
+            <p data-lang-key="team_disclaimer_en" style="display:none;">※ The digital employees shown on this page are AI digital employees. Experience data is simulated based on AI training models and is for capability demonstration reference only, not actual service records. Salary comparison data is based on industry salary estimates and is for reference only. AI digital employees do not replace licensed lawyers/accountants/compliance professionals.</p>
         </div>
     </div>
 
@@ -678,6 +680,23 @@
                     team_monthly: '월급',
                     team_compare: '인건비 대비',
                     team_ai_consult: 'AI 상담',
+                },
+                'en': {
+                    team_title: 'AI Digital Employee Team - China-Korea Digital Port',
+                    team_hero_title: 'AI Digital Employee Team',
+                    team_hero_subtitle: 'Our AI digital compliance officers cover the full spectrum of China-Korea cross-border compliance, available 24/7, providing professional, efficient, and cost-effective compliance services.',
+                    team_badge: '6 AI Digital Employees · Ready Now',
+                    team_loading: 'Loading digital employee data...',
+                    team_error_title: 'Data Load Failed',
+                    team_error_desc: 'Please check your network connection and refresh the page.',
+                    team_empty_title: 'No Digital Employees Yet',
+                    team_empty_desc: 'The digital employee team is being assembled. Stay tuned!',
+                    team_back: 'Back to Home',
+                    team_invite: 'Invite to Serve',
+                    team_capabilities: 'Core Capabilities',
+                    team_monthly: '/month',
+                    team_compare: 'vs Human Cost',
+                    team_ai_consult: 'AI Consult',
                 }
             };
 
@@ -915,9 +934,11 @@
             // 免责声明语言切换
             const disclaimerZh = document.querySelector('[data-lang-key="team_disclaimer_zh"]');
             const disclaimerKo = document.querySelector('[data-lang-key="team_disclaimer_ko"]');
-            if (disclaimerZh && disclaimerKo) {
-                disclaimerZh.style.display = lang === 'ko-KR' ? 'none' : 'block';
+            const disclaimerEn = document.querySelector('[data-lang-key="team_disclaimer_en"]');
+            if (disclaimerZh && disclaimerKo && disclaimerEn) {
+                disclaimerZh.style.display = (lang === 'ko-KR' || lang === 'en') ? 'none' : 'block';
                 disclaimerKo.style.display = lang === 'ko-KR' ? 'block' : 'none';
+                disclaimerEn.style.display = lang === 'en' ? 'block' : 'none';
             }
         }
 

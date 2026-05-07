@@ -107,6 +107,7 @@
                 <div class="header__lang">
                     <button class="lang-btn" data-lang="zh-CN">中文</button>
                     <button class="lang-btn" data-lang="ko-KR">한국어</button>
+                    <button class="lang-btn" data-lang="en">English</button>
                 </div>
                 <div class="header__theme">
                     <button class="theme-btn" id="themeToggle" aria-label="切换主题">
@@ -282,6 +283,28 @@
                     checkout_back_home: '홈으로',
                     checkout_free_success: '무료 플랜 활성화 완료',
                     checkout_free_desc: '무료 플랜이 자동으로 활성화되었습니다. 지금 바로 사용하세요.',
+                },
+                'en': {
+                    checkout_loading: 'Loading...',
+                    checkout_error_title: 'Load Failed',
+                    checkout_error_msg: 'Invalid plan parameter',
+                    checkout_back_pricing: 'Back to Pricing',
+                    checkout_title: 'Confirm Order',
+                    checkout_subtitle: 'Fill in your details to complete payment',
+                    checkout_pay_btn: 'Confirm Payment',
+                    checkout_qr_hint: 'Open Alipay and scan to pay',
+                    checkout_qr_waiting: 'Generating QR code...',
+                    checkout_countdown: 'Payment remaining',
+                    checkout_simulate_btn: 'Simulate Payment (Dev Mode)',
+                    checkout_simulate_note: 'For testing only — hidden in production',
+                    checkout_waiting_title: 'Waiting for payment...',
+                    checkout_waiting_desc: 'Please scan the QR code with Alipay to complete payment',
+                    checkout_paid_title: 'Payment Successful!',
+                    checkout_paid_desc: 'Thank you for your purchase. Your plan has been activated.',
+                    checkout_license_label: 'License Key:',
+                    checkout_back_home: 'Back to Home',
+                    checkout_free_success: 'Free Plan Activated',
+                    checkout_free_desc: 'Your free plan has been automatically activated. You can start using it now.',
                 }
             };
             for (var lang in extra) {
@@ -297,9 +320,9 @@
 
     // 方案数据
     var PLAN_DATA = {
-        'free':  { name: '免费初评', name_ko: '무료 초기 평가', price: 0, desc: '适合初步了解中国市场的韩企' },
-        'depth': { name: '深度方案', name_ko: '심층 컨설팅 패키지', price: 9800, desc: '适合已决定进入中国市场的韩企' },
-        'annual': { name: '年订阅', name_ko: '연간 구독', price: 58000, desc: '适合持续运营中国业务的韩企' },
+        'free':  { name: '免费初评', name_ko: '무료 초기 평가', name_en: 'Free Assessment', price: 0, desc: '适合初步了解中国市场的韩企' },
+        'depth': { name: '深度方案', name_ko: '심층 컨설팅 패키지', name_en: 'Depth Plan', price: 9800, desc: '适合已决定进入中国市场的韩企' },
+        'annual': { name: '年订阅', name_ko: '연간 구독', name_en: 'Annual Subscription', price: 58000, desc: '适合持续运营中国业务的韩企' },
     };
 
     var urlParams = new URLSearchParams(window.location.search);
@@ -324,14 +347,14 @@
         }
 
         var lang = localStorage.getItem('lang') || 'zh-CN';
-        var planName = lang === 'ko-KR' ? plan.name_ko : plan.name;
-        var priceDisplay = plan.price === 0 ? '免费' : '¥' + plan.price.toLocaleString();
+        var planName = lang === 'ko-KR' ? plan.name_ko : lang === 'en' ? plan.name_en : plan.name;
+        var priceDisplay = plan.price === 0 ? 'Free' : '¥' + plan.price.toLocaleString();
 
         document.getElementById('planName').textContent = planName;
         document.getElementById('planType').textContent = plan.type || planType;
         document.getElementById('planPrice').textContent = plan.price === 0 ? '0' : plan.price.toLocaleString();
         document.getElementById('formPlanType').value = planType;
-        document.getElementById('submitBtn').textContent = (lang === 'ko-KR' ? '확인 및 결제 ' : '确认支付 ') + priceDisplay;
+        document.getElementById('submitBtn').textContent = (lang === 'ko-KR' ? '확인 및 결제 ' : lang === 'en' ? 'Confirm Payment ' : '确认支付 ') + priceDisplay;
 
         isFreePlan = (plan.price === 0);
 
@@ -385,7 +408,7 @@
 
                 var btn = document.getElementById('submitBtn');
                 btn.disabled = true;
-                btn.innerHTML = '<span class="spinner"></span>' + (lang === 'ko-KR' ? '처리 중...' : '处理中...');
+                btn.innerHTML = '<span class=\"spinner\"></span>' + (lang === 'ko-KR' ? '처리 중...' : lang === 'en' ? 'Processing...' : '处理中...');
 
                 try {
                     var response = await fetch('/api/v1/payment/create', {
@@ -635,3 +658,7 @@
     </script>
 </body>
 </html>
+logout
+logout
+logout
+logout

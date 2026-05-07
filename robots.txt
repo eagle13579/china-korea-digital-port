@@ -3,6 +3,15 @@ Allow: /
 Allow: /index.html
 Allow: /team.html
 Allow: /pricing.html
+Allow: /pricing-v2.html
+Allow: /compliance-check.html
+Allow: /compliance-demo.html
+Allow: /demo.html
+Allow: /checkout.html
+Allow: /payment-success.html
+Allow: /order.html
+Allow: /terms.html
+Allow: /privacy.html
 Disallow: /admin/
 Disallow: /api/
 Disallow: /private/

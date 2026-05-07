@@ -20,6 +20,7 @@
     <!-- Hreflang -->
     <link rel="alternate" hreflang="zh-CN" href="https://go-aiport.com/pricing-v2.html">
     <link rel="alternate" hreflang="ko-KR" href="https://go-aiport.com/pricing-v2.html?lang=ko-KR">
+    <link rel="alternate" hreflang="en" href="https://go-aiport.com/pricing-v2.html?lang=en">
     <link rel="alternate" hreflang="x-default" href="https://go-aiport.com/pricing-v2.html">
     <link rel="icon" href="favicon.ico">
     <link rel="stylesheet" href="css/style.css">
@@ -98,6 +99,7 @@
                 <div class="header__lang">
                     <button class="lang-btn" data-lang="zh-CN">中文</button>
                     <button class="lang-btn" data-lang="ko-KR">한국어</button>
+                    <button class="lang-btn" data-lang="en">English</button>
                 </div>
                 <div class="header__theme">
                     <button class="theme-btn" id="themeToggle" aria-label="切换主题">
@@ -316,6 +318,44 @@
                         order_modal_sub: '정보를 입력하여 주문을 완료하세요',
                         order_submit_btn: '주문 확인',
                         order_cancel_btn: '취소',
+                    },
+                    'en': {
+                        pricing_title: 'Choose Your Plan',
+                        pricing_subtitle: 'AI digital employee-driven cross-border compliance services — pick what suits you',
+                        pricing_free_desc: 'Best for Korean enterprises exploring the Chinese market',
+                        pricing_free_f1: '30-minute online consultation',
+                        pricing_free_f2: 'China market overview report',
+                        pricing_free_f3: 'Basic compliance checklist',
+                        pricing_buy_free: 'Get Free',
+                        pricing_recommended: 'Recommended',
+                        pricing_one_time: 'One-time',
+                        pricing_depth_desc: 'Best for Korean enterprises committed to entering China',
+                        pricing_depth_f1: 'Full market entry strategy',
+                        pricing_depth_f2: 'Bilingual Chinese-Korean brand content',
+                        pricing_depth_f3: 'SEO optimization plan',
+                        pricing_depth_f4: 'In-depth competitor analysis',
+                        pricing_depth_f5: 'Complete compliance diagnosis (6 digital employees)',
+                        pricing_buy_depth: 'Buy Now',
+                        pricing_per_year: '/year',
+                        pricing_annual_desc: 'Best for Korean enterprises with ongoing China operations',
+                        pricing_annual_f1: 'All depth plan features included',
+                        pricing_annual_f2: 'Unlimited AI digital employee analysis',
+                        pricing_annual_f3: 'Real-time market intelligence monitoring',
+                        pricing_annual_f4: 'Priority technical support',
+                        pricing_annual_f5: 'Quarterly strategic review',
+                        pricing_buy_annual: 'Subscribe Now',
+                        pricing_faq_title: 'Frequently Asked Questions',
+                        faq_q1: 'Q: What is the difference between the Depth Plan and Annual Subscription?',
+                        faq_a1: 'The Depth Plan is a one-time complete solution, ideal for Korean enterprises aiming to enter the market quickly. The Annual Subscription includes year-round continuous service, including unlimited AI analysis, real-time intelligence monitoring, and quarterly reviews — best for long-term China operations.',
+                        faq_q2: 'Q: What can the digital employees actually do?',
+                        faq_a2: '6 AI digital compliance officers cover: Industry Access (Xu Zhun), Data Security (Liu Zhen), Intellectual Property (Zhi Hao), Cross-Border Tax (Jae Hyun), Labor & Employment (Hyun Woo), and Visa & Immigration (Mi Young), providing one-stop compliance diagnostics and solutions.',
+                        faq_q3: 'Q: What payment methods are accepted?',
+                        faq_a3: 'We accept Alipay, WeChat Pay, and bank transfers. VAT special invoices are available. Cross-border payments support USD and KRW settlement.',
+                        pricing_back: '← Back to Home',
+                        order_modal_title: 'Create Order',
+                        order_modal_sub: 'Fill in the details to complete your order',
+                        order_submit_btn: 'Confirm Order',
+                        order_cancel_btn: 'Cancel',
                     }
                 };
                 for (var lang in extra) {
@@ -327,9 +367,9 @@
 
         // 定价方案数据
         var planData = {
-            'free': { name: '免费初评', name_ko: '무료 초기 평가', price: 0, price_display: '¥0', type: 'free' },
-            'depth': { name: '深度方案', name_ko: '심층 컨설팅 패키지', price: 9800, price_display: '¥9,800', type: 'depth' },
-            'annual': { name: '年订阅', name_ko: '연간 구독', price: 58000, price_display: '¥58,000', type: 'annual' },
+            'free': { name: '免费初评', name_ko: '무료 초기 평가', name_en: 'Free Assessment', price: 0, price_display: '¥0', type: 'free' },
+            'depth': { name: '深度方案', name_ko: '심층 컨설팅 패키지', name_en: 'Depth Plan', price: 9800, price_display: '¥9,800', type: 'depth' },
+            'annual': { name: '年订阅', name_ko: '연간 구독', name_en: 'Annual Subscription', price: 58000, price_display: '¥58,000', type: 'annual' },
         };
 
         // 打开下单弹窗
@@ -338,7 +378,7 @@
             if (!plan) return;
 
             var lang = localStorage.getItem('lang') || 'zh-CN';
-            var planName = lang === 'ko-KR' ? plan.name_ko : plan.name;
+            var planName = lang === 'ko-KR' ? plan.name_ko : lang === 'en' ? plan.name_en : plan.name;
 
             document.getElementById('modalPlanLabel').textContent = planName;
             document.getElementById('modalPlanType').textContent = plan.type;
@@ -426,4 +466,7 @@
     </script>
 </body>
 </html>
+logout
+logout
+logout
 logout

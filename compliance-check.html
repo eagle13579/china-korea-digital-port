@@ -92,6 +92,7 @@
 <div class="lang-switch">
 <button class="lang-btn active" onclick="switchLang('zh-CN')" data-lang-key="cc_lang_zh">中文</button>
 <button class="lang-btn" onclick="switchLang('ko-KR')" data-lang-key="cc_lang_ko">한국어</button>
+<button class="lang-btn" onclick="switchLang('en')" data-lang-key="cc_lang_en">English</button>
 </div>
 
 <!-- 导航栏 -->
@@ -219,6 +220,25 @@ risk_low: '저위험', risk_med: '중위험', risk_high: '고위험',
 rec_title: '추천方案', rec_free: '무료 초기 평가', rec_depth: '심층方案', rec_year: '연간 구독',
 rec_free_desc: '컴플라이언스 상태가 양호한 기업에 적합', rec_depth_desc: '맞춤형 규정 준수方案이 필요한 기업에 적합', rec_year_desc: '지속적인 규정 준수 지원이 필요한 기업에 적합',
 cc_score_desc: '점수가 낮을수록 규정 준수가 완벽함', cc_no_data: '데이터 없음'
+},
+'en': {
+cc_title: 'Compliance Health Check', cc_desc: 'Quickly assess your company\'s compliance readiness for entering the Chinese market with 8 questions and get a personalized report',
+cc_progress: 'Progress', cc_prev: 'Previous', cc_next: 'Next', cc_submit: 'Submit',
+cc_analyzing: 'Analyzing your compliance status...',
+cc_result_title: 'Compliance Health Report', cc_health: 'Health Score',
+cc_recommend_title: 'Recommended Plans', cc_get_report: 'Get Full Compliance Report (PDF)',
+cc_name_ph: 'Your Name', cc_company_ph: 'Company Name', cc_email_ph: 'Email Address', cc_phone_ph: 'Phone Number',
+cc_send_report: 'Send Report to Email', cc_try_ai: 'Try Xu Zhun AI Compliance Consult',
+cc_lang_zh: '中文', cc_lang_ko: '한국어', cc_lang_en: 'English',
+nav_logo: 'China-Korea Digital Port', nav_services: 'Services', nav_team: 'Team',
+nav_pricing: 'Pricing', nav_compliance_check: 'Compliance Check', nav_ai_consult: 'AI Consult', nav_demo: 'Book Demo',
+cc_start: 'Start Check', cc_restart: 'Restart',
+dim_行业准入: 'Industry Access', dim_数据安全: 'Data Security', dim_知识产权: 'Intellectual Property',
+dim_财税: 'Tax & Finance', dim_用工: 'Employment', dim_签证: 'Visa',
+risk_low: 'Low Risk', risk_med: 'Medium Risk', risk_high: 'High Risk',
+rec_title: 'Recommended Plans', rec_free: 'Free Assessment', rec_depth: 'Depth Plan', rec_year: 'Annual Subscription',
+rec_free_desc: 'Suitable for enterprises with good compliance status', rec_depth_desc: 'Suitable for enterprises needing targeted compliance solutions', rec_year_desc: 'Suitable for enterprises needing ongoing compliance support',
+cc_score_desc: 'Lower score means better compliance readiness', cc_no_data: 'No data'
 }
 };
 
@@ -228,7 +248,7 @@ function t(key) { const d = CC_LANG[currentLang]; return d && d[key] ? d[key] : 
 function switchLang(lang) {
 currentLang = lang;
 document.documentElement.lang = lang;
-document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('active', b.textContent.includes(lang === 'zh-CN' ? '中文' : '한국')));
+document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('active', b.textContent.includes(lang === 'zh-CN' ? '中文' : lang === 'ko-KR' ? '한국' : 'English')));
 applyLang();
 }
 
@@ -330,7 +350,7 @@ document.getElementById('submitBtn').style.display = (currentStep === QUESTIONS.
 async function submitCheck() {
 const allAnswered = QUESTIONS.every(q => answers[q.id] !== undefined);
 if (!allAnswered) {
-showToast('请回答所有题目', 'error');
+showToast(currentLang === 'zh-CN' ? '请回答所有题目' : currentLang === 'ko-KR' ? '모든 질문에 답해주세요' : 'Please answer all questions', 'error');
 return;
 }
 document.getElementById('loadingSpinner').classList.add('active');
@@ -447,3 +467,4 @@ window.switchLang = switchLang;
 </script>
 </body>
 </html>
+logout
