@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>额度充值 - 中韩出海数智港</title>
+    <meta name="description" content="选择适合您的额度套餐，AI数字员工分析，按需充值。">
+    <link rel="icon" href="favicon.ico">
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root { --accent: #6366f1; }
+        body.light-mode { --accent: #4f46e5; }
+        .payment-page { padding-top: 120px; padding-bottom: 80px; min-height: 100vh; }
+        
+        /* 暗色主题适配 */
+        .bg-card { background: var(--card-bg, #1e1e2e); border: 1px solid var(--border-color, #313244); }
+        .text-muted { color: var(--text-secondary, #a0a0b8); }
+        
+        /* 计划卡片 */
+        .plan-card { transition: all .3s ease; cursor: pointer; position: relative; overflow: hidden; }
+        .plan-card:hover { transform: translateY(-4px); box-shadow: 0 12px 30px rgba(99,102,241,0.15); }
+        .plan-card.selected { border-color: var(--accent) !important; box-shadow: 0 0 0 2px var(--accent); }
+        .plan-card .badge { position: absolute; top: 12px; right: 12px; background: var(--accent); color: #fff; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+        
+        /* 支付二维码容器 */
+        .qr-container { background: #fff; border-radius: 16px; padding: 24px; display: inline-block; }
+        .qr-container img { width: 200px; height: 200px; }
+        
+        /* 加载动画 */
+        .spinner { width: 40px; height: 40px; border: 4px solid var(--border-color); border-top-color: var(--accent); border-radius: 50%; animation: spin .8s linear infinite; margin: 0 auto; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        
+        /* 成功动画 */
+        .success-icon { width: 80px; height: 80px; background: #10b981; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; animation: scaleIn .5s ease; }
+        .success-icon i { font-size: 40px; color: #fff; }
+        @keyframes scaleIn { 0% { transform: scale(0); } 60% { transform: scale(1.2); } 100% { transform: scale(1); } }
+        
+        /* 步骤指示器 */
+        .step-indicator { display: flex; justify-content: center; gap: 40px; margin-bottom: 40px; }
+        .step { display: flex; align-items: center; gap: 8px; color: var(--text-secondary); font-size: 14px; }
+        .step.active { color: var(--accent); font-weight: 600; }
+        .step.completed { color: #10b981; }
+        .step-number { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; border: 2px solid var(--text-secondary); }
+        .step.active .step-number { border-color: var(--accent); background: var(--accent); color: #fff; }
+        .step.completed .step-number { border-color: #10b981; background: #10b981; color: #fff; }
+        
+        .quota-display { background: var(--bg-secondary, #181825); border-radius: 12px; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; }
+        
+        /* 登录提示 */
+        .login-prompt { text-align: center; padding: 60px 20px; }
+        .login-prompt i { font-size: 64px; color: var(--text-secondary); margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+    <div x-data="paymentApp()" x-init="init()" class="payment-page">
+        <!-- 导航 -->
+        <header class="header">
+            <div class="container">
+                <div class="header__content">
+                    <div class="header__logo">
+                        <h1 class="logo__text">中韩出海数智港</h1>
+                    </div>
+                    <nav class="header__nav">
+                        <ul class="nav__list">
+                            <li class="nav__item"><a href="index.html" class="nav__link">首页</a></li>
+                            <li class="nav__item"><a href="pricing-v2.html" class="nav__link">定价方案</a></li>
+                            <li class="nav__item"><a href="payment.html" class="nav__link">额度充值</a></li>
+                        </ul>
+                    </nav>
+                    <div class="header__theme">
+                        <button class="theme-btn" id="themeToggle" aria-label="切换主题">
+                            <i class="bi bi-moon"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="container" style="max-width:800px">
+            <!-- 未登录提示 -->
+            <template x-if="!token">
+                <div class="login-prompt">
+                    <i class="bi bi-person-circle"></i>
+                    <h3 class="text-xl font-semibold mb-2">请先登录</h3>
+                    <p class="text-muted mb-6">登录后即可选择套餐并完成支付</p>
+                    <a href="login.html?redirect=payment.html" class="inline-block px-8 py-3 rounded-xl font-semibold text-white" style="background:var(--accent)">立即登录</a>
+                </div>
+            </template>
+
+            <template x-if="token">
+                <div>
+                    <!-- 步骤指示器 -->
+                    <div class="step-indicator">
+                        <div class="step" :class="step >= 1 ? (step > 1 ? 'completed' : 'active') : ''">
+                            <span class="step-number" x-text="step > 1 ? '✓' : '1'"></span>
+                            <span>选择套餐</span>
+                        </div>
+                        <div class="step" :class="step >= 2 ? (step > 2 ? 'completed' : 'active') : ''">
+                            <span class="step-number" x-text="step > 2 ? '✓' : '2'"></span>
+                            <span>扫码支付</span>
+                        </div>
+                        <div class="step" :class="step >= 3 ? 'completed' : ''">
+                            <span class="step-number" x-text="step > 3 ? '✓' : '3'"></span>
+                            <span>支付成功</span>
+                        </div>
+                    </div>
+
+                    <!-- 当前额度显示 -->
+                    <div class="quota-display mb-8">
+                        <div>
+                            <div class="text-sm text-muted">当前额度</div>
+                            <div class="text-lg font-bold"><span x-text="quota.remaining || 0"></span> / <span x-text="quota.total_quota || 0"></span> 次</div>
+                        </div>
+                        <div class="text-sm text-muted">
+                            套餐: <span x-text="quota.plan_type || 'free'"></span>
+                            <span x-show="quota.expires_at" class="ml-2">· 到期: <span x-text="quota.expires_at ? quota.expires_at.substring(0,10) : ''"></span></span>
+                        </div>
+                    </div>
+
+                    <!-- Step 1: 选择套餐 -->
+                    <div x-show="step === 1">
+                        <h2 class="text-2xl font-bold text-center mb-2">选择充值套餐</h2>
+                        <p class="text-muted text-center mb-8">按需选择，支付后额度即时到账</p>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                            <!-- 基础版 -->
+                            <div class="plan-card bg-card rounded-2xl p-8 text-center"
+                                 :class="selectedPlan === 'basic' ? 'selected' : ''"
+                                 @click="selectedPlan = 'basic'"
+                                 style="border:2px solid transparent">
+                                <div class="text-2xl font-bold mb-1">基础版</div>
+                                <div class="text-sm text-muted mb-4">Basic</div>
+                                <div class="text-4xl font-bold mb-4" style="color:var(--accent)">
+                                    ¥99 <span class="text-base font-normal text-muted">/次</span>
+                                </div>
+                                <div class="text-muted mb-6">100次AI数字员工分析额度</div>
+                                <ul class="text-left space-y-3 mb-8">
+                                    <li><i class="bi bi-check-circle text-green-500 mr-2"></i> 100次分析调用</li>
+                                    <li><i class="bi bi-check-circle text-green-500 mr-2"></i> 所有数字员工可用</li>
+                                    <li><i class="bi bi-check-circle text-green-500 mr-2"></i> 365天有效期</li>
+                                </ul>
+                            </div>
+
+                            <!-- 专业版 -->
+                            <div class="plan-card bg-card rounded-2xl p-8 text-center relative"
+                                 :class="selectedPlan === 'pro' ? 'selected' : ''"
+                                 @click="selectedPlan = 'pro'"
+                                 style="border:2px solid transparent">
+                                <div class="badge">推荐</div>
+                                <div class="text-2xl font-bold mb-1">专业版</div>
+                                <div class="text-sm text-muted mb-4">Professional</div>
+                                <div class="text-4xl font-bold mb-4" style="color:var(--accent)">
+                                    ¥299 <span class="text-base font-normal text-muted">/次</span>
+                                </div>
+                                <div class="text-muted mb-6">500次AI数字员工分析额度</div>
+                                <ul class="text-left space-y-3 mb-8">
+                                    <li><i class="bi bi-check-circle text-green-500 mr-2"></i> 500次分析调用</li>
+                                    <li><i class="bi bi-check-circle text-green-500 mr-2"></i> 所有数字员工可用</li>
+                                    <li><i class="bi bi-check-circle text-green-500 mr-2"></i> 365天有效期</li>
+                                    <li><i class="bi bi-check-circle text-green-500 mr-2"></i> 优先技术支持</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="text-center">
+                            <button @click="createOrder()" :disabled="loading"
+                                    class="px-12 py-4 rounded-xl text-lg font-semibold text-white transition disabled:opacity-50"
+                                    style="background:var(--accent)">
+                                <span x-show="!loading">立即充值</span>
+                                <span x-show="loading">处理中...</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Step 2: 扫码支付 -->
+                    <div x-show="step === 2" class="text-center">
+                        <h2 class="text-2xl font-bold mb-2">扫码支付</h2>
+                        <p class="text-muted mb-6">请使用支付宝扫描下方二维码完成支付</p>
+
+                        <div class="flex justify-center mb-6">
+                            <div class="qr-container">
+                                <template x-if="order.qr_code_url">
+                                    <img :src="order.qr_code_url" alt="支付宝支付二维码">
+                                </template>
+                                <template x-if="!order.qr_code_url && !order.is_free">
+                                    <div class="text-center p-4">
+                                        <i class="bi bi-qr-code-scan text-6xl" style="color:var(--accent)"></i>
+                                        <p class="text-sm text-gray-600 mt-2">模拟支付模式</p>
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
+
+                        <div class="bg-card rounded-xl p-6 mb-6 text-left max-w-md mx-auto">
+                            <div class="flex justify-between mb-2">
+                                <span class="text-muted">套餐</span>
+                                <span class="font-semibold" x-text="order.plan_name"></span>
+                            </div>
+                            <div class="flex justify-between mb-2">
+                                <span class="text-muted">金额</span>
+                                <span class="font-semibold text-lg" style="color:var(--accent)">¥<span x-text="order.price"></span></span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-muted">订单号</span>
+                                <span class="font-mono text-sm" x-text="order.order_no"></span>
+                            </div>
+                        </div>
+
+                        <div class="flex gap-4 justify-center">
+                            <button @click="step = 1" class="px-8 py-3 rounded-xl font-semibold border" style="border-color:var(--border-color);color:var(--text-primary)">
+                                返回选择
+                            </button>
+                            <template x-if="order.simulate_mode || !order.qr_code_url">
+                                <button @click="simulatePay()" :disabled="loading"
+                                        class="px-8 py-3 rounded-xl font-semibold text-white" style="background:var(--accent)">
+                                    <span x-show="!loading">模拟完成支付</span>
+                                    <span x-show="loading">处理中...</span>
+                                </button>
+                            </template>
+                            <template x-if="order.qr_code_url && !order.simulate_mode">
+                                <button @click="checkPayment()" :disabled="loading"
+                                        class="px-8 py-3 rounded-xl font-semibold text-white" style="background:var(--accent)">
+                                    <span x-show="!loading">我已付款</span>
+                                    <span x-show="loading">查询中...</span>
+                                </button>
+                            </template>
+                        </div>
+                    </div>
+
+                    <!-- Step 3: 支付成功 -->
+                    <div x-show="step === 3" class="text-center py-8">
+                        <div class="success-icon">
+                            <i class="bi bi-check-lg"></i>
+                        </div>
+                        <h2 class="text-2xl font-bold mb-2">支付成功！</h2>
+                        <p class="text-muted mb-6">额度已充入您的账户</p>
+
+                        <div class="bg-card rounded-xl p-6 mb-6 text-left max-w-md mx-auto">
+                            <div class="flex justify-between mb-2">
+                                <span class="text-muted">套餐</span>
+                                <span class="font-semibold" x-text="order.plan_name"></span>
+                            </div>
+                            <div class="flex justify-between mb-2">
+                                <span class="text-muted">充值金额</span>
+                                <span class="font-semibold">¥<span x-text="order.price"></span></span>
+                            </div>
+                            <div class="flex justify-between mb-2">
+                                <span class="text-muted">订单状态</span>
+                                <span class="text-green-500 font-semibold">已支付</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-muted">当前额度</span>
+                                <span class="font-semibold"><span x-text="quota.remaining || 0"></span> 次</span>
+                            </div>
+                        </div>
+
+                        <div class="flex gap-4 justify-center">
+                            <a href="payment.html" class="px-8 py-3 rounded-xl font-semibold border" style="border-color:var(--border-color);color:var(--text-primary)">
+                                继续充值
+                            </a>
+                            <a href="account.html" class="px-8 py-3 rounded-xl font-semibold text-white" style="background:var(--accent)">
+                                返回会员中心
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </template>
+        </div>
+    </div>
+
+    <script src="js/toast.js"></script>
+    <script src="js/main.js"></script>
+    <script>
+    function paymentApp() {
+        return {
+            token: localStorage.getItem('token') || '',
+            step: 1,
+            selectedPlan: 'pro',
+            loading: false,
+            order: {},
+            quota: {},
+
+            async init() {
+                if (this.token) {
+                    await this.loadQuota();
+                }
+                // 监听主题变化
+                const toggleBtn = document.getElementById('themeToggle');
+                if (toggleBtn) {
+                    toggleBtn.addEventListener('click', function() {
+                        document.body.classList.toggle('light-mode');
+                        const icon = this.querySelector('i');
+                        if (icon) {
+                            icon.classList.toggle('bi-moon');
+                            icon.classList.toggle('bi-sun');
+                        }
+                    });
+                }
+            },
+
+            async loadQuota() {
+                try {
+                    const res = await fetch('/api/v1/auth/quota', {
+                        headers: { 'Authorization': 'Bearer ' + this.token }
+                    });
+                    if (res.ok) {
+                        this.quota = await res.json();
+                    }
+                } catch (e) {
+                    console.error('加载额度失败', e);
+                }
+            },
+
+            async createOrder() {
+                if (!this.selectedPlan) {
+                    showToast('请选择套餐', 'error');
+                    return;
+                }
+                this.loading = true;
+                try {
+                    const res = await fetch('/api/v1/payment/create', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': 'Bearer ' + this.token
+                        },
+                        body: JSON.stringify({ plan_type: this.selectedPlan })
+                    });
+                    const data = await res.json();
+                    if (res.ok && data.success) {
+                        this.order = data;
+                        if (data.status === 'paid') {
+                            // 免费方案直接成功
+                            this.step = 3;
+                            await this.loadQuota();
+                            showToast('充值成功！', 'success');
+                        } else {
+                            this.step = 2;
+                            showToast('订单创建成功，请完成支付', 'success');
+                        }
+                    } else {
+                        showToast(data.detail || data.message || '创建订单失败', 'error');
+                    }
+                } catch (e) {
+                    showToast('网络错误，请重试', 'error');
+                } finally {
+                    this.loading = false;
+                }
+            },
+
+            async simulatePay() {
+                this.loading = true;
+                try {
+                    const res = await fetch('/api/v1/payment/simulate/notify', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': 'Bearer ' + this.token
+                        },
+                        body: JSON.stringify({ order_no: this.order.order_no })
+                    });
+                    const data = await res.json();
+                    if (res.ok && data.success) {
+                        this.step = 3;
+                        this.order.status = 'paid';
+                        await this.loadQuota();
+                        showToast('支付成功！额度已到账', 'success');
+                    } else {
+                        showToast(data.detail || data.message || '模拟支付失败', 'error');
+                    }
+                } catch (e) {
+                    showToast('网络错误，请重试', 'error');
+                } finally {
+                    this.loading = false;
+                }
+            },
+
+            async checkPayment() {
+                this.loading = true;
+                try {
+                    const res = await fetch('/api/v1/payment/query/' + this.order.order_id, {
+                        headers: { 'Authorization': 'Bearer ' + this.token }
+                    });
+                    const data = await res.json();
+                    if (res.ok && data.success) {
+                        if (data.data.status === 'paid') {
+                            this.step = 3;
+                            this.order.status = 'paid';
+                            await this.loadQuota();
+                            showToast('支付成功！额度已到账', 'success');
+                        } else {
+                            showToast('尚未支付，请扫码完成支付', 'info');
+                        }
+                    } else {
+                        showToast(data.detail || '查询失败', 'error');
+                    }
+                } catch (e) {
+                    showToast('网络错误，请重试', 'error');
+                } finally {
+                    this.loading = false;
+                }
+            }
+        };
+    }
+    </script>
+</body>
+</html>

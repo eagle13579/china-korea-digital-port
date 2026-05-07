@@ -36,8 +36,11 @@ StandardError=append:/var/log/ckdp/backend-error.log
 # 安全设置
 NoNewPrivileges=true
 PrivateTmp=true
-ProtectSystem=full
+# 使用 strict 而非 full，以便服务可以写日志和数据库
+ProtectSystem=strict
 ProtectHome=false
+# 允许写入日志目录和数据库目录
+ReadWritePaths=/var/log/ckdp /var/www/china-korea-digital-port/backend/data
 
 [Install]
 WantedBy=multi-user.target

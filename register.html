@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>注册 - 中韩出海数智港</title>
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="js/auth.js"></script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+            min-height: 100vh;
+        }
+        .card {
+            background: rgba(255,255,255,0.04);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+        .input-field {
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.12);
+            color: #e2e8f0;
+            transition: all 0.3s ease;
+        }
+        .input-field:focus {
+            border-color: #8b5cf6;
+            box-shadow: 0 0 0 3px rgba(139,92,246,0.2);
+            outline: none;
+        }
+        .input-field::placeholder {
+            color: rgba(255,255,255,0.3);
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #8b5cf6, #6366f1);
+            transition: all 0.3s ease;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(139,92,246,0.3);
+        }
+        .error-msg {
+            color: #ef4444;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+        }
+    </style>
+</head>
+<body class="text-gray-200">
+    <div x-data="registerForm()" class="min-h-screen flex items-center justify-center px-4 py-12">
+        <div class="card w-full max-w-md rounded-2xl p-8 shadow-2xl">
+            <!-- Logo / Title -->
+            <div class="text-center mb-8">
+                <h1 class="text-3xl font-bold bg-gradient-to-r from-purple-400 to-indigo-400 bg-clip-text text-transparent">
+                    中韩出海数智港
+                </h1>
+                <p class="text-gray-400 mt-2 text-sm">创建您的账户，开启跨境之旅</p>
+            </div>
+
+            <!-- Error Alert -->
+            <div x-show="error" x-transition.duration.300ms
+                 class="bg-red-500/10 border border-red-500/30 text-red-400 px-4 py-3 rounded-xl mb-6 text-sm">
+                <p x-text="error"></p>
+            </div>
+
+            <!-- Success Alert -->
+            <div x-show="successMsg" x-transition.duration.300ms
+                 class="bg-green-500/10 border border-green-500/30 text-green-400 px-4 py-3 rounded-xl mb-6 text-sm">
+                <p x-text="successMsg"></p>
+            </div>
+
+            <!-- Register Form -->
+            <form @submit.prevent="handleRegister" class="space-y-5">
+                <!-- Username -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-1.5">用户名</label>
+                    <input type="text" x-model="form.username" placeholder="请输入用户名"
+                           class="input-field w-full px-4 py-3 rounded-xl text-sm"
+                           :class="{'border-red-500': fieldErrors.username}" required minlength="2">
+                    <p x-show="fieldErrors.username" class="error-msg" x-text="fieldErrors.username"></p>
+                </div>
+
+                <!-- Email -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-1.5">邮箱</label>
+                    <input type="email" x-model="form.email" placeholder="请输入邮箱地址"
+                           class="input-field w-full px-4 py-3 rounded-xl text-sm"
+                           :class="{'border-red-500': fieldErrors.email}" required>
+                    <p x-show="fieldErrors.email" class="error-msg" x-text="fieldErrors.email"></p>
+                </div>
+
+                <!-- Password -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-1.5">密码</label>
+                    <input type="password" x-model="form.password" placeholder="至少6位密码"
+                           class="input-field w-full px-4 py-3 rounded-xl text-sm"
+                           :class="{'border-red-500': fieldErrors.password}" required minlength="6">
+                    <p x-show="fieldErrors.password" class="error-msg" x-text="fieldErrors.password"></p>
+                </div>
+
+                <!-- Confirm Password -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-1.5">确认密码</label>
+                    <input type="password" x-model="form.confirmPassword" placeholder="再次输入密码"
+                           class="input-field w-full px-4 py-3 rounded-xl text-sm"
+                           :class="{'border-red-500': fieldErrors.confirmPassword}" required>
+                    <p x-show="fieldErrors.confirmPassword" class="error-msg" x-text="fieldErrors.confirmPassword"></p>
+                </div>
+
+                <!-- Submit -->
+                <button type="submit" :disabled="loading"
+                        class="btn-primary w-full py-3 rounded-xl text-white font-semibold text-sm disabled:opacity-50 disabled:cursor-not-allowed">
+                    <span x-show="!loading">注册</span>
+                    <span x-show="loading">注册中...</span>
+                </button>
+            </form>
+
+            <!-- Divider -->
+            <div class="relative my-6">
+                <div class="absolute inset-0 flex items-center">
+                    <div class="w-full border-t border-gray-700"></div>
+                </div>
+                <div class="relative flex justify-center text-xs">
+                    <span class="bg-[#1e293b] px-4 text-gray-400">已有账户？</span>
+                </div>
+            </div>
+
+            <!-- Login Link -->
+            <div class="text-center">
+                <a href="login.html" class="text-purple-400 hover:text-purple-300 text-sm font-medium transition-colors">
+                    立即登录 →
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function registerForm() {
+            return {
+                form: {
+                    username: '',
+                    email: '',
+                    password: '',
+                    confirmPassword: ''
+                },
+                fieldErrors: {},
+                error: '',
+                successMsg: '',
+                loading: false,
+
+                validate() {
+                    this.fieldErrors = {};
+                    let valid = true;
+
+                    if (!this.form.username || this.form.username.length < 2) {
+                        this.fieldErrors.username = '用户名至少2个字符';
+                        valid = false;
+                    }
+                    if (!this.form.email || !this.form.email.includes('@')) {
+                        this.fieldErrors.email = '请输入有效的邮箱地址';
+                        valid = false;
+                    }
+                    if (!this.form.password || this.form.password.length < 6) {
+                        this.fieldErrors.password = '密码至少6位';
+                        valid = false;
+                    }
+                    if (this.form.password !== this.form.confirmPassword) {
+                        this.fieldErrors.confirmPassword = '两次密码不一致';
+                        valid = false;
+                    }
+
+                    return valid;
+                },
+
+                async handleRegister() {
+                    this.error = '';
+                    this.successMsg = '';
+
+                    if (!this.validate()) return;
+
+                    this.loading = true;
+
+                    try {
+                        const response = await fetch('/api/v1/auth/register', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                username: this.form.username,
+                                email: this.form.email,
+                                password: this.form.password
+                            })
+                        });
+
+                        const data = await response.json();
+
+                        if (!response.ok) {
+                            this.error = data.detail || '注册失败，请重试';
+                            this.loading = false;
+                            return;
+                        }
+
+                        // 保存 token
+                        localStorage.setItem('access_token', data.access_token);
+                        localStorage.setItem('user', JSON.stringify(data.user));
+
+                        this.successMsg = '注册成功！正在跳转...';
+
+                        // 跳转到首页
+                        setTimeout(() => {
+                            window.location.href = '/';
+                        }, 1000);
+
+                    } catch (err) {
+                        this.error = '网络错误，请检查连接后重试';
+                        this.loading = false;
+                    }
+                }
+            }
+        }
+    </script>
+</body>
+</html>

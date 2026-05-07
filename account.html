@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>会员中心 - 中韩出海数智港</title>
+    <meta name="description" content="中韩出海数智港会员中心 - 查看账户信息、额度概览、充值记录">
+    <link rel="icon" href="favicon.ico">
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="js/toast.js"></script>
+    <style>
+        :root { --accent: #6366f1; }
+        body.light-mode { --accent: #4f46e5; }
+        
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+            min-height: 100vh;
+            color: #e2e8f0;
+            font-family: 'Inter', sans-serif;
+        }
+        body.light-mode {
+            background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 50%, #f1f5f9 100%);
+            color: #1e293b;
+        }
+        .card {
+            background: rgba(255,255,255,0.04);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 16px;
+        }
+        body.light-mode .card {
+            background: rgba(255,255,255,0.85);
+            border: 1px solid rgba(0,0,0,0.08);
+        }
+        .avatar-circle {
+            width: 64px; height: 64px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #8b5cf6, #6366f1);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 24px; font-weight: 700; color: #fff;
+        }
+        .badge-plan {
+            display: inline-block;
+            padding: 3px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .badge-free { background: rgba(148,163,184,0.2); color: #94a3b8; }
+        .badge-basic { background: rgba(99,102,241,0.2); color: #818cf8; }
+        .badge-pro { background: rgba(251,191,36,0.2); color: #fbbf24; }
+        body.light-mode .badge-free { background: rgba(148,163,184,0.15); }
+        body.light-mode .badge-basic { background: rgba(99,102,241,0.15); }
+        body.light-mode .badge-pro { background: rgba(251,191,36,0.15); }
+        
+        .progress-bar-bg {
+            background: rgba(255,255,255,0.08);
+            border-radius: 999px;
+            height: 10px;
+            overflow: hidden;
+        }
+        body.light-mode .progress-bar-bg {
+            background: rgba(0,0,0,0.08);
+        }
+        .progress-bar-fill {
+            height: 100%;
+            border-radius: 999px;
+            transition: width 0.8s ease;
+            background: linear-gradient(90deg, #6366f1, #8b5cf6);
+        }
+        
+        .employee-card {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 12px;
+            padding: 16px;
+            transition: all 0.3s ease;
+        }
+        .employee-card:hover {
+            transform: translateY(-2px);
+            border-color: rgba(99,102,241,0.3);
+        }
+        body.light-mode .employee-card {
+            background: rgba(255,255,255,0.8);
+            border: 1px solid rgba(0,0,0,0.08);
+        }
+        .employee-avatar {
+            width: 44px; height: 44px;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 16px; font-weight: 700; color: #fff;
+            flex-shrink: 0;
+        }
+        
+        .table-header {
+            background: rgba(255,255,255,0.04);
+        }
+        body.light-mode .table-header {
+            background: rgba(0,0,0,0.04);
+        }
+        .table-row {
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+        body.light-mode .table-row {
+            border-bottom: 1px solid rgba(0,0,0,0.06);
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        .status-paid { background: rgba(16,185,129,0.15); color: #34d399; }
+        .status-pending { background: rgba(251,191,36,0.15); color: #fbbf24; }
+        .status-cancelled { background: rgba(239,68,68,0.15); color: #f87171; }
+        
+        .btn-accent {
+            background: linear-gradient(135deg, #8b5cf6, #6366f1);
+            transition: all 0.3s ease;
+        }
+        .btn-accent:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(99,102,241,0.3);
+        }
+        
+        /* 登录提示 */
+        .login-prompt { text-align: center; padding: 80px 20px; }
+        .login-prompt i { font-size: 64px; color: rgba(255,255,255,0.3); margin-bottom: 20px; }
+        body.light-mode .login-prompt i { color: rgba(0,0,0,0.2); }
+        
+        [x-cloak] { display: none !important; }
+    </style>
+</head>
+<body>
+    <div x-data="accountApp()" x-init="init()" x-cloak>
+        <!-- 未登录提示 -->
+        <template x-if="!token">
+            <div class="login-prompt" style="padding-top:120px;">
+                <i class="bi bi-person-circle"></i>
+                <h3 class="text-xl font-semibold mb-2">请先登录</h3>
+                <p class="text-gray-400 mb-6">登录后即可查看会员信息和额度</p>
+                <a href="login.html?redirect=account.html" class="inline-block px-8 py-3 rounded-xl font-semibold text-white btn-accent">立即登录</a>
+            </div>
+        </template>
+
+        <template x-if="token">
+            <div>
+                <!-- 导航 -->
+                <header class="header">
+                    <div class="container">
+                        <div class="header__content">
+                            <div class="header__logo">
+                                <h1 class="logo__text">中韩出海数智港</h1>
+                            </div>
+                            <nav class="header__nav">
+                                <ul class="nav__list">
+                                    <li class="nav__item"><a href="index.html" class="nav__link">首页</a></li>
+                                    <li class="nav__item"><a href="team.html" class="nav__link">数字员工</a></li>
+                                    <li class="nav__item"><a href="pricing-v2.html" class="nav__link">定价方案</a></li>
+                                    <li class="nav__item"><a href="payment.html" class="nav__link">额度充值</a></li>
+                                    <li class="nav__item"><a href="account.html" class="nav__link" style="color:var(--accent);font-weight:600;">会员中心</a></li>
+                                    <li class="nav__item">
+                                        <div class="flex items-center gap-2" style="display:inline-flex;">
+                                            <span class="text-sm text-purple-400 font-medium" x-text="'欢迎, ' + (user.username || '')" style="white-space:nowrap;"></span>
+                                            <a href="#" class="nav__link text-red-400 hover:text-red-300"
+                                               @click.prevent="logout()">退出</a>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </nav>
+                            <div class="header__theme">
+                                <button class="theme-btn" id="themeToggle" aria-label="切换主题">
+                                    <i class="bi bi-moon"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </header>
+
+                <div class="container px-4 py-6" style="max-width:1000px;padding-top:100px;padding-bottom:80px;">
+                    <!-- 页面标题 -->
+                    <div class="mb-8">
+                        <h1 class="text-2xl font-bold">会员中心</h1>
+                        <p class="text-gray-400 text-sm mt-1">管理您的账户、额度和充值记录</p>
+                    </div>
+
+                    <!-- 第1行：用户信息卡片 + 额度概览 -->
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                        <!-- 用户信息卡片 -->
+                        <div class="card p-6">
+                            <div class="flex items-center gap-4 mb-4">
+                                <div class="avatar-circle">
+                                    <span x-text="userInitial"></span>
+                                </div>
+                                <div>
+                                    <h2 class="text-lg font-bold" x-text="user.username || '--'"></h2>
+                                    <p class="text-sm text-gray-400" x-text="user.email || '--'"></p>
+                                </div>
+                            </div>
+                            <div class="text-sm text-gray-400">
+                                <span>注册时间：</span>
+                                <span class="text-gray-300" x-text="user.created_at ? user.created_at.substring(0,10) : '--'"></span>
+                            </div>
+                        </div>
+
+                        <!-- 额度概览 -->
+                        <div class="card p-6">
+                            <div class="flex items-center justify-between mb-4">
+                                <h2 class="text-lg font-bold">额度概览</h2>
+                                <span class="badge-plan" :class="'badge-' + (quota.plan_type || 'free')" x-text="planTypeLabel"></span>
+                            </div>
+                            <div class="grid grid-cols-3 gap-4 mb-4 text-center">
+                                <div>
+                                    <div class="text-2xl font-bold" x-text="quota.total_quota || 0"></div>
+                                    <div class="text-xs text-gray-400">总额度</div>
+                                </div>
+                                <div>
+                                    <div class="text-2xl font-bold" x-text="quota.used_quota || 0"></div>
+                                    <div class="text-xs text-gray-400">已用额度</div>
+                                </div>
+                                <div>
+                                    <div class="text-2xl font-bold" :style="{color: remainingColor}" x-text="(quota.total_quota || 0) - (quota.used_quota || 0)"></div>
+                                    <div class="text-xs text-gray-400">剩余额度</div>
+                                </div>
+                            </div>
+                            <!-- 进度条 -->
+                            <div>
+                                <div class="flex justify-between text-xs text-gray-400 mb-1">
+                                    <span>使用率</span>
+                                    <span x-text="usagePercent + '%'"></span>
+                                </div>
+                                <div class="progress-bar-bg">
+                                    <div class="progress-bar-fill" :style="{width: usagePercent + '%'}"></div>
+                                </div>
+                            </div>
+                            <div class="text-xs text-gray-400 mt-2" x-show="quota.expires_at">
+                                到期时间：<span x-text="quota.expires_at ? quota.expires_at.substring(0,10) : '--'"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 充值入口 -->
+                    <div class="card p-6 mb-6 text-center">
+                        <h2 class="text-lg font-bold mb-2">需要更多额度？</h2>
+                        <p class="text-sm text-gray-400 mb-4">选择适合您的套餐，快速充值，额度即时到账</p>
+                        <a href="payment.html" class="inline-block px-10 py-3 rounded-xl font-semibold text-white btn-accent text-base">
+                            <i class="bi bi-credit-card mr-2"></i>充值额度
+                        </a>
+                    </div>
+
+                    <!-- 已雇数字员工 -->
+                    <div class="card p-6 mb-6">
+                        <h2 class="text-lg font-bold mb-4">已雇数字员工</h2>
+                        <p class="text-sm text-gray-400 mb-4">您已雇佣以下AI数字合规官，随时为您服务</p>
+                        <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+                            <div class="employee-card">
+                                <div class="flex items-center gap-3">
+                                    <div class="employee-avatar" style="background:linear-gradient(135deg,#6366f1,#8b5cf6);">徐</div>
+                                    <div>
+                                        <div class="font-semibold text-sm">徐准</div>
+                                        <div class="text-xs text-gray-400">首席合规官</div>
+                                        <div class="text-xs text-gray-500 mt-0.5">行业准入 · 政策解读</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="employee-card">
+                                <div class="flex items-center gap-3">
+                                    <div class="employee-avatar" style="background:linear-gradient(135deg,#ec4899,#f472b6);">刘</div>
+                                    <div>
+                                        <div class="font-semibold text-sm">刘真</div>
+                                        <div class="text-xs text-gray-400">数据安全官</div>
+                                        <div class="text-xs text-gray-500 mt-0.5">数据合规 · 隐私保护</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="employee-card">
+                                <div class="flex items-center gap-3">
+                                    <div class="employee-avatar" style="background:linear-gradient(135deg,#10b981,#34d399);">志</div>
+                                    <div>
+                                        <div class="font-semibold text-sm">志浩</div>
+                                        <div class="text-xs text-gray-400">知识产权官</div>
+                                        <div class="text-xs text-gray-500 mt-0.5">商标·专利·著作权</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="employee-card">
+                                <div class="flex items-center gap-3">
+                                    <div class="employee-avatar" style="background:linear-gradient(135deg,#f59e0b,#fbbf24);">宰</div>
+                                    <div>
+                                        <div class="font-semibold text-sm">宰贤</div>
+                                        <div class="text-xs text-gray-400">财税合规官</div>
+                                        <div class="text-xs text-gray-500 mt-0.5">税务·财务·审计</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="employee-card">
+                                <div class="flex items-center gap-3">
+                                    <div class="employee-avatar" style="background:linear-gradient(135deg,#3b82f6,#60a5fa);">贤</div>
+                                    <div>
+                                        <div class="font-semibold text-sm">贤宇</div>
+                                        <div class="text-xs text-gray-400">劳动用工官</div>
+                                        <div class="text-xs text-gray-500 mt-0.5">用工·社保·薪酬</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="employee-card">
+                                <div class="flex items-center gap-3">
+                                    <div class="employee-avatar" style="background:linear-gradient(135deg,#8b5cf6,#a78bfa);">美</div>
+                                    <div>
+                                        <div class="font-semibold text-sm">美英</div>
+                                        <div class="text-xs text-gray-400">签证移民官</div>
+                                        <div class="text-xs text-gray-500 mt-0.5">签证·移民·居留</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 充值记录 / 订单历史 -->
+                    <div class="card p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <h2 class="text-lg font-bold">充值记录</h2>
+                            <span class="text-xs text-gray-400" x-show="orders.length > 0" x-text="'共 ' + orders.length + ' 条记录'"></span>
+                        </div>
+                        <!-- 加载状态 -->
+                        <div x-show="loadingOrders" class="text-center py-8">
+                            <div class="inline-block w-8 h-8 border-2 border-gray-500 border-t-purple-500 rounded-full animate-spin"></div>
+                            <p class="text-sm text-gray-400 mt-2">加载中...</p>
+                        </div>
+                        <!-- 无数据 -->
+                        <div x-show="!loadingOrders && orders.length === 0" class="text-center py-8 text-gray-400">
+                            <i class="bi bi-inbox text-4xl block mb-2"></i>
+                            <p class="text-sm">暂无充值记录</p>
+                            <a href="payment.html" class="text-purple-400 hover:text-purple-300 text-sm mt-2 inline-block">去充值 →</a>
+                        </div>
+                        <!-- 表格 -->
+                        <div x-show="!loadingOrders && orders.length > 0" class="overflow-x-auto">
+                            <table class="w-full text-sm">
+                                <thead class="table-header">
+                                    <tr>
+                                        <th class="text-left px-3 py-3 font-medium text-gray-400">订单号</th>
+                                        <th class="text-left px-3 py-3 font-medium text-gray-400">套餐</th>
+                                        <th class="text-right px-3 py-3 font-medium text-gray-400">金额</th>
+                                        <th class="text-center px-3 py-3 font-medium text-gray-400">状态</th>
+                                        <th class="text-right px-3 py-3 font-medium text-gray-400">时间</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <template x-for="order in orders" :key="order.id">
+                                        <tr class="table-row">
+                                            <td class="px-3 py-3 font-mono text-xs" x-text="order.order_no"></td>
+                                            <td class="px-3 py-3" x-text="order.plan_name || order.plan_type"></td>
+                                            <td class="px-3 py-3 text-right">¥<span x-text="parseFloat(order.price).toFixed(2)"></span></td>
+                                            <td class="px-3 py-3 text-center">
+                                                <span class="status-badge" :class="'status-' + order.status" x-text="order.status === 'paid' ? '已支付' : (order.status === 'pending' ? '待支付' : '已取消')"></span>
+                                            </td>
+                                            <td class="px-3 py-3 text-right text-gray-400 text-xs" x-text="order.created_at ? order.created_at.substring(0,19).replace('T', ' ') : '--'"></td>
+                                        </tr>
+                                    </template>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </template>
+    </div>
+
+    <script src="js/main.js"></script>
+    <script>
+    function accountApp() {
+        return {
+            token: localStorage.getItem('access_token') || '',
+            user: {},
+            quota: {},
+            orders: [],
+            loadingOrders: false,
+
+            init() {
+                if (this.token) {
+                    this.loadUserInfo();
+                    this.loadQuota();
+                    this.loadOrders();
+                }
+                // 主题切换监听
+                setTimeout(() => {
+                    const toggleBtn = document.getElementById('themeToggle');
+                    if (toggleBtn) {
+                        toggleBtn.addEventListener('click', function() {
+                            document.body.classList.toggle('light-mode');
+                            const icon = this.querySelector('i');
+                            if (icon) {
+                                icon.classList.toggle('bi-moon');
+                                icon.classList.toggle('bi-sun');
+                            }
+                        });
+                    }
+                }, 100);
+            },
+
+            get userInitial() {
+                const name = this.user.username || '';
+                return name.charAt(0).toUpperCase() || '?';
+            },
+
+            get planTypeLabel() {
+                const p = this.quota.plan_type || 'free';
+                const labels = { free: '免费版', basic: '基础版', pro: '专业版' };
+                return labels[p] || p;
+            },
+
+            get usagePercent() {
+                const total = this.quota.total_quota || 0;
+                const used = this.quota.used_quota || 0;
+                if (total === 0) return 0;
+                return Math.min(100, Math.round((used / total) * 100));
+            },
+
+            get remainingColor() {
+                const remaining = (this.quota.total_quota || 0) - (this.quota.used_quota || 0);
+                if (remaining <= 0) return '#ef4444';
+                if (remaining <= 10) return '#f59e0b';
+                return '#34d399';
+            },
+
+            async loadUserInfo() {
+                try {
+                    // 先从 localStorage 取缓存
+                    const cached = localStorage.getItem('user');
+                    if (cached) {
+                        this.user = JSON.parse(cached);
+                    }
+                    const res = await fetch('/api/v1/auth/me', {
+                        headers: { 'Authorization': 'Bearer ' + this.token }
+                    });
+                    if (res.ok) {
+                        const data = await res.json();
+                        this.user = data;
+                        localStorage.setItem('user', JSON.stringify(data));
+                    }
+                } catch (e) {
+                    console.error('加载用户信息失败', e);
+                }
+            },
+
+            async loadQuota() {
+                try {
+                    const res = await fetch('/api/v1/auth/quota', {
+                        headers: { 'Authorization': 'Bearer ' + this.token }
+                    });
+                    if (res.ok) {
+                        this.quota = await res.json();
+                    }
+                } catch (e) {
+                    console.error('加载额度失败', e);
+                }
+            },
+
+            async loadOrders() {
+                this.loadingOrders = true;
+                try {
+                    const res = await fetch('/api/v1/auth/orders', {
+                        headers: { 'Authorization': 'Bearer ' + this.token }
+                    });
+                    if (res.ok) {
+                        const data = await res.json();
+                        this.orders = data.data || [];
+                    }
+                } catch (e) {
+                    console.error('加载订单失败', e);
+                } finally {
+                    this.loadingOrders = false;
+                }
+            },
+
+            logout() {
+                localStorage.removeItem('access_token');
+                localStorage.removeItem('user');
+                window.location.href = '/';
+            }
+        };
+    }
+    </script>
+</body>
+</html>

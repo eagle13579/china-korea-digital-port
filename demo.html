@@ -10,6 +10,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="js/main.js" defer></script>
     <script src="js/toast.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    <script src="js/auth.js"></script>
     <style>
         .demo-page {
             padding: 140px 0 80px;
@@ -192,6 +194,24 @@
                     <li><a href="/" class="nav__link" data-lang-key="home">首页</a></li>
                     <li><a href="/pricing.html" class="nav__link" data-lang-key="footer_pricing">定价/购买</a></li>
                     <li><a href="/demo.html" class="nav__link" data-lang-key="consult">预约演示</a></li>
+                    <!-- 登录状态动态切换 -->
+                    <li x-data="{ loggedIn: !!localStorage.getItem('access_token'), username: (() => { try { const u = JSON.parse(localStorage.getItem('user') || '{}'); return u.username || ''; } catch(e) { return ''; } })() }">
+                        <template x-if="!loggedIn">
+                            <span style="display:inline-flex;gap:4px;">
+                                <a href="/login.html" class="nav__link" data-lang-key="login">登录</a>
+                                <span class="text-gray-500">/</span>
+                                <a href="/register.html" class="nav__link" data-lang-key="register">注册</a>
+                            </span>
+                        </template>
+                        <template x-if="loggedIn">
+                            <span style="display:inline-flex;gap:8px;align-items:center;">
+                                <span class="nav__link" style="color:var(--accent-primary);font-size:13px;font-weight:500;" x-text="'欢迎, ' + username"></span>
+                                <a href="#" class="nav__link" style="color:#ef4444;"
+                                   @click.prevent="localStorage.removeItem('access_token');localStorage.removeItem('user');window.location.href='/'"
+                                   data-lang-key="logout">退出</a>
+                            </span>
+                        </template>
+                    </li>
                 </ul>
             </nav>
             <div class="header__lang">

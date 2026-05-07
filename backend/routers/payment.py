@@ -1,24 +1,27 @@
 """
 中韩出海数智港 - 支付系统API路由
-集成支付宝当面付（扫码支付）+ Stripe备用方案
+集成支付宝当面付（扫码支付）+ 额度充值
 
-API端点:
-  POST /api/v1/payment/create — 创建订单，返回支付二维码/链接
-  POST /api/v1/payment/notify — 支付宝支付回调通知
-  GET  /api/v1/payment/status/{order_id} — 查询支付状态
+JWT认证端点（新）:
+  POST /api/v1/payment/create     — 创建支付订单（需JWT）
+  POST /api/v1/payment/notify     — 支付宝异步通知
+  GET  /api/v1/payment/query/{order_id} — 查询订单状态
+  POST /api/v1/payment/topup      — 人工充值（需admin认证）
 
-还保留兼容旧版订单API:
-  POST /api/v1/orders — 创建订单（form）
-  POST /api/v1/order/create — 创建订单（JSON）
-  GET  /api/v1/orders/{order_id} — 查询订单
+旧版兼容端点:
+  POST /api/v1/orders             — 创建订单（form）
+  POST /api/v1/order/create       — 创建订单（JSON）
+  GET  /api/v1/orders/{order_id}  — 查询订单
   POST /api/v1/orders/{order_id}/payment — 上传付款凭证
+  POST /api/v1/payment/simulate/notify  — 模拟支付回调
+  GET  /api/v1/payment/status/{order_id} — 旧版查询支付状态
 """
 
 import os
 import uuid
 import json
 import logging
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Optional
 from urllib.parse import urljoin
@@ -59,6 +62,26 @@ PLAN_NAMES_KO = {
     "depth": "심층 컨설팅 패키지",
     "annual": "연간 구독",
     "source": "소스코드 라이선스",
+}
+
+# ── 额度套餐定价映射（新JWT认证系统用）──────────────────
+SUBSCRIPTION_PLANS = {
+    "basic": {
+        "name": "基础版",
+        "name_en": "Basic",
+        "name_ko": "베이직",
+        "price": 99.00,
+        "quota": 100,
+        "description": "100次AI数字员工分析额度",
+    },
+    "pro": {
+        "name": "专业版",
+        "name_en": "Professional",
+        "name_ko": "프로페셔널",
+        "price": 299.00,
+        "quota": 500,
+        "description": "500次AI数字员工分析额度",
+    },
 }
 
 # ── 支付宝配置 ────────────────────────────────────────
@@ -172,46 +195,160 @@ def _require_auth(authorization: str = Header(None)):
         raise HTTPException(status_code=401, detail="token已过期，请重新登录")
 
 
+def _require_admin(authorization: str = Header(None)):
+    """验证管理员认证，返回用户信息"""
+    from backend.routers.admin import _verify_token
+    if not authorization:
+        raise HTTPException(status_code=401, detail="未授权")
+    token = authorization.replace("Bearer ", "")
+    payload = _verify_token(token)
+    if not payload:
+        raise HTTPException(status_code=401, detail="token已过期，请重新登录")
+    return payload
+
+
+def _apply_quota_on_payment(order_id: int):
+    """
+    支付成功后自动更新用户额度
+
+    根据订单的plan_type增加对应用户的 user_quotas.total_quota
+    """
+    conn = get_db()
+    try:
+        cursor = conn.execute("SELECT * FROM orders WHERE id = ?", (order_id,))
+        row = cursor.fetchone()
+        if not row:
+            logger.warning(f"订单不存在: order_id={order_id}")
+            return
+
+        cols = [d[0] for d in cursor.description]
+        order = dict(zip(cols, row))
+        user_id = order.get("user_id")
+        plan_type = order["plan_type"]
+
+        if not user_id:
+            logger.warning(f"订单没有关联用户: order_id={order_id}")
+            return
+
+        # 确定要增加的额度
+        add_quota = 0
+        if plan_type in SUBSCRIPTION_PLANS:
+            add_quota = SUBSCRIPTION_PLANS[plan_type]["quota"]
+        elif plan_type == "basic":
+            add_quota = 100
+        elif plan_type == "pro":
+            add_quota = 500
+        else:
+            # 老的咨询套餐（depth/annual/source）增加大额额度
+            quota_map = {"free": 10, "depth": 200, "annual": 1000, "source": 2000}
+            add_quota = quota_map.get(plan_type, 10)
+
+        if add_quota <= 0:
+            return
+
+        # 更新或创建用户额度
+        cursor.execute("SELECT id, total_quota FROM user_quotas WHERE user_id = ?", (user_id,))
+        existing = cursor.fetchone()
+
+        if existing:
+            new_total = existing["total_quota"] + add_quota
+            if plan_type == "basic" or plan_type == "pro":
+                # 额度套餐：更新plan_type和total_quota
+                expires_at = (datetime.utcnow() + timedelta(days=365)).isoformat()
+                conn.execute(
+                    """UPDATE user_quotas 
+                       SET plan_type = ?, total_quota = ?, expires_at = ?, updated_at = CURRENT_TIMESTAMP 
+                       WHERE user_id = ?""",
+                    (plan_type, new_total, expires_at, user_id),
+                )
+            else:
+                conn.execute(
+                    "UPDATE user_quotas SET total_quota = ?, updated_at = CURRENT_TIMESTAMP WHERE user_id = ?",
+                    (new_total, user_id),
+                )
+        else:
+            expires_at = (datetime.utcnow() + timedelta(days=365)).isoformat()
+            conn.execute(
+                "INSERT INTO user_quotas (user_id, plan_type, total_quota, used_quota, expires_at) VALUES (?, ?, ?, 0, ?)",
+                (user_id, plan_type if plan_type in ("basic", "pro") else "free", add_quota, expires_at),
+            )
+
+        conn.commit()
+        logger.info(f"额度更新成功: user_id={user_id}, add_quota={add_quota}, new_total={existing['total_quota'] + add_quota if existing else add_quota}")
+    except Exception as e:
+        logger.error(f"额度更新失败: {e}")
+    finally:
+        conn.close()
+
+
 # ═══════════════════════════════════════════════════════
-# 新支付系统 API (面向 checkout.html)
+# 新支付系统 API (JWT认证，额度充值)
 # ═══════════════════════════════════════════════════════
 
+def _get_jwt_user(authorization: str = Header(None)) -> dict:
+    """从JWT Bearer token获取当前用户"""
+    from backend.routers.auth import get_current_user
+    return get_current_user(authorization)
+
+
 class PaymentCreateRequest(BaseModel):
-    """创建支付订单请求"""
-    plan_type: str = Field(..., pattern=r'^(free|depth|annual|source)$', description="套餐类型")
-    customer_name: str = Field(..., min_length=1, max_length=100, description="联系人姓名")
-    customer_email: str = Field(..., description="电子邮箱")
-    customer_company: Optional[str] = Field(None, max_length=200, description="企业名称")
-    customer_phone: Optional[str] = Field(None, max_length=50, description="联系电话")
+    """创建支付订单请求（额度充值用）"""
+    plan_type: str = Field(..., pattern=r'^(free|depth|annual|source|basic|pro)$', description="套餐类型")
 
 
 @router.post("/api/v1/payment/create")
-async def create_payment(req: PaymentCreateRequest):
+async def create_payment(req: PaymentCreateRequest, authorization: str = Header(None)):
     """
-    创建支付订单，返回支付宝支付二维码链接
-
+    创建支付订单（需JWT认证）
+    
     流程:
-    1. 校验套餐类型和价格
-    2. 在数据库中创建订单记录
-    3. 调用支付宝当面付 API 生成二维码
-    4. 返回支付信息给前端
+    1. 验证JWT token
+    2. 根据plan_type确定价格（支持老的咨询套餐和新的额度套餐）
+    3. 创建订单，关联到当前用户
+    4. 调用支付宝当面付生成支付二维码
+    5. 返回支付信息
     """
+    # 1. JWT认证
+    payload = _get_jwt_user(authorization)
+    user_id = int(payload["sub"])
+    user_email = payload.get("email", "")
+
+    # 2. 校验套餐
     plan_type = req.plan_type
-    if plan_type not in PLAN_PRICES:
+    
+    # 判断是老的咨询套餐还是新的额度套餐
+    if plan_type in PLAN_PRICES:
+        price = PLAN_PRICES[plan_type]
+        plan_name = PLAN_NAMES.get(plan_type, plan_type)
+    elif plan_type in SUBSCRIPTION_PLANS:
+        sp = SUBSCRIPTION_PLANS[plan_type]
+        price = sp["price"]
+        plan_name = sp["name"]
+    else:
         raise HTTPException(status_code=400, detail=f"不支持的套餐类型: {plan_type}")
 
-    price = PLAN_PRICES[plan_type]
+    # 获取用户信息
+    conn = get_db()
+    try:
+        cursor = conn.execute("SELECT id, username, email FROM users WHERE id = ?", (user_id,))
+        user = cursor.fetchone()
+        if not user:
+            raise HTTPException(status_code=404, detail="用户不存在")
+        username = user["username"]
+        email = user["email"]
+    finally:
+        conn.close()
+
     order_no = _generate_order_no()
 
     conn = get_db()
     try:
         cursor = conn.execute(
             """INSERT INTO orders (
-                order_no, user_company, user_name, user_phone, user_email,
+                order_no, user_id, user_company, user_name, user_email,
                 plan_type, price, status
             ) VALUES (?, ?, ?, ?, ?, ?, ?, 'pending')""",
-            (order_no, req.customer_company or "", req.customer_name,
-             req.customer_phone or "", req.customer_email,
+            (order_no, user_id, username, username, email,
              plan_type, price),
         )
         conn.commit()
@@ -229,32 +366,30 @@ async def create_payment(req: PaymentCreateRequest):
 
     if alipay_client and price > 0:
         try:
-            # 描述订单信息
-            subject = f"中韩出海数智港 - {PLAN_NAMES.get(plan_type, plan_type)}"
-
-            # 当面付 (Face-to-Face) 预创建订单
-            # 使用 alipay.trade.precreate 接口
+            subject = f"中韩出海数智港 - {plan_name}"
             result = alipay_client.api_alipay_trade_precreate(
                 subject=subject,
                 out_trade_no=order_no,
                 total_amount=price,
-                quit_url="",  # 可选：用户付款中途退出返回的URL
+                quit_url="",
             )
-
             if result.get("code") == "10000":
                 qr_code_url = result.get("qr_code")
                 alipay_trade_no = result.get("trade_no")
                 logger.info(f"支付宝订单创建成功: order_no={order_no}, qr_code={qr_code_url}")
+                # 保存支付宝交易号
+                if alipay_trade_no:
+                    conn = get_db()
+                    conn.execute("UPDATE orders SET alipay_trade_no = ? WHERE id = ?", (alipay_trade_no, order_id))
+                    conn.commit()
+                    conn.close()
             else:
-                logger.warning(f"支付宝预创建失败: {result.get('code')} - {result.get('msg')} - {result.get('sub_msg')}")
-                # 降级: 返回模拟二维码
+                logger.warning(f"支付宝预创建失败: {result.get('code')} - {result.get('msg')}")
         except Exception as e:
             logger.error(f"调用支付宝API异常: {e}")
-            # 降级处理
 
-    # 如果支付宝不可用或金额为0，生成模拟支付二维码
+    # 免费方案直接标记已支付并增加额度
     if price == 0:
-        # 免费方案：直接标记为已支付
         conn = get_db()
         try:
             conn.execute(
@@ -267,13 +402,16 @@ async def create_payment(req: PaymentCreateRequest):
         finally:
             conn.close()
 
+        # 免费方案增加额度（如果是额度套餐）
+        _apply_quota_on_payment(order_id)
+
         return {
             "success": True,
             "order_id": order_id,
             "order_no": order_no,
             "price": price,
             "plan_type": plan_type,
-            "plan_name": PLAN_NAMES.get(plan_type, plan_type),
+            "plan_name": plan_name,
             "status": "paid",
             "qr_code_url": None,
             "alipay_trade_no": None,
@@ -288,7 +426,7 @@ async def create_payment(req: PaymentCreateRequest):
             "order_no": order_no,
             "price": price,
             "plan_type": plan_type,
-            "plan_name": PLAN_NAMES.get(plan_type, plan_type),
+            "plan_name": plan_name,
             "status": "pending",
             "qr_code_url": qr_code_url,
             "alipay_trade_no": alipay_trade_no,
@@ -296,18 +434,18 @@ async def create_payment(req: PaymentCreateRequest):
             "is_free": False,
         }
     else:
-        # 支付宝未配置，返回模拟支付模式
+        # 支付宝不可用或金额为0，返回模拟支付模式
         return {
             "success": True,
             "order_id": order_id,
             "order_no": order_no,
             "price": price,
             "plan_type": plan_type,
-            "plan_name": PLAN_NAMES.get(plan_type, plan_type),
+            "plan_name": plan_name,
             "status": "pending",
             "qr_code_url": None,
             "alipay_trade_no": None,
-            "message": "订单创建成功（演示模式，请联系客服完成支付）",
+            "message": "订单创建成功（模拟模式，点击完成支付模拟支付成功）",
             "is_free": False,
             "simulate_mode": True,
         }
@@ -317,9 +455,9 @@ async def create_payment(req: PaymentCreateRequest):
 async def payment_notify(request: Request):
     """
     支付宝异步支付回调通知
-
+    
     支付宝 POST 方式通知，参数以 form-data 格式发送
-    需要验证签名并处理订单状态更新
+    需要验证签名并处理订单状态更新，支付成功后自动增加用户额度
     """
     try:
         form_data = await request.form()
@@ -413,6 +551,12 @@ async def payment_notify(request: Request):
                                 pass
                     except Exception as e:
                         logger.warning(f"License 生成失败: {e}")
+
+                    # 额度充值：支付成功后自动更新用户额度
+                    try:
+                        _apply_quota_on_payment(order_id)
+                    except Exception as e:
+                        logger.warning(f"额度更新失败: {e}")
         except Exception as e:
             logger.error(f"回调处理异常: {e}")
             return {"success": False, "message": str(e)}
@@ -894,3 +1038,195 @@ async def get_order_stats(authorization: str = Header(None)):
     finally:
         conn.close()
 
+
+# ═══════════════════════════════════════════════════════
+# 新JWT支付订单查询 & 人工充值
+# ═══════════════════════════════════════════════════════
+
+@router.get("/api/v1/payment/query/{order_id}")
+async def query_payment(order_id: int, authorization: str = Header(None)):
+    """
+    查询支付订单状态（需JWT认证）
+
+    返回订单信息，包括支付状态、套餐信息等
+    """
+    payload = _get_jwt_user(authorization)
+    user_id = int(payload["sub"])
+
+    conn = get_db()
+    try:
+        cursor = conn.execute(
+            """SELECT id, order_no, user_id, plan_type, price, 
+                      status, alipay_trade_no, license_key,
+                      created_at, paid_at
+               FROM orders WHERE id = ?""",
+            (order_id,),
+        )
+        row = cursor.fetchone()
+        if not row:
+            raise HTTPException(status_code=404, detail="订单不存在")
+
+        columns = [desc[0] for desc in cursor.description]
+        order = dict(zip(columns, row))
+
+        # 验证订单属于当前用户
+        if order["user_id"] != user_id:
+            # 管理员可以查所有订单
+            from backend.routers.admin import _verify_token
+            try:
+                admin_token = authorization.replace("Bearer ", "")
+                if not _verify_token(admin_token):
+                    raise HTTPException(status_code=403, detail="无权访问该订单")
+            except Exception:
+                raise HTTPException(status_code=403, detail="无权访问该订单")
+
+        # 获取套餐名称
+        plan_name = ""
+        if order["plan_type"] in PLAN_NAMES:
+            plan_name = PLAN_NAMES[order["plan_type"]]
+        elif order["plan_type"] in SUBSCRIPTION_PLANS:
+            plan_name = SUBSCRIPTION_PLANS[order["plan_type"]]["name"]
+        else:
+            plan_name = order["plan_type"]
+
+        # 查询用户当前额度
+        quota_info = None
+        cursor2 = conn.execute(
+            "SELECT total_quota, used_quota, plan_type, expires_at FROM user_quotas WHERE user_id = ?",
+            (order["user_id"],),
+        )
+        quota_row = cursor2.fetchone()
+        if quota_row:
+            quota_info = {
+                "total_quota": quota_row["total_quota"],
+                "used_quota": quota_row["used_quota"],
+                "remaining": quota_row["total_quota"] - quota_row["used_quota"],
+                "plan_type": quota_row["plan_type"],
+                "expires_at": quota_row["expires_at"],
+            }
+
+        return {
+            "success": True,
+            "data": {
+                "order_id": order["id"],
+                "order_no": order["order_no"],
+                "plan_type": order["plan_type"],
+                "plan_name": plan_name,
+                "price": order["price"],
+                "status": order["status"],
+                "alipay_trade_no": order.get("alipay_trade_no"),
+                "license_key": order.get("license_key"),
+                "created_at": order["created_at"],
+                "paid_at": order["paid_at"],
+                "quota": quota_info,
+            },
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"查询失败: {str(e)}")
+    finally:
+        conn.close()
+
+
+@router.post("/api/v1/payment/topup")
+async def admin_topup(
+    req: Request,
+    authorization: str = Header(None),
+):
+    """
+    人工充值（admin接口，需admin认证）
+
+    请求体: {"user_id": 1, "amount": 100, "plan_type": "pro", "remark": "客户补偿"}
+    直接为用户增加 quota，不经过支付宝
+    """
+    # 验证admin
+    admin_payload = _require_admin(authorization)
+
+    try:
+        body = await req.json()
+    except Exception:
+        raise HTTPException(status_code=400, detail="无效的请求格式")
+
+    target_user_id = body.get("user_id")
+    amount = body.get("amount", 0)
+    plan_type = body.get("plan_type", "pro")
+    remark = body.get("remark", "")
+
+    if not target_user_id or not isinstance(target_user_id, int):
+        raise HTTPException(status_code=400, detail="请提供有效的 user_id")
+    if amount <= 0:
+        raise HTTPException(status_code=400, detail="充值金额必须大于0")
+
+    # 根据plan_type计算要增加的额度
+    add_quota = 0
+    if plan_type == "basic":
+        add_quota = 100
+    elif plan_type == "pro":
+        add_quota = 500
+    else:
+        # 自定义金额对应额度（每1元=1次额度）
+        add_quota = int(amount)
+
+    conn = get_db()
+    try:
+        # 检查用户是否存在
+        cursor = conn.execute("SELECT id, username FROM users WHERE id = ?", (target_user_id,))
+        user = cursor.fetchone()
+        if not user:
+            raise HTTPException(status_code=404, detail=f"用户不存在: user_id={target_user_id}")
+
+        # 创建订单记录
+        order_no = _generate_order_no()
+        cursor = conn.execute(
+            """INSERT INTO orders (order_no, user_id, user_company, user_name, user_email,
+                plan_type, price, status, paid_at)
+               VALUES (?, ?, ?, ?, ?, ?, ?, 'paid', CURRENT_TIMESTAMP)""",
+            (order_no, target_user_id, user["username"], user["username"], "",
+             plan_type, amount),
+        )
+        order_id = cursor.lastrowid
+
+        # 更新用户额度
+        cursor.execute("SELECT id, total_quota FROM user_quotas WHERE user_id = ?", (target_user_id,))
+        existing = cursor.fetchone()
+
+        if existing:
+            new_total = existing["total_quota"] + add_quota
+            expires_at = (datetime.utcnow() + timedelta(days=365)).isoformat()
+            conn.execute(
+                """UPDATE user_quotas 
+                   SET plan_type = ?, total_quota = ?, expires_at = ?, updated_at = CURRENT_TIMESTAMP 
+                   WHERE user_id = ?""",
+                (plan_type, new_total, expires_at, target_user_id),
+            )
+        else:
+            expires_at = (datetime.utcnow() + timedelta(days=365)).isoformat()
+            conn.execute(
+                "INSERT INTO user_quotas (user_id, plan_type, total_quota, used_quota, expires_at) VALUES (?, ?, ?, 0, ?)",
+                (target_user_id, plan_type, add_quota, expires_at),
+            )
+
+        conn.commit()
+
+        logger.info(f"人工充值成功: user_id={target_user_id}, amount={amount}, add_quota={add_quota}, remark={remark}")
+
+        return {
+            "success": True,
+            "message": f"充值成功，为用户 {user['username']} 增加 {add_quota} 次额度",
+            "data": {
+                "order_id": order_id,
+                "user_id": target_user_id,
+                "username": user["username"],
+                "amount": amount,
+                "add_quota": add_quota,
+                "plan_type": plan_type,
+                "remark": remark,
+            },
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"充值失败: {str(e)}")
+    finally:
+        conn.close()

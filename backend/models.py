@@ -82,3 +82,29 @@ class PaymentCreate(BaseModel):
 class StatusUpdate(BaseModel):
     """订单状态更新请求"""
     status: str = Field(..., pattern=r'^(paid|cancelled)$', description="目标状态: paid/cancelled")
+
+
+# ── 支付系统模型（新JWT认证版）──────────────────────────
+
+class TopUpRequest(BaseModel):
+    """人工充值请求（admin接口）"""
+    user_id: int = Field(..., description="用户ID")
+    amount: float = Field(..., gt=0, description="充值金额（元）")
+    plan_type: str = Field("pro", pattern=r'^(basic|pro)$', description="充值到的套餐类型")
+    remark: Optional[str] = Field(None, max_length=200, description="充值备注")
+
+
+class PaymentOrderResponse(BaseModel):
+    """支付订单创建响应"""
+    success: bool = True
+    message: str = "订单创建成功"
+    order_id: int
+    order_no: str
+    price: float
+    plan_type: str
+    plan_name: str
+    status: str
+    qr_code_url: Optional[str] = None
+    alipay_trade_no: Optional[str] = None
+    is_free: bool = False
+    simulate_mode: bool = False

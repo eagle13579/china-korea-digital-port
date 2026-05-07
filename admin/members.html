@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>会员管理 - 中韩出海数智港</title>
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        body { background: #0f172a; color: #e2e8f0; font-family: 'Inter', system-ui, sans-serif; }
+        .card { background: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 20px; }
+        .btn { padding: 8px 16px; border-radius: 8px; border: none; font-weight: 500; cursor: pointer; transition: all .2s; }
+        .btn-primary { background: #6366f1; color: #fff; }
+        .btn-primary:hover { background: #4f46e5; }
+        .btn-danger { background: #dc2626; color: #fff; }
+        .btn-danger:hover { background: #b91c1c; }
+        .btn-sm { padding: 4px 12px; font-size: 13px; }
+        .btn-success { background: #16a34a; color: #fff; }
+        .btn-success:hover { background: #15803d; }
+        .badge { padding: 3px 10px; border-radius: 12px; font-size: 12px; font-weight: 500; }
+        .badge-free { background: #1e293b; color: #94a3b8; }
+        .badge-basic { background: #166534; color: #86efac; }
+        .badge-pro { background: #1e40af; color: #93c5fd; }
+        .badge-depth { background: #854d0e; color: #fde68a; }
+        .badge-annual { background: #6b21a8; color: #d8b4fe; }
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 50; display: flex; align-items: center; justify-content: center; }
+        .modal-box { background: #1e293b; border: 1px solid #334155; border-radius: 16px; padding: 24px; max-width: 600px; width: 90%; max-height: 80vh; overflow-y: auto; }
+        input, select, textarea { background: #0f172a; border: 1px solid #334155; border-radius: 8px; padding: 8px 12px; color: #e2e8f0; width: 100%; }
+        input:focus, select:focus { outline: none; border-color: #6366f1; }
+        table { width: 100%; border-collapse: collapse; }
+        th { text-align: left; padding: 12px 8px; border-bottom: 1px solid #334155; color: #94a3b8; font-weight: 500; font-size: 12px; text-transform: uppercase; }
+        td { padding: 12px 8px; border-bottom: 1px solid #1e293b; font-size: 14px; }
+        tr:hover td { background: rgba(99,102,241,0.05); }
+        .page-btn { padding: 6px 12px; border-radius: 6px; border: 1px solid #334155; background: #1e293b; color: #e2e8f0; cursor: pointer; font-size: 13px; }
+        .page-btn.active { background: #6366f1; border-color: #6366f1; }
+        .page-btn:hover:not(.active) { border-color: #6366f1; }
+    </style>
+</head>
+<body>
+<div x-data="memberApp()" x-init="init()" class="container mx-auto p-6">
+    <!-- 顶部导航 -->
+    <div class="flex justify-between items-center mb-6">
+        <div>
+            <h1 class="text-2xl font-bold">会员管理</h1>
+            <p class="text-sm text-slate-400 mt-1" x-text="`共 ${total} 位会员`"></p>
+        </div>
+        <div class="flex gap-2">
+            <a href="/admin/index.html" class="btn btn-sm" style="background:#334155;color:#e2e8f0">← 返回后台</a>
+        </div>
+    </div>
+
+    <!-- 搜索与筛选 -->
+    <div class="card mb-6">
+        <div class="flex gap-3 flex-wrap items-center">
+            <div class="flex-1 min-w-[200px]">
+                <input type="text" x-model="search" placeholder="搜索用户名/邮箱..." @keyup.enter="loadMembers(1)" class="w-full">
+            </div>
+            <select x-model="planFilter" @change="loadMembers(1)" class="w-32">
+                <option value="">全部套餐</option>
+                <option value="free">免费</option>
+                <option value="basic">基础版</option>
+                <option value="pro">专业版</option>
+            </select>
+            <button @click="loadMembers(1)" class="btn btn-primary">搜索</button>
+            <button @click="search=''; planFilter=''; loadMembers(1)" class="btn" style="background:#334155;color:#e2e8f0">重置</button>
+        </div>
+    </div>
+
+    <!-- 会员列表 -->
+    <div class="card p-0 overflow-x-auto">
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>用户名</th>
+                    <th>邮箱</th>
+                    <th>套餐</th>
+                    <th>总额度</th>
+                    <th>已用</th>
+                    <th>剩余</th>
+                    <th>订单数</th>
+                    <th>消费额</th>
+                    <th>注册时间</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                <template x-for="m in members" :key="m.id">
+                    <tr>
+                        <td class="text-slate-400" x-text="m.id"></td>
+                        <td class="font-medium" x-text="m.username"></td>
+                        <td class="text-slate-300" x-text="m.email"></td>
+                        <td><span class="badge" :class="`badge-${m.plan_type}`" x-text="planLabel(m.plan_type)"></span></td>
+                        <td x-text="m.total_quota"></td>
+                        <td x-text="m.used_quota"></td>
+                        <td :class="m.remaining > 0 ? 'text-green-400' : 'text-red-400'" x-text="m.remaining"></td>
+                        <td x-text="m.order_count"></td>
+                        <td x-text="`¥${m.total_spent.toFixed(0)}`"></td>
+                        <td class="text-slate-400 text-xs" x-text="m.created_at?.slice(0,10)"></td>
+                        <td>
+                            <div class="flex gap-1">
+                                <button @click="showDetail(m.id)" class="btn btn-sm" style="background:#334155;color:#e2e8f0">详情</button>
+                                <button @click="openTopup(m)" class="btn btn-sm btn-success">充值</button>
+                                <button @click="suspendMember(m.id)" class="btn btn-sm btn-danger">暂停</button>
+                            </div>
+                        </td>
+                    </tr>
+                </template>
+                <template x-if="members.length === 0">
+                    <tr><td colspan="11" class="text-center py-8 text-slate-500">暂无会员数据</td></tr>
+                </template>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- 分页 -->
+    <div class="flex justify-between items-center mt-4" x-show="total_pages > 1">
+        <span class="text-sm text-slate-400" x-text="`第 ${page} / ${total_pages} 页`"></span>
+        <div class="flex gap-1">
+            <button class="page-btn" @click="loadMembers(1)" x-bind:disabled="page===1">首页</button>
+            <button class="page-btn" @click="loadMembers(page-1)" x-bind:disabled="page===1">上一页</button>
+            <template x-for="p in paginationButtons()" :key="p">
+                <button class="page-btn" :class="p===page?'active':''" @click="loadMembers(p)" x-text="p"></button>
+            </template>
+            <button class="page-btn" @click="loadMembers(page+1)" x-bind:disabled="page===total_pages">下一页</button>
+            <button class="page-btn" @click="loadMembers(total_pages)" x-bind:disabled="page===total_pages">末页</button>
+        </div>
+    </div>
+
+    <!-- 详情弹窗 -->
+    <div x-show="detailOpen" class="modal-overlay" @click.self="detailOpen=false">
+        <div class="modal-box">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-lg font-bold">会员详情</h2>
+                <button @click="detailOpen=false" class="text-slate-400 hover:text-white text-xl">&times;</button>
+            </div>
+            <template x-if="detailData">
+                <div>
+                    <div class="grid grid-cols-2 gap-4 mb-6">
+                        <div><label class="text-xs text-slate-400">用户名</label><p class="font-medium" x-text="detailData.user?.username"></p></div>
+                        <div><label class="text-xs text-slate-400">邮箱</label><p x-text="detailData.user?.email"></p></div>
+                        <div><label class="text-xs text-slate-400">套餐</label><p x-text="planLabel(detailData.quota?.plan_type)"></p></div>
+                        <div><label class="text-xs text-slate-400">额度</label><p><span x-text="detailData.quota?.total_quota"></span> / <span x-text="detailData.quota?.used_quota" class="text-slate-400"></span> (剩余 <span :class="(detailData.quota?.total_quota - detailData.quota?.used_quota) > 0 ? 'text-green-400' : 'text-red-400'" x-text="detailData.quota?.total_quota - detailData.quota?.used_quota"></span>)</p></div>
+                        <div><label class="text-xs text-slate-400">注册时间</label><p class="text-sm" x-text="detailData.user?.created_at"></p></div>
+                        <div><label class="text-xs text-slate-400">订单总数 / 总消费</label><p class="text-sm" x-text="`${detailData.order_count} 单 / ¥${(detailData.total_spent||0).toFixed(0)}`"></p></div>
+                    </div>
+                    <h3 class="text-sm font-semibold text-slate-300 mb-2">最近订单</h3>
+                    <table class="text-sm">
+                        <thead><tr><th>订单号</th><th>套餐</th><th>金额</th><th>状态</th><th>时间</th></tr></thead>
+                        <tbody>
+                            <template x-for="o in (detailData.orders||[])" :key="o.id">
+                                <tr>
+                                    <td class="text-xs" x-text="o.order_no"></td>
+                                    <td x-text="planLabel(o.plan_type)"></td>
+                                    <td x-text="`¥${o.price}`"></td>
+                                    <td><span :class="o.status==='paid'?'text-green-400':'text-yellow-400'" x-text="o.status"></span></td>
+                                    <td class="text-xs text-slate-400" x-text="o.created_at"></td>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                </div>
+            </template>
+        </div>
+    </div>
+
+    <!-- 充值弹窗 -->
+    <div x-show="topupOpen" class="modal-overlay" @click.self="topupOpen=false">
+        <div class="modal-box">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-lg font-bold">会员充值</h2>
+                <button @click="topupOpen=false" class="text-slate-400 hover:text-white text-xl">&times;</button>
+            </div>
+            <p class="text-sm text-slate-400 mb-4">为 <span class="text-white font-medium" x-text="topupTarget?.username"></span> (<span x-text="topupTarget?.email"></span>) 充值额度</p>
+            <div class="space-y-4">
+                <div>
+                    <label class="text-sm text-slate-400 block mb-1">套餐类型</label>
+                    <select x-model="topupForm.plan_type">
+                        <option value="basic">基础版 (¥99/100额度)</option>
+                        <option value="pro">专业版 (¥299/500额度)</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="text-sm text-slate-400 block mb-1">充值额度（次数）</label>
+                    <input type="number" x-model="topupForm.amount" min="1" placeholder="输入充值次数">
+                </div>
+                <div>
+                    <label class="text-sm text-slate-400 block mb-1">备注（可选）</label>
+                    <input type="text" x-model="topupForm.remark" placeholder="客户补偿、促销赠送等">
+                </div>
+            </div>
+            <div class="flex gap-2 mt-6">
+                <button @click="doTopup()" class="btn btn-success flex-1" :disabled="topupLoading">
+                    <span x-text="topupLoading ? '充值中...' : '确认充值'"></span>
+                </button>
+                <button @click="topupOpen=false" class="btn" style="background:#334155;color:#e2e8f0">取消</button>
+            </div>
+            <div x-show="topupMsg" class="mt-3 text-sm" :class="topupMsgType === 'success' ? 'text-green-400' : 'text-red-400'" x-text="topupMsg"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+function memberApp() {
+    return {
+        members: [],
+        total: 0,
+        page: 1,
+        page_size: 20,
+        total_pages: 1,
+        search: '',
+        planFilter: '',
+        detailOpen: false,
+        detailData: null,
+        topupOpen: false,
+        topupTarget: null,
+        topupLoading: false,
+        topupMsg: '',
+        topupMsgType: 'success',
+        topupForm: { plan_type: 'basic', amount: 100, remark: '' },
+
+        async init() {
+            const token = localStorage.getItem('admin_token');
+            if (!token) { window.location.href = '/admin/index.html'; return; }
+            this.loadMembers(1);
+        },
+
+        getAuthHeaders() {
+            const token = localStorage.getItem('admin_token');
+            return { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' };
+        },
+
+        async loadMembers(p) {
+            this.page = p;
+            const params = new URLSearchParams({ page: p, page_size: this.page_size });
+            if (this.search) params.append('search', this.search);
+            if (this.planFilter) params.append('plan_type', this.planFilter);
+            try {
+                const r = await fetch(`/api/v1/admin/members?${params}`, { headers: this.getAuthHeaders() });
+                const d = await r.json();
+                if (d.success) {
+                    this.members = d.data;
+                    this.total = d.total;
+                    this.total_pages = d.total_pages;
+                } else {
+                    alert(d.detail || '加载失败');
+                }
+            } catch(e) {
+                console.error('load members error:', e);
+            }
+        },
+
+        async showDetail(userId) {
+            try {
+                const r = await fetch(`/api/v1/admin/members/${userId}`, { headers: this.getAuthHeaders() });
+                const d = await r.json();
+                if (d.success) {
+                    this.detailData = d.data;
+                    this.detailOpen = true;
+                }
+            } catch(e) {
+                console.error('detail error:', e);
+            }
+        },
+
+        openTopup(member) {
+            this.topupTarget = member;
+            this.topupForm = { plan_type: 'basic', amount: 100, remark: '' };
+            this.topupMsg = '';
+            this.topupOpen = true;
+        },
+
+        async doTopup() {
+            if (!this.topupForm.amount || this.topupForm.amount <= 0) {
+                this.topupMsg = '请输入有效的充值额度';
+                this.topupMsgType = 'error';
+                return;
+            }
+            this.topupLoading = true;
+            this.topupMsg = '';
+            try {
+                const r = await fetch(`/api/v1/admin/members/${this.topupTarget.id}/topup`, {
+                    method: 'POST',
+                    headers: this.getAuthHeaders(),
+                    body: JSON.stringify(this.topupForm)
+                });
+                const d = await r.json();
+                if (d.success) {
+                    this.topupMsg = `✅ ${d.message}`;
+                    this.topupMsgType = 'success';
+                    this.loadMembers(this.page);
+                    setTimeout(() => { this.topupOpen = false; }, 1500);
+                } else {
+                    this.topupMsg = `❌ ${d.detail || '充值失败'}`;
+                    this.topupMsgType = 'error';
+                }
+            } catch(e) {
+                this.topupMsg = '❌ 网络错误';
+                this.topupMsgType = 'error';
+            }
+            this.topupLoading = false;
+        },
+
+        async suspendMember(userId) {
+            if (!confirm('确认暂停该会员的额度？（额度将清零）')) return;
+            try {
+                const r = await fetch(`/api/v1/admin/members/${userId}/suspend`, {
+                    method: 'POST',
+                    headers: this.getAuthHeaders()
+                });
+                const d = await r.json();
+                if (d.success) {
+                    alert(d.message);
+                    this.loadMembers(this.page);
+                } else {
+                    alert(d.detail || '操作失败');
+                }
+            } catch(e) {
+                alert('网络错误');
+            }
+        },
+
+        planLabel(type) {
+            const labels = { free: '免费', basic: '基础版', pro: '专业版', depth: '深度方案', annual: '年订阅', source: '源码授权' };
+            return labels[type] || type;
+        },
+
+        paginationButtons() {
+            const pages = [];
+            const tp = this.total_pages;
+            const cur = this.page;
+            let start = Math.max(1, cur - 2);
+            let end = Math.min(tp, cur + 2);
+            if (end - start < 4) {
+                if (start === 1) end = Math.min(tp, start + 4);
+                else start = Math.max(1, end - 4);
+            }
+            for (let i = start; i <= end; i++) pages.push(i);
+            return pages;
+        }
+    };
+}
+</script>
+</body>
+</html>

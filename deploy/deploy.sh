@@ -12,8 +12,9 @@ set -euo pipefail
 APP_DIR="/var/www/china-korea-digital-port"
 SERVICE_NAME="ckdp-backend"
 NGINX_SITE="go-aiport.com"
-NGINX_SRC="$(dirname "$0")/nginx.conf"
-SERVICE_SRC="$(dirname "$0")/ckdp-backend.service"
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+NGINX_SRC="$SCRIPT_DIR/nginx.conf"
+SERVICE_SRC="$SCRIPT_DIR/ckdp-backend.service"
 
 echo ""
 echo "=========================================="
@@ -22,8 +23,16 @@ echo "  时间: $(date '+%Y-%m-%d %H:%M:%S')"
 echo "=========================================="
 echo ""
 
+# ── Step 0: 确保目标目录存在 ──
+echo "[0/7] 确保目标目录存在..."
+if [ ! -d "$APP_DIR" ]; then
+    echo "  ! 目标目录 $APP_DIR 不存在，请先手动创建或从 Git 克隆"
+    echo "  执行: sudo mkdir -p $APP_DIR && sudo chown \$USER:\$USER $APP_DIR && git clone <repo-url> $APP_DIR"
+    exit 1
+fi
+
 # ── Step 1: 拉取最新代码 ──
-echo "[1/7] 拉取最新代码..."
+echo "[1/8] 拉取最新代码..."
 cd "$APP_DIR"
 if [ -d ".git" ]; then
     git pull origin main
@@ -32,7 +41,7 @@ else
 fi
 
 # ── Step 2: 创建/更新 Python 虚拟环境 ──
-echo "[2/7] 设置 Python 虚拟环境..."
+echo "[2/8] 设置 Python 虚拟环境..."
 if [ ! -d "venv" ]; then
     python3 -m venv venv
     echo "  ✓ 虚拟环境已创建"
@@ -43,7 +52,7 @@ pip install --quiet -r requirements.txt
 pip install --quiet uvicorn[standard]
 
 # ── Step 3: 配置环境变量 ──
-echo "[3/7] 配置环境变量..."
+echo "[3/8] 配置环境变量..."
 if [ ! -f ".env" ]; then
     if [ -f ".env.example" ]; then
         cp .env.example .env
@@ -57,7 +66,7 @@ else
 fi
 
 # ── Step 4: 部署 Nginx 配置 ──
-echo "[4/7] 部署 Nginx 配置..."
+echo "[4/8] 部署 Nginx 配置..."
 sudo cp "$NGINX_SRC" "/etc/nginx/sites-available/$NGINX_SITE"
 # 启用站点（如果尚未启用）
 if [ ! -L "/etc/nginx/sites-enabled/$NGINX_SITE" ]; then
@@ -68,13 +77,13 @@ sudo nginx -t
 echo "  ✓ Nginx 配置测试通过"
 
 # ── Step 5: 部署 Systemd 服务 ──
-echo "[5/7] 部署 Systemd 服务..."
+echo "[5/8] 部署 Systemd 服务..."
 sudo cp "$SERVICE_SRC" "/etc/systemd/system/$SERVICE_NAME.service"
 sudo systemctl daemon-reload
 echo "  ✓ Systemd 服务已部署"
 
 # ── Step 6: 创建日志目录 & 设置权限 ──
-echo "[6/7] 设置日志目录和权限..."
+echo "[6/8] 设置日志目录和权限..."
 sudo mkdir -p /var/log/ckdp
 sudo touch /var/log/ckdp/backend.log /var/log/ckdp/backend-error.log
 sudo chown -R opc:opc /var/log/ckdp
@@ -85,10 +94,12 @@ sudo chown -R opc:opc "$APP_DIR/backend/data"
 sudo chmod 755 "$APP_DIR/backend/data"
 
 # 确保 admin 目录权限正确
-sudo chown -R opc:opc "$APP_DIR/admin"
+if [ -d "$APP_DIR/admin" ]; then
+    sudo chown -R opc:opc "$APP_DIR/admin"
+fi
 
 # ── Step 7: 启动服务 & 重载 Nginx ──
-echo "[7/7] 启动服务..."
+echo "[7/8] 启动服务..."
 sudo systemctl enable "$SERVICE_NAME"
 sudo systemctl restart "$SERVICE_NAME"
 sudo systemctl reload nginx
@@ -98,7 +109,7 @@ sleep 3
 
 echo ""
 echo "=========================================="
-echo "  部署完成 — 健康检查"
+echo "[8/8] 健康检查..."
 echo "=========================================="
 
 # 健康检查

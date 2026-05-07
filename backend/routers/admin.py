@@ -19,8 +19,8 @@ router = APIRouter(tags=["admin"])
 # 安全认证 — 必须从环境变量读取 ADMIN_USERNAME 和 ADMIN_PASSWORD
 # 如果环境变量未设置，则抛出错误，强制要求配置，杜绝默认密码风险
 # 生产环境必须通过 .env 或系统环境变量设置强密码！
-_ADMIN_USER = os.environ.get("ADMIN_USERNAME")
-_ADMIN_PASS = os.environ.get("ADMIN_PASSWORD")
+_ADMIN_USER = os.environ.get("ADMIN_USERNAME") or os.environ.get("ADMIN_USER")
+_ADMIN_PASS = os.environ.get("ADMIN_PASSWORD") or os.environ.get("ADMIN_PASS")
 if not _ADMIN_USER or not _ADMIN_PASS:
     raise RuntimeError(
         "请设置环境变量 ADMIN_USERNAME 和 ADMIN_PASSWORD！"

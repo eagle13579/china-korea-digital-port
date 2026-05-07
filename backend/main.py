@@ -11,7 +11,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 from backend.database import init_db
-from backend.routers import contact, demo, pricing, admin, employees, service_inquiry, payment, compliance
+from backend.routers import contact, demo, pricing, admin, employees, service_inquiry, payment, compliance, auth, members
 # order.py 已废弃并合并到 payment.py 中
 
 # 项目根目录
@@ -52,6 +52,8 @@ app.include_router(employees.router)
 app.include_router(service_inquiry.router)
 app.include_router(payment.router)
 app.include_router(compliance.router)
+app.include_router(auth.router)
+app.include_router(members.router)
 
 # 静态文件路由
 @app.get("/")
@@ -82,6 +84,10 @@ async def checkout_html():
 async def payment_success_html():
     return FileResponse(os.path.join(ROOT_DIR, "payment-success.html"))
 
+@app.get("/payment.html")
+async def payment_html():
+    return FileResponse(os.path.join(ROOT_DIR, "payment.html"))
+
 @app.get("/demo.html")
 async def demo_html():
     return FileResponse(os.path.join(ROOT_DIR, "demo.html"))
@@ -93,6 +99,18 @@ async def admin_funnel_html():
 @app.get("/admin/quote.html")
 async def admin_quote_html():
     return FileResponse(os.path.join(ROOT_DIR, "admin", "quote.html"))
+
+@app.get("/login.html")
+async def login_html():
+    return FileResponse(os.path.join(ROOT_DIR, "login.html"))
+
+@app.get("/register.html")
+async def register_html():
+    return FileResponse(os.path.join(ROOT_DIR, "register.html"))
+
+@app.get("/account.html")
+async def account_html():
+    return FileResponse(os.path.join(ROOT_DIR, "account.html"))
 
 @app.get("/team.html")
 async def team_html():
@@ -159,5 +177,6 @@ async def health():
 async def startup():
     """启动时初始化数据库"""
     init_db()
+
 
 

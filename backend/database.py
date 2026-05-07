@@ -93,7 +93,7 @@ def init_db():
         )
     """)
 
-    # 订单表 — 沙箱支付模式
+    # 订单表 — 沙箱支付模式（兼容新旧两套系统）
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS orders (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -102,16 +102,16 @@ def init_db():
             user_name TEXT NOT NULL,
             user_phone TEXT,
             user_email TEXT NOT NULL,
-            plan_type TEXT NOT NULL CHECK(plan_type IN ('free','depth','annual','source')),
+            plan_type TEXT NOT NULL CHECK(plan_type IN ('free','depth','annual','source','basic','pro')),
             price REAL NOT NULL DEFAULT 0,
-            status TEXT NOT NULL DEFAULT 'pending' CHECK(status IN ('pending','paid','cancelled')),
+            status TEXT NOT NULL DEFAULT 'pending' CHECK(status IN ('pending','paid','cancelled','failed','refunded')),
             license_key TEXT,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             updated_at TIMESTAMP
         )
     """)
 
-    # 迁移：为现有记录添加order_no（如果列为空）
+    # 迁移：为现有记录添加新字段（兼容新旧两套系统）
     cursor.execute("PRAGMA table_info(orders)")
     cols = [r[1] for r in cursor.fetchall()]
     if 'order_no' in cols:
@@ -120,9 +120,10 @@ def init_db():
         cursor.execute("ALTER TABLE orders ADD COLUMN license_key TEXT")
     if 'paid_at' not in cols:
         cursor.execute("ALTER TABLE orders ADD COLUMN paid_at TIMESTAMP")
-    if 'customer_name' not in cols:
-        # user_name already covers this; adding alias column for compatibility
-        pass
+    if 'user_id' not in cols:
+        cursor.execute("ALTER TABLE orders ADD COLUMN user_id INTEGER REFERENCES users(id)")
+    if 'alipay_trade_no' not in cols:
+        cursor.execute("ALTER TABLE orders ADD COLUMN alipay_trade_no TEXT")
 
     # 支付表 — 三种付款方式 + 凭证上传
     cursor.execute("""
@@ -206,6 +207,33 @@ def init_db():
             cursor.execute(f"ALTER TABLE {tbl} ADD COLUMN stage TEXT DEFAULT 'new_lead'")
         if "stage_changed_at" not in cols:
             cursor.execute(f"ALTER TABLE {tbl} ADD COLUMN stage_changed_at TIMESTAMP")
+
+    # ── 用户表 ─────────────────────────────────────────────
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS users (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT NOT NULL UNIQUE,
+            email TEXT NOT NULL UNIQUE,
+            password_hash TEXT NOT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP
+        )
+    """)
+
+    # ── 用户额度表 ─────────────────────────────────────────
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS user_quotas (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER NOT NULL UNIQUE,
+            plan_type TEXT NOT NULL DEFAULT 'free' CHECK(plan_type IN ('free','basic','pro')),
+            total_quota INTEGER NOT NULL DEFAULT 10,
+            used_quota INTEGER NOT NULL DEFAULT 0,
+            expires_at TEXT,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP,
+            FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+        )
+    """)
 
     conn.commit()
     conn.close()

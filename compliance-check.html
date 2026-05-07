@@ -7,6 +7,8 @@
 <meta name="description" content="中韩出海数智港AI合规自检工具 - 8道题快速评估您的企业进入中国市场的合规健康度，获取个性化合规报告">
 <link rel="stylesheet" href="css/style.css">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+<script src="js/auth.js"></script>
 <style>
 /* 合规自检页面专属样式 */
 .cc-container { max-width: 800px; margin: 100px auto 60px; padding: 0 20px; }
@@ -106,6 +108,23 @@
 <a href="compliance-check.html" class="active" data-lang-key="nav_compliance_check">合规自检</a>
 <a href="compliance-demo.html" data-lang-key="nav_ai_consult">AI咨询</a>
 <a href="demo.html" data-lang-key="nav_demo">预约演示</a>
+<span x-data="{ loggedIn: !!localStorage.getItem('access_token'), username: (() => { try { const u = JSON.parse(localStorage.getItem('user') || '{}'); return u.username || ''; } catch(e) { return ''; } })() }">
+    <template x-if="!loggedIn">
+        <span style="display:inline-flex;gap:4px;">
+            <a href="login.html" data-lang-key="login" style="color:var(--text-secondary);">登录</a>
+            <span style="color:var(--text-muted);">/</span>
+            <a href="register.html" data-lang-key="register" style="color:var(--text-secondary);">注册</a>
+        </span>
+    </template>
+    <template x-if="loggedIn">
+        <span style="display:inline-flex;gap:8px;align-items:center;">
+            <span style="color:var(--accent-primary);font-size:13px;font-weight:500;" x-text="'欢迎, ' + username"></span>
+            <a href="#" style="color:#ef4444;font-size:13px;"
+               @click.prevent="localStorage.removeItem('access_token');localStorage.removeItem('user');window.location.href='/'"
+               data-lang-key="logout">退出</a>
+        </span>
+    </template>
+</span>
 </nav>
 </div>
 </header>
