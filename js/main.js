@@ -262,7 +262,7 @@ const translations = {
         footer_advantages: '核心优势',
         footer_partners: '合作伙伴',
         footer_follow: '关注我们',
-        footer_copyright: '© 2026 中韩出海数智港. 保留所有权利.',
+        footer_copyright: '© 2026 中韩出海数智港. 保留所有权利. 沪ICP备2026007459号',
         footer_privacy: '隐私政策',
         footer_terms: '服务条款',
         about_vision: '我们的愿景',
