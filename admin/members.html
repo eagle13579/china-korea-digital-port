@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>会员管理 - 中韩出海数智港</title>
+<script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+<style>
+body { background: #0f172a; color: #e2e8f0; font-family: 'Inter', system-ui, sans-serif; }
+.card { background: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 20px; }
+.card-stat { background: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 24px; text-align: center; transition: all .2s; }
+.card-stat:hover { border-color: #6366f1; transform: translateY(-2px); }
+.btn { padding: 8px 16px; border-radius: 8px; border: none; font-weight: 500; cursor: pointer; transition: all .2s; display: inline-flex; align-items: center; gap: 6px; }
+.btn-primary { background: #6366f1; color: #fff; }
+.btn-primary:hover { background: #4f46e5; }
+.btn-sm { padding: 4px 12px; font-size: 13px; }
+.badge { padding: 3px 10px; border-radius: 12px; font-size: 12px; font-weight: 500; }
+.badge-active { background: #166534; color: #86efac; }
+.badge-inactive { background: #7f1d1d; color: #fca5a5; }
+.badge-suspended { background: #854d0e; color: #fde68a; }
+.badge-vip { background: #1e40af; color: #93c5fd; }
+.badge-premium { background: #6b21a8; color: #d8b4fe; }
+.badge-free { background: #1e293b; color: #94a3b8; }
+.input { background: #0f172a; border: 1px solid #334155; border-radius: 8px; padding: 10px 14px; color: #e2e8f0; width: 100%; outline: none; }
+.input:focus { border-color: #6366f1; }
+select.input { appearance: auto; }
+table { width: 100%; border-collapse: collapse; }
+th { text-align: left; padding: 12px 16px; border-bottom: 1px solid #334155; color: #94a3b8; font-weight: 500; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; }
+td { padding: 12px 16px; border-bottom: 1px solid #1e293b; }
+tr:hover td { background: #1e293b; }
+.truncate { max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #0f172a; }
+::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+.toast { position: fixed; bottom: 24px; right: 24px; background: #166534; color: #fff; padding: 12px 24px; border-radius: 8px; z-index: 100; animation: slideIn .3s; }
+.toast-error { background: #7f1d1d; }
+@keyframes slideIn { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+.loading { display: inline-block; width: 20px; height: 20px; border: 2px solid #334155; border-top-color: #6366f1; border-radius: 50%; animation: spin .6s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.pagination { display: flex; gap: 4px; align-items: center; justify-content: center; margin-top: 16px; }
+.pagination button { padding: 6px 12px; border-radius: 6px; border: 1px solid #334155; background: #1e293b; color: #94a3b8; cursor: pointer; font-size: 13px; transition: all .2s; }
+.pagination button:hover { border-color: #6366f1; color: #e2e8f0; }
+.pagination button.active { background: #6366f1; border-color: #6366f1; color: #fff; }
+.pagination button:disabled { opacity: 0.4; cursor: not-allowed; }
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 50; display: flex; align-items: center; justify-content: center; }
+.modal-content { background: #1e293b; border: 1px solid #334155; border-radius: 16px; padding: 32px; max-width: 600px; width: 90%; max-height: 80vh; overflow-y: auto; }
+</style>
+</head>
+<body>
+<div x-data="membersPage()" x-init="init()" class="min-h-screen p-4 md:p-6 max-w-7xl mx-auto">
+
+    <!-- 登录页 -->
+    <div x-show="!token" class="flex items-center justify-center min-h-screen">
+        <div class="card w-full max-w-md mx-4">
+            <div class="text-center mb-8">
+                <h1 class="text-2xl font-bold text-white mb-2">管理后台</h1>
+                <p class="text-slate-400 text-sm">中韩出海数智港 · 会员管理</p>
+            </div>
+            <form @submit.prevent="doLogin" class="space-y-4">
+                <div>
+                    <label class="block text-sm text-slate-400 mb-1">用户名</label>
+                    <input type="text" x-model="loginForm.username" class="input" placeholder="admin" required>
+                </div>
+                <div>
+                    <label class="block text-sm text-slate-400 mb-1">密码</label>
+                    <input type="password" x-model="loginForm.password" class="input" placeholder="••••••" required>
+                </div>
+                <div x-show="loginError" class="text-red-400 text-sm" x-text="loginError"></div>
+                <button type="submit" class="btn btn-primary w-full py-3 justify-center" :disabled="loading">
+                    <span x-show="!loading">登录</span>
+                    <span x-show="loading" class="loading inline-block"></span>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- 管理主体 -->
+    <div x-show="token">
+        <!-- 顶部导航 -->
+        <div class="flex items-center justify-between mb-6">
+            <div>
+                <h1 class="text-xl font-bold">会员管理</h1>
+                <p class="text-slate-400 text-sm">中韩出海数智港 · 用户列表与管理</p>
+            </div>
+            <div class="flex items-center gap-3">
+                <a href="/admin/index.html" class="btn btn-sm" style="background:#334155;color:#e2e8f0">
+                    <i class="bi bi-arrow-left"></i> 线索管理
+                </a>
+                <span class="text-slate-400 text-sm">admin</span>
+                <button @click="doLogout" class="btn btn-sm" style="background:#334155;color:#e2e8f0">退出</button>
+            </div>
+        </div>
+
+        <!-- 统计卡片 -->
+        <div class="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6">
+            <div class="card-stat">
+                <div class="text-3xl font-bold" x-text="stats.total ?? '-'"></div>
+                <div class="text-slate-400 text-sm mt-1">总用户</div>
+            </div>
+            <div class="card-stat">
+                <div class="text-3xl font-bold text-green-400" x-text="stats.active ?? '-'"></div>
+                <div class="text-slate-400 text-sm mt-1">活跃</div>
+            </div>
+            <div class="card-stat">
+                <div class="text-3xl font-bold text-red-400" x-text="stats.inactive ?? '-'"></div>
+                <div class="text-slate-400 text-sm mt-1">停用</div>
+            </div>
+            <div class="card-stat">
+                <div class="text-3xl font-bold text-yellow-400" x-text="stats.suspended ?? '-'"></div>
+                <div class="text-slate-400 text-sm mt-1">冻结</div>
+            </div>
+            <div class="card-stat">
+                <div class="text-3xl font-bold text-purple-400" x-text="stats.today_new ?? '-'"></div>
+                <div class="text-slate-400 text-sm mt-1">今日注册</div>
+            </div>
+        </div>
+
+        <!-- 搜索与筛选 -->
+        <div class="card mb-6">
+            <div class="flex flex-wrap items-center gap-3">
+                <div class="flex-1 min-w-[200px]">
+                    <input type="text" x-model="search" @input.debounce.300ms="loadMembers" class="input" placeholder="搜索用户名、邮箱...">
+                </div>
+                <div>
+                    <select x-model="filterStatus" @change="loadMembers" class="input py-2 text-sm">
+                        <option value="">全部状态</option>
+                        <option value="active">活跃</option>
+                        <option value="inactive">停用</option>
+                        <option value="suspended">冻结</option>
+                    </select>
+                </div>
+                <div>
+                    <select x-model="filterLevel" @change="loadMembers" class="input py-2 text-sm">
+                        <option value="">全部等级</option>
+                        <option value="free">免费用户</option>
+                        <option value="vip">VIP</option>
+                        <option value="premium">高级会员</option>
+                    </select>
+                </div>
+                <div>
+                    <button @click="search=''; filterStatus=''; filterLevel=''; loadMembers()" class="btn btn-sm" style="background:#334155;color:#e2e8f0">
+                        <i class="bi bi-arrow-counterclockwise"></i> 重置
+                    </button>
+                </div>
+                <div class="text-slate-500 text-sm ml-auto" x-text="`共 ${totalCount} 条`"></div>
+            </div>
+        </div>
+
+        <!-- 会员表格 -->
+        <div class="card">
+            <div x-show="tableLoading" class="text-center py-12">
+                <div class="loading mx-auto"></div>
+                <p class="text-slate-400 mt-2">加载中...</p>
+            </div>
+            <div x-show="!tableLoading && members.length === 0" class="text-center py-12 text-slate-500">
+                <i class="bi bi-people text-4xl block mb-2 opacity-30"></i>
+                暂无会员数据
+            </div>
+            <div x-show="!tableLoading && members.length > 0" class="overflow-x-auto">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>用户名</th>
+                            <th>邮箱</th>
+                            <th>会员等级</th>
+                            <th>剩余额度</th>
+                            <th>状态</th>
+                            <th>注册时间</th>
+                            <th>最后登录</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <template x-for="m in members" :key="m.id">
+                            <tr>
+                                <td class="font-mono text-sm text-slate-400" x-text="m.id"></td>
+                                <td class="font-medium">
+                                    <span x-text="m.username"></span>
+                                </td>
+                                <td class="text-sm" x-text="m.email"></td>
+                                <td>
+                                    <span :class="'badge badge-' + (m.membership_level || 'free')" x-text="levelLabel(m.membership_level)"></span>
+                                </td>
+                                <td class="text-sm" x-text="(m.quota_remaining ?? '-') + ' 次'"></td>
+                                <td>
+                                    <span :class="'badge badge-' + (m.status || 'active')" x-text="statusLabel(m.status)"></span>
+                                </td>
+                                <td class="text-sm text-slate-400" x-text="formatDate(m.created_at)"></td>
+                                <td class="text-sm text-slate-400" x-text="formatDate(m.last_login)"></td>
+                                <td>
+                                    <div class="flex gap-1">
+                                        <button @click="viewDetail(m)" class="btn btn-sm" style="background:#334155;color:#93c5fd" title="查看详情">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+                                        <button @click="toggleStatus(m)" class="btn btn-sm" :style="m.status === 'active' ? 'background:#854d0e;color:#fde68a' : 'background:#166534;color:#86efac'" 
+                                                x-text="m.status === 'active' ? '冻结' : '激活'">
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </template>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 分页 -->
+            <div x-show="!tableLoading && totalPages > 1" class="pagination">
+                <button @click="goPage(1)" :disabled="page <= 1">&laquo;</button>
+                <button @click="goPage(page - 1)" :disabled="page <= 1">&lsaquo;</button>
+                <template x-for="p in pageRange" :key="p">
+                    <button @click="goPage(p)" :class="{ 'active': p === page }" x-text="p"></button>
+                </template>
+                <button @click="goPage(page + 1)" :disabled="page >= totalPages">&rsaquo;</button>
+                <button @click="goPage(totalPages)" :disabled="page >= totalPages">&raquo;</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 详情弹窗 -->
+    <div x-show="detailModal" class="modal-overlay" @click.self="detailModal=false">
+        <div class="modal-content">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-lg font-bold">会员详情</h2>
+                <button @click="detailModal=false" class="text-slate-400 hover:text-white text-xl">&times;</button>
+            </div>
+            <div class="space-y-3">
+                <div class="flex"><span class="text-slate-400 w-28 shrink-0 text-sm">用户ID</span><span class="text-white font-mono" x-text="detail.id"></span></div>
+                <div class="flex"><span class="text-slate-400 w-28 shrink-0 text-sm">用户名</span><span class="text-white" x-text="detail.username"></span></div>
+                <div class="flex"><span class="text-slate-400 w-28 shrink-0 text-sm">邮箱</span><span class="text-white" x-text="detail.email"></span></div>
+                <div class="flex"><span class="text-slate-400 w-28 shrink-0 text-sm">会员等级</span><span class="text-white" x-text="levelLabel(detail.membership_level)"></span></div>
+                <div class="flex"><span class="text-slate-400 w-28 shrink-0 text-sm">状态</span><span class="text-white" x-text="statusLabel(detail.status)"></span></div>
+                <div class="flex"><span class="text-slate-400 w-28 shrink-0 text-sm">剩余额度</span><span class="text-white" x-text="(detail.quota_remaining ?? '-') + ' 次'"></span></div>
+                <div class="flex"><span class="text-slate-400 w-28 shrink-0 text-sm">总查询</span><span class="text-white" x-text="(detail.total_quota ?? '-') + ' 次'"></span></div>
+                <div class="flex"><span class="text-slate-400 w-28 shrink-0 text-sm">已用查询</span><span class="text-white" x-text="(detail.used_quota ?? '-') + ' 次'"></span></div>
+                <div class="flex"><span class="text-slate-400 w-28 shrink-0 text-sm">注册时间</span><span class="text-white" x-text="formatDate(detail.created_at)"></span></div>
+                <div class="flex"><span class="text-slate-400 w-28 shrink-0 text-sm">最后登录</span><span class="text-white" x-text="formatDate(detail.last_login)"></span></div>
+                <div class="flex" x-show="detail.expires_at"><span class="text-slate-400 w-28 shrink-0 text-sm">套餐到期</span><span class="text-white" x-text="formatDate(detail.expires_at)"></span></div>
+            </div>
+            <div class="mt-6 flex gap-2">
+                <template x-if="detail.status === 'active'">
+                    <button @click="doToggleStatus(detail.id, 'suspended')" class="btn" style="background:#854d0e;color:#fde68a">冻结账户</button>
+                </template>
+                <template x-if="detail.status !== 'active'">
+                    <button @click="doToggleStatus(detail.id, 'active')" class="btn" style="background:#166534;color:#86efac">激活账户</button>
+                </template>
+                <button @click="detailModal=false" class="btn" style="background:#334155;color:#e2e8f0">关闭</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div x-show="toast" class="toast" :class="{'toast-error': toastType==='err'}" x-text="toast" x-init="setTimeout(() => toast='', 3000)"></div>
+</div>
+
+<script>
+function membersPage() {
+    return {
+        // 登录
+        token: localStorage.getItem('portal_token') || '',
+        loginForm: { username: 'admin', password: '' },
+        loginError: '',
+        loading: false,
+
+        // 数据
+        members: [],
+        stats: {},
+        tableLoading: false,
+        totalCount: 0,
+        page: 1,
+        pageSize: 20,
+        totalPages: 1,
+
+        // 筛选
+        search: '',
+        filterStatus: '',
+        filterLevel: '',
+
+        // 详情
+        detailModal: false,
+        detail: {},
+
+        // Toast
+        toast: '',
+        toastType: '',
+
+        get pageRange() {
+            const total = this.totalPages;
+            const current = this.page;
+            const range = [];
+            const start = Math.max(1, current - 2);
+            const end = Math.min(total, current + 2);
+            for (let i = start; i <= end; i++) range.push(i);
+            return range;
+        },
+
+        levelLabel(level) {
+            const labels = { free: '免费用户', vip: 'VIP', premium: '高级会员', basic: '基础版', pro: '专业版' };
+            return labels[level] || level || '免费用户';
+        },
+
+        statusLabel(status) {
+            const labels = { active: '活跃', inactive: '停用', suspended: '冻结' };
+            return labels[status] || status || '活跃';
+        },
+
+        formatDate(dateStr) {
+            if (!dateStr) return '-';
+            return dateStr.slice(0, 10);
+        },
+
+        async api(path, options = {}) {
+            const headers = { 'Content-Type': 'application/json' };
+            if (this.token) headers['Authorization'] = 'Bearer ' + this.token;
+            const res = await fetch(path, { ...options, headers });
+            const data = await res.json();
+            if (!res.ok && res.status === 401) {
+                this.token = '';
+                localStorage.removeItem('portal_token');
+                this.loginError = '登录已过期，请重新登录';
+            }
+            return data;
+        },
+
+        async doLogin() {
+            this.loading = true;
+            this.loginError = '';
+            try {
+                const res = await this.api('/api/v1/admin/login', {
+                    method: 'POST',
+                    body: JSON.stringify(this.loginForm)
+                });
+                if (res.success && res.token) {
+                    this.token = res.token;
+                    localStorage.setItem('portal_token', res.token);
+                    this.init();
+                } else {
+                    this.loginError = res.detail || '登录失败';
+                }
+            } catch(e) {
+                this.loginError = '网络错误：' + e.message;
+            }
+            this.loading = false;
+        },
+
+        doLogout() {
+            this.token = '';
+            localStorage.removeItem('portal_token');
+        },
+
+        async init() {
+            if (!this.token) return;
+            await Promise.all([this.loadMembers(), this.loadStats()]);
+        },
+
+        async loadStats() {
+            try {
+                const res = await this.api('/api/v1/admin/members/stats');
+                if (res.success) this.stats = res.data;
+            } catch(e) {
+                console.error('loadStats error:', e);
+            }
+        },
+
+        async loadMembers() {
+            this.tableLoading = true;
+            try {
+                const params = new URLSearchParams();
+                params.set('page', this.page);
+                params.set('page_size', this.pageSize);
+                if (this.search) params.set('search', this.search);
+                if (this.filterStatus) params.set('status', this.filterStatus);
+                if (this.filterLevel) params.set('level', this.filterLevel);
+                const res = await this.api('/api/v1/admin/members?' + params.toString());
+                if (res.success) {
+                    this.members = res.data?.items || res.data || [];
+                    this.totalCount = res.data?.total || this.members.length;
+                    this.totalPages = res.data?.total_pages || Math.ceil(this.totalCount / this.pageSize) || 1;
+                }
+            } catch(e) {
+                this.toast = '加载会员列表失败';
+                this.toastType = 'err';
+            }
+            this.tableLoading = false;
+        },
+
+        goPage(p) {
+            if (p < 1 || p > this.totalPages) return;
+            this.page = p;
+            this.loadMembers();
+        },
+
+        viewDetail(m) {
+            this.detail = m;
+            this.detailModal = true;
+        },
+
+        async toggleStatus(m) {
+            const newStatus = m.status === 'active' ? 'suspended' : 'active';
+            const actionLabel = newStatus === 'suspended' ? '冻结' : '激活';
+            if (!confirm(`确定${actionLabel}用户 "${m.username}" 吗？`)) return;
+            await this.doToggleStatus(m.id, newStatus);
+        },
+
+        async doToggleStatus(userId, newStatus) {
+            try {
+                const res = await this.api(`/api/v1/admin/members/${userId}/status`, {
+                    method: 'PATCH',
+                    body: JSON.stringify({ status: newStatus })
+                });
+                if (res.success) {
+                    const label = newStatus === 'active' ? '已激活' : newStatus === 'suspended' ? '已冻结' : '已更新';
+                    this.toast = label + '用户';
+                    this.toastType = '';
+                    this.detailModal = false;
+                    this.loadMembers();
+                    this.loadStats();
+                } else {
+                    this.toast = res.detail || '操作失败';
+                    this.toastType = 'err';
+                }
+            } catch(e) {
+                this.toast = '网络错误';
+                this.toastType = 'err';
+            }
+        }
+    }
+}
+</script>
+</body>
+</html>

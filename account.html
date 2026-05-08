@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>会员中心 - 中韩出海数智港</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+<script src="/js/auth.js"></script>
+<style>
+body { background: #0a0e1a; font-family: 'Inter', sans-serif; }
+.glow-card { background: linear-gradient(135deg, rgba(30,41,59,0.9), rgba(15,23,42,0.95)); border: 1px solid rgba(99,102,241,0.15); box-shadow: 0 0 40px rgba(99,102,241,0.05), 0 8px 32px rgba(0,0,0,0.3); }
+.glow-input { background: rgba(15,23,42,0.8); border: 1px solid rgba(99,102,241,0.2); }
+.glow-input:focus { border-color: rgba(99,102,241,0.6); box-shadow: 0 0 15px rgba(99,102,241,0.15); outline: none; }
+.btn-primary { background: linear-gradient(135deg, #6366f1, #8b5cf6); }
+.btn-primary:hover { opacity: 0.9; }
+.gradient-text { background: linear-gradient(135deg, #6366f1, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.stat-card { background: rgba(30,41,59,0.5); border: 1px solid rgba(99,102,241,0.1); border-radius: 12px; padding: 20px; }
+.stat-card:hover { border-color: rgba(99,102,241,0.3); }
+.order-item { border-bottom: 1px solid rgba(99,102,241,0.08); }
+.order-item:last-child { border-bottom: none; }
+.badge { padding: 3px 10px; border-radius: 12px; font-size: 12px; font-weight: 500; }
+.badge-active { background: rgba(22,163,74,0.15); color: #86efac; }
+.badge-expired { background: rgba(220,38,38,0.15); color: #fca5a5; }
+.badge-pending { background: rgba(234,179,8,0.15); color: #fde68a; }
+.badge-paid { background: rgba(22,163,74,0.15); color: #86efac; }
+.badge-cancelled { background: rgba(100,116,139,0.15); color: #94a3b8; }
+</style>
+</head>
+<body class="min-h-screen p-4 md:p-8">
+<div x-data="accountPage()" x-init="init()" class="max-w-4xl mx-auto">
+    <!-- 顶部导航 -->
+    <div class="flex items-center justify-between mb-8">
+        <div>
+            <a href="/" class="text-gray-500 hover:text-gray-300 text-sm">&larr; 返回首页</a>
+            <h1 class="text-2xl font-bold gradient-text mt-1">会员中心</h1>
+        </div>
+        <div class="flex items-center gap-3">
+            <span class="text-gray-400 text-sm" x-text="user.username || '用户'"></span>
+            <button @click="AUTH.logout()" class="text-sm text-gray-500 hover:text-gray-300 bg-gray-800/50 px-3 py-1.5 rounded-lg border border-gray-700/50">退出登录</button>
+        </div>
+    </div>
+
+    <!-- 加载中 -->
+    <div x-show="loading" class="text-center py-20">
+        <div class="inline-block w-8 h-8 border-2 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin"></div>
+        <p class="text-gray-500 mt-3 text-sm">加载中...</p>
+    </div>
+
+    <div x-show="!loading" class="space-y-6">
+        <!-- 用户信息卡片 -->
+        <div class="glow-card rounded-2xl p-6">
+            <div class="flex items-start justify-between">
+                <div class="flex items-center gap-4">
+                    <div class="w-14 h-14 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-xl font-bold" x-text="(user.username || '?')[0].toUpperCase()"></div>
+                    <div>
+                        <h2 class="text-xl font-semibold text-white" x-text="user.username || '-'"></h2>
+                        <p class="text-gray-500 text-sm mt-0.5" x-text="user.email || '-'"></p>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <div class="text-2xl font-bold gradient-text" x-text="profile.quota_remaining ?? '-'"></div>
+                    <div class="text-gray-500 text-xs">剩余查询次数</div>
+                </div>
+            </div>
+            <div class="mt-4 flex flex-wrap gap-4 text-sm text-gray-500">
+                <span>注册时间: <span class="text-gray-300" x-text="user.created_at ? user.created_at.slice(0,10) : '-'"></span></span>
+                <span>会员等级: <span class="text-indigo-400 font-medium" x-text="profile.membership_level || '普通用户'"></span></span>
+                <span x-show="profile.expires_at">到期时间: <span class="text-gray-300" x-text="profile.expires_at ? profile.expires_at.slice(0,10) : '-'"></span></span>
+            </div>
+            <div class="mt-5 flex gap-3">
+                <a href="/payment.html" class="btn-primary rounded-xl px-5 py-2.5 text-white text-sm font-semibold">充值额度</a>
+                <button @click="editMode = !editMode" class="text-sm text-gray-400 hover:text-white bg-gray-800/50 px-4 py-2.5 rounded-xl border border-gray-700/50" x-text="editMode ? '取消编辑' : '编辑资料'"></button>
+            </div>
+        </div>
+
+        <!-- 编辑资料表单 -->
+        <div x-show="editMode" class="glow-card rounded-2xl p-6" x-transition>
+            <h3 class="text-lg font-semibold text-white mb-4">编辑个人信息</h3>
+            <div x-show="editError" class="bg-red-500/10 border border-red-500/30 text-red-300 rounded-lg px-4 py-3 mb-4 text-sm" x-text="editError"></div>
+            <div x-show="editSuccess" class="bg-green-500/10 border border-green-500/30 text-green-300 rounded-lg px-4 py-3 mb-4 text-sm" x-text="editSuccess"></div>
+            <form @submit.prevent="saveProfile" class="space-y-4 max-w-lg">
+                <div>
+                    <label class="block text-gray-400 text-sm font-medium mb-1.5">昵称</label>
+                    <input type="text" x-model="editForm.username" required minlength="2" class="glow-input w-full rounded-xl px-4 py-2.5 text-gray-100 placeholder-gray-600">
+                </div>
+                <div>
+                    <label class="block text-gray-400 text-sm font-medium mb-1.5">邮箱</label>
+                    <input type="email" x-model="editForm.email" required class="glow-input w-full rounded-xl px-4 py-2.5 text-gray-100 placeholder-gray-600">
+                </div>
+                <button type="submit" :disabled="editLoading" class="btn-primary rounded-xl px-6 py-2.5 text-white text-sm font-semibold flex items-center gap-2">
+                    <span x-show="editLoading" class="inline-block w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+                    <span x-text="editLoading ? '保存中...' : '保存修改'"></span>
+                </button>
+            </form>
+        </div>
+
+        <!-- 会员等级 / 套餐信息 -->
+        <div class="glow-card rounded-2xl p-6">
+            <h3 class="text-lg font-semibold text-white mb-4">会员套餐信息</h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="stat-card">
+                    <div class="text-gray-500 text-xs mb-1">当前套餐</div>
+                    <div class="text-white font-semibold" x-text="profile.plan_name || '免费版'"></div>
+                </div>
+                <div class="stat-card">
+                    <div class="text-gray-500 text-xs mb-1">总查询额度</div>
+                    <div class="text-white font-semibold" x-text="(profile.total_quota ?? 0) + ' 次'"></div>
+                </div>
+                <div class="stat-card">
+                    <div class="text-gray-500 text-xs mb-1">已用查询</div>
+                    <div class="text-white font-semibold" x-text="(profile.used_quota ?? 0) + ' 次'"></div>
+                </div>
+            </div>
+            <div class="mt-3 flex items-center gap-2">
+                <div class="flex-1 h-2 bg-gray-800 rounded-full overflow-hidden">
+                    <div class="h-full bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full transition-all" :style="'width: ' + quotaPercent + '%'"></div>
+                </div>
+                <span class="text-xs text-gray-500" x-text="quotaPercent + '%'"></span>
+            </div>
+        </div>
+
+        <!-- 最近订单列表 -->
+        <div class="glow-card rounded-2xl p-6">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-semibold text-white">最近订单</h3>
+                <a href="/order.html" class="text-indigo-400 hover:text-indigo-300 text-sm">查看全部 &rarr;</a>
+            </div>
+            <div x-show="orders.length === 0" class="text-center py-8 text-gray-500 text-sm">暂无订单记录</div>
+            <div x-show="orders.length > 0">
+                <template x-for="order in orders" :key="order.id">
+                    <div class="order-item py-4">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <div class="text-white font-medium" x-text="order.plan_name || order.plan_type || '套餐购买'"></div>
+                                <div class="text-gray-500 text-xs mt-0.5">
+                                    <span x-text="order.order_no"></span>
+                                    <span class="mx-2">|</span>
+                                    <span x-text="order.created_at ? order.created_at.slice(0, 16) : ''"></span>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-white font-semibold" x-text="'¥' + (Number(order.price) || 0).toLocaleString()"></div>
+                                <span :class="'badge ' + (order.status === 'paid' ? 'badge-paid' : order.status === 'pending' ? 'badge-pending' : order.status === 'cancelled' ? 'badge-cancelled' : 'badge-expired')" 
+                                      x-text="order.status === 'paid' ? '已付款' : order.status === 'pending' ? '待支付' : order.status === 'cancelled' ? '已取消' : order.status"></span>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+            </div>
+        </div>
+
+        <!-- 快速操作 -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <a href="/payment.html" class="stat-card text-center py-4 hover:border-indigo-500/30 transition-all">
+                <div class="text-2xl mb-1">💳</div>
+                <div class="text-gray-400 text-sm">充值购买</div>
+            </a>
+            <a href="/order.html" class="stat-card text-center py-4 hover:border-indigo-500/30 transition-all">
+                <div class="text-2xl mb-1">📋</div>
+                <div class="text-gray-400 text-sm">我的订单</div>
+            </a>
+            <a href="/" class="stat-card text-center py-4 hover:border-indigo-500/30 transition-all">
+                <div class="text-2xl mb-1">🏠</div>
+                <div class="text-gray-400 text-sm">返回首页</div>
+            </a>
+            <a href="/team.html" class="stat-card text-center py-4 hover:border-indigo-500/30 transition-all">
+                <div class="text-2xl mb-1">🤖</div>
+                <div class="text-gray-400 text-sm">数字员工</div>
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+function accountPage() {
+    return {
+        loading: true,
+        editMode: false,
+        editError: '',
+        editSuccess: '',
+        editLoading: false,
+        user: {},
+        profile: {},
+        orders: [],
+        editForm: {},
+
+        get quotaPercent() {
+            const total = this.profile.total_quota || 0;
+            const used = this.profile.used_quota || 0;
+            if (total === 0) return 0;
+            return Math.min(100, Math.round((used / total) * 100));
+        },
+
+        async init() {
+            // 检查登录状态
+            if (!AUTH.isLoggedIn()) {
+                window.location.href = '/login.html?redirect=/account.html';
+                return;
+            }
+            this.user = AUTH.getUser() || {};
+            this.editForm = { username: this.user.username || '', email: this.user.email || '' };
+            try {
+                await Promise.all([this.loadProfile(), this.loadOrders()]);
+            } catch(e) {
+                console.error('init error:', e);
+            }
+            this.loading = false;
+        },
+
+        async loadProfile() {
+            try {
+                const r = await fetch('/api/v1/members/profile', {
+                    headers: { ...AUTH.authHeader(), 'Content-Type': 'application/json' }
+                });
+                const d = await r.json();
+                if (d.success) {
+                    this.profile = d.data;
+                }
+            } catch(e) {
+                console.error('loadProfile error:', e);
+            }
+        },
+
+        async loadOrders() {
+            try {
+                const r = await fetch('/api/v1/members/orders', {
+                    headers: { ...AUTH.authHeader(), 'Content-Type': 'application/json' }
+                });
+                const d = await r.json();
+                if (d.success) {
+                    this.orders = Array.isArray(d.data) ? d.data : (d.data?.orders || d.data?.items || []);
+                }
+            } catch(e) {
+                console.error('loadOrders error:', e);
+            }
+        },
+
+        async saveProfile() {
+            this.editError = '';
+            this.editSuccess = '';
+            if (this.editForm.username.trim().length < 2) {
+                this.editError = '昵称至少2个字符';
+                return;
+            }
+            this.editLoading = true;
+            try {
+                const r = await fetch('/api/v1/auth/me', {
+                    method: 'PATCH',
+                    headers: { ...AUTH.authHeader(), 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        username: this.editForm.username.trim(),
+                        email: this.editForm.email.trim()
+                    })
+                });
+                const d = await r.json();
+                if (d.success) {
+                    this.user.username = this.editForm.username.trim();
+                    this.user.email = this.editForm.email.trim();
+                    AUTH.setToken(AUTH.getToken(), this.user);
+                    this.editSuccess = '资料更新成功';
+                    setTimeout(() => { this.editSuccess = ''; this.editMode = false; }, 2000);
+                } else {
+                    this.editError = d.detail || d.message || '更新失败';
+                }
+            } catch(e) {
+                this.editError = '网络错误';
+            } finally {
+                this.editLoading = false;
+            }
+        }
+    }
+}
+</script>
+</body>
+</html>

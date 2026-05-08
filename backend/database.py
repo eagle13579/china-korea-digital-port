@@ -76,6 +76,53 @@ def init_db():
         )
     """)
 
+    # 用户表 — 注册登录
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS users (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT UNIQUE NOT NULL,
+            email TEXT UNIQUE NOT NULL,
+            password_hash TEXT NOT NULL,
+            display_name TEXT,
+            company TEXT,
+            phone TEXT,
+            avatar TEXT,
+            role TEXT NOT NULL DEFAULT 'user' CHECK(role IN ('user','vip','admin')),
+            is_active INTEGER NOT NULL DEFAULT 1,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP
+        )
+    """)
+
+    # 会员资料扩展表
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS member_profiles (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER NOT NULL UNIQUE,
+            company_name TEXT,
+            company_reg_number TEXT,
+            contact_person TEXT,
+            contact_phone TEXT,
+            contact_email TEXT,
+            business_scope TEXT,
+            membership_level TEXT NOT NULL DEFAULT 'basic' CHECK(membership_level IN ('basic','silver','gold','platinum')),
+            points INTEGER NOT NULL DEFAULT 0,
+            total_spent REAL NOT NULL DEFAULT 0.0,
+            membership_expires TIMESTAMP,
+            FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+        )
+    """)
+
+    # 迁移：users 表和 member_profiles 表兼容已有字段
+    cursor.execute("PRAGMA table_info(users)")
+    user_cols = [r[1] for r in cursor.fetchall()]
+    for col in ['display_name', 'company', 'phone', 'avatar']:
+        if col not in user_cols:
+            try:
+                cursor.execute(f"ALTER TABLE users ADD COLUMN {col} TEXT")
+            except Exception:
+                pass
+
     # 服务邀请表（数字员工邀请）
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS service_inquiries (

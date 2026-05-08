@@ -11,7 +11,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 from backend.database import init_db
-from backend.routers import contact, demo, pricing, admin, employees, service_inquiry, payment
+from backend.routers import contact, demo, pricing, admin, employees, service_inquiry, payment, auth, members
 # order.py 已废弃并合并到 payment.py 中
 
 # 项目根目录
@@ -51,12 +51,13 @@ app.include_router(admin.router)
 app.include_router(employees.router)
 app.include_router(service_inquiry.router)
 app.include_router(payment.router)
+app.include_router(auth.router)
+app.include_router(members.router)
 
 # 静态文件路由
 @app.get("/")
 async def root():
     return FileResponse(os.path.join(ROOT_DIR, "index.html"))
-
 @app.get("/index.html")
 async def index_html():
     return FileResponse(os.path.join(ROOT_DIR, "index.html"))
@@ -130,4 +131,4 @@ async def health():
 async def startup():
     """启动时初始化数据库"""
     init_db()
-logout
+
