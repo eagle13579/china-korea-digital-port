@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-lang-zh="客户操作SaaS后台 | 韩品优选"
+           data-lang-ko="고객 SaaS 대시보드 | 한품우선"
+           data-lang-en="Customer Dashboard | K-Brand Select">客户操作SaaS后台 | 韩品优选</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.3/dist/cdn.min.js"></script>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", "Noto Sans KR", sans-serif; }
+        .scrollbar-thin::-webkit-scrollbar { width:4px; }
+        .scrollbar-thin::-webkit-scrollbar-track { background:transparent; }
+        .scrollbar-thin::-webkit-scrollbar-thumb { background:#8B5CF6; border-radius:4px; }
+        .transition-all { transition: all 0.3s ease; }
+        .sidebar-item { cursor:pointer; border-radius:8px; padding:10px 14px; display:flex; align-items:center; gap:10px; transition: all 0.25s ease; }
+        .sidebar-item:hover { background:rgba(139,92,246,0.15); }
+        .sidebar-item.active { background:linear-gradient(135deg, rgba(245,158,11,0.2), rgba(139,92,246,0.2)); border-left:3px solid #F59E0B; }
+        .card { border-radius:12px; padding:20px; transition: all 0.3s ease; }
+        .gold-gradient { background:linear-gradient(135deg, #F59E0B, #D97706); }
+        .purple-gradient { background:linear-gradient(135deg, #8B5CF6, #7C3AED); }
+        .btn-gold { background:linear-gradient(135deg, #F59E0B, #D97706); color:#0B1120; font-weight:600; border:none; border-radius:8px; padding:8px 20px; cursor:pointer; transition:all 0.3s; }
+        .btn-gold:hover { transform:translateY(-1px); box-shadow:0 4px 15px rgba(245,158,11,0.4); }
+        .btn-purple { background:linear-gradient(135deg, #8B5CF6, #7C3AED); color:#fff; font-weight:600; border:none; border-radius:8px; padding:8px 20px; cursor:pointer; transition:all 0.3s; }
+        .btn-purple:hover { transform:translateY(-1px); box-shadow:0 4px 15px rgba(139,92,246,0.4); }
+        .input-field { background:rgba(255,255,255,0.05); border:1px solid rgba(139,92,246,0.3); border-radius:8px; padding:10px 14px; color:#fff; width:100%; outline:none; transition:all 0.3s; }
+        .input-field:focus { border-color:#F59E0B; box-shadow:0 0 0 3px rgba(245,158,11,0.15); }
+        .input-field::placeholder { color:rgba(255,255,255,0.35); }
+        select.input-field { appearance:none; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%238B5CF6' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right 12px center; padding-right:36px; }
+        select.input-field option { background:#0B1120; color:#fff; }
+        .badge { display:inline-block; padding:2px 10px; border-radius:12px; font-size:12px; font-weight:500; }
+        .table-header { background:rgba(139,92,246,0.15); border-bottom:1px solid rgba(139,92,246,0.3); }
+        .table-row { border-bottom:1px solid rgba(255,255,255,0.05); transition:all 0.2s; }
+        .table-row:hover { background:rgba(139,92,246,0.08); }
+        .match-bar { height:6px; border-radius:3px; background:rgba(255,255,255,0.1); overflow:hidden; }
+        .match-fill { height:100%; border-radius:3px; background:linear-gradient(90deg, #8B5CF6, #F59E0B); transition:width 1s ease; }
+        .stat-card { border:1px solid rgba(139,92,246,0.2); }
+        .light-mode body,
+        .light-mode { background:#F8F9FA !important; color:#1E293B !important; }
+        .light-mode .card { background:#fff !important; border-color:rgba(139,92,246,0.15) !important; }
+        .light-mode .sidebar-item { color:#1E293B !important; }
+        .light-mode .sidebar-item.active { background:linear-gradient(135deg, rgba(245,158,11,0.1), rgba(139,92,246,0.1)) !important; }
+        .light-mode .input-field { background:rgba(0,0,0,0.03) !important; border-color:rgba(139,92,246,0.2) !important; color:#1E293B !important; }
+        .light-mode .input-field::placeholder { color:rgba(0,0,0,0.3) !important; }
+        .light-mode .table-row { border-bottom-color:rgba(0,0,0,0.06) !important; }
+        .light-mode .table-row:hover { background:rgba(139,92,246,0.05) !important; }
+        .light-mode .table-header { background:rgba(139,92,246,0.08) !important; }
+        .light-mode select.input-field { background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%238B5CF6' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E") !important; background-color:rgba(0,0,0,0.03) !important; }
+        .lang-btn { cursor:pointer; padding:4px 10px; border-radius:6px; font-size:12px; transition:all 0.2s; border:1px solid transparent; }
+        .lang-btn.active { border-color:#F59E0B; background:rgba(245,158,11,0.15); color:#F59E0B; }
+        .lang-btn:hover { border-color:rgba(245,158,11,0.4); }
+        /* day mode override body styles */
+        .day-mode body,
+        .day-mode.body-light { background:#F8F9FA !important; }
+    </style>
+</head>
+<body>
+<div x-data="dashboardApp()" x-init="init()" :class="theme === 'dark' ? 'bg-[#0B1120] text-gray-100' : 'bg-[#F8F9FA] text-gray-800'" class="min-h-screen flex transition-all duration-300">
+
+    <!-- SIDEBAR -->
+    <aside :class="theme === 'dark' ? 'bg-[#0F172A] border-gray-700' : 'bg-white border-gray-200'" class="w-[220px] min-h-screen border-r flex flex-col shrink-0 transition-all duration-300">
+        <!-- Logo -->
+        <div class="p-5 border-b" :class="theme === 'dark' ? 'border-gray-700' : 'border-gray-200'">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-lg gold-gradient flex items-center justify-center text-[#0B1120] font-bold text-sm">KP</div>
+                <div>
+                    <div class="font-bold text-sm" :class="theme === 'dark' ? 'text-white' : 'text-gray-900'" x-text="lang === 'zh' ? '韩品优选' : lang === 'ko' ? '한품우선' : 'K-Brand Select'">韩品优选</div>
+                    <div class="text-[10px] text-gray-500" x-text="lang === 'zh' ? '客户操作SaaS' : lang === 'ko' ? '고객 SaaS' : 'Customer SaaS'">客户操作SaaS</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Nav Items -->
+        <nav class="flex-1 p-3 space-y-1 overflow-y-auto scrollbar-thin">
+            <template x-for="(item, idx) in menuItems" :key="idx">
+                <div class="sidebar-item" :class="{ 'active': activeMenu === idx, 'text-gray-400': activeMenu !== idx, 'text-gray-700': activeMenu !== idx && theme === 'light' }" @click="switchMenu(idx)">
+                    <i :class="item.icon" class="text-lg" :style="activeMenu === idx ? 'color:#F59E0B' : ''"></i>
+                    <span class="text-sm font-medium" x-text="item.label"></span>
+                </div>
+            </template>
+        </nav>
+
+        <!-- Bottom controls -->
+        <div class="p-4 border-t" :class="theme === 'dark' ? 'border-gray-700' : 'border-gray-200'">
+            <!-- Lang switch -->
+            <div class="flex items-center gap-1 mb-3">
+                <template x-for="l in ['zh','ko','en']" :key="l">
+                    <button class="lang-btn" :class="{ 'active': lang === l }" @click="setLang(l)" x-text="l === 'zh' ? '中' : l === 'ko' ? '한' : 'EN'"></button>
+                </template>
+            </div>
+            <!-- Theme toggle -->
+            <button @click="toggleTheme" class="flex items-center gap-2 w-full rounded-lg px-3 py-2 text-sm transition-all" :class="theme === 'dark' ? 'text-gray-400 hover:bg-gray-700' : 'text-gray-600 hover:bg-gray-100'">
+                <i :class="theme === 'dark' ? 'bi bi-moon-fill text-[#8B5CF6]' : 'bi bi-sun-fill text-[#F59E0B]'"></i>
+                <span x-text="theme === 'dark' ? '夜间模式' : '日间模式'" x-text-ko="theme === 'dark' ? '야간 모드' : '주간 모드'" x-text-en="theme === 'dark' ? 'Dark' : 'Light'"></span>
+            </button>
+            <!-- User -->
+            <div class="flex items-center gap-2 mt-3 pt-3 border-t" :class="theme === 'dark' ? 'border-gray-700' : 'border-gray-200'">
+                <div class="w-7 h-7 rounded-full purple-gradient flex items-center justify-center text-white text-xs font-bold">韩</div>
+                <div>
+                    <div class="text-xs font-medium" x-text="lang === 'zh' ? '韩品优选' : lang === 'ko' ? '한품우선' : 'K-Brand'"></div>
+                    <div class="text-[10px] text-gray-500">admin@kbselect.com</div>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="flex-1 p-6 overflow-y-auto" style="max-height:100vh;">
+        <!-- Header -->
+        <div class="flex items-center justify-between mb-6">
+            <div>
+                <h1 class="text-xl font-bold" x-text="menuItems[activeMenu]?.label || ''"></h1>
+                <p class="text-sm mt-1" :class="theme === 'dark' ? 'text-gray-400' : 'text-gray-500'" x-text="menuItems[activeMenu]?.desc || ''"></p>
+            </div>
+            <div class="flex items-center gap-3">
+                <span class="text-xs" :class="theme === 'dark' ? 'text-gray-500' : 'text-gray-400'">
+                    <i class="bi bi-clock mr-1"></i><span x-text="currentTime"></span>
+                </span>
+            </div>
+        </div>
+
+        <!-- ============= MODULE 1: 产品上架 ============= -->
+        <div x-show="activeMenu === 0" x-transition.opacity.duration.300ms>
+            <div class="card" :class="theme === 'dark' ? 'bg-[#0F172A] border border-gray-700' : 'bg-white border border-gray-200 shadow-sm'">
+                <h2 class="text-lg font-bold mb-1 flex items-center gap-2">
+                    <i class="bi bi-box-seam text-[#F59E0B]"></i>
+                    <span x-text="lang === 'zh' ? '上架新产品' : lang === 'ko' ? '신제품 등록' : 'List New Product'"></span>
+                </h2>
+                <p class="text-sm mb-5" :class="theme === 'dark' ? 'text-gray-400' : 'text-gray-500'" x-text="lang === 'zh' ? '填写产品信息，提交后上架至平台' : lang === 'ko' ? '제품 정보를 입력하고 제출하면 플랫폼에 등록됩니다.' : 'Fill in product details and submit to list on the platform.'"></p>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div>
+                        <label class="block text-sm font-medium mb-1.5" x-text="lang === 'zh' ? '产品名称 *' : lang === 'ko' ? '제품명 *' : 'Product Name *'"></label>
+                        <input type="text" class="input-field" x-model="form.product.name" :placeholder="lang === 'zh' ? '如：抹茶拿铁' : lang === 'ko' ? '예: 말차 라떼' : 'e.g. Matcha Latte'">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1.5" x-text="lang === 'zh' ? '品牌 *' : lang === 'ko' ? '브랜드 *' : 'Brand *'"></label>
+                        <input type="text" class="input-field" x-model="form.product.brand" :placeholder="lang === 'zh' ? '如：韩天' : lang === 'ko' ? '예: 한천' : 'e.g. Hancheon'">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1.5" x-text="lang === 'zh' ? '产地' : lang === 'ko' ? '원산지' : 'Origin'"></label>
+                        <input type="text" class="input-field" x-model="form.product.origin" :placeholder="lang === 'zh' ? '如：韩国 济州岛' : lang === 'ko' ? '예: 한국 제주도' : 'e.g. Jeju, Korea'">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1.5">FOB <span x-text="lang === 'zh' ? '价格 (USD)' : lang === 'ko' ? '가격 (USD)' : 'Price (USD)'"></span></label>
+                        <input type="number" class="input-field" x-model="form.product.fob" placeholder="0.00">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1.5">MOQ</label>
+                        <input type="number" class="input-field" x-model="form.product.moq" placeholder="100">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1.5" x-text="lang === 'zh' ? '口味种类' : lang === 'ko' ? '맛 종류' : 'Flavors'"></label>
+                        <input type="text" class="input-field" x-model="form.product.flavors" :placeholder="lang === 'zh' ? '如：原味, 蜂蜜, 抹茶' : lang === 'ko' ? '예: 오리지널, 꿀, 말차' : 'e.g. Original, Honey, Matcha'">
+                    </div>
+                </div>
+                <div class="mt-5">
+                    <label class="block text-sm font-medium mb-1.5" x-text="lang === 'zh' ? '产品描述' : lang === 'ko' ? '제품 설명' : 'Description'"></label>
+                    <textarea class="input-field" rows="3" x-model="form.product.desc" :placeholder="lang === 'zh' ? '请输入产品详细介绍...' : lang === 'ko' ? '제품 상세 설명을 입력하세요...' : 'Enter detailed product description...'"></textarea>
+                </div>
+                <div class="mt-5">
+                    <label class="block text-sm font-medium mb-1.5" x-text="lang === 'zh' ? '产品图片' : lang === 'ko' ? '제품 이미지' : 'Product Images'"></label>
+                    <div class="border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-all" :class="theme === 'dark' ? 'border-gray-600 hover:border-[#8B5CF6]' : 'border-gray-300 hover:border-[#8B5CF6]'">
+                        <i class="bi bi-cloud-arrow-up text-3xl" :class="theme === 'dark' ? 'text-gray-500' : 'text-gray-400'"></i>
+                        <p class="mt-2 text-sm" :class="theme === 'dark' ? 'text-gray-400' : 'text-gray-500'" x-text="lang === 'zh' ? '点击或拖拽上传图片（模拟）' : lang === 'ko' ? '클릭하거나 드래그하여 이미지 업로드 (시뮬레이션)' : 'Click or drag to upload images (simulated)'"></p>
+                        <p class="text-xs mt-1 text-gray-500" x-text="lang === 'zh' ? '支持 JPG, PNG, GIF | 最多5张' : lang === 'ko' ? 'JPG, PNG, GIF 지원 | 최대 5장' : 'JPG, PNG, GIF | Max 5 images'"></p>
+                    </div>
+                </div>
+                <div class="mt-6 flex justify-end gap-3">
+                    <button class="btn-purple px-6 py-2.5" @click="submitProduct" x-text="lang === 'zh' ? '提交上架' : lang === 'ko' ? '등록 제출' : 'Submit Listing'"></button>
+                </div>
+                <div x-show="form.showSuccess" x-transition class="mt-4 p-3 rounded-lg bg-green-500/10 border border-green-500/30 text-green-400 text-sm flex items-center gap-2">
+                    <i class="bi bi-check-circle-fill"></i>
+                    <span x-text="lang === 'zh' ? '产品上架成功！' : lang === 'ko' ? '제품이 성공적으로 등록되었습니다!' : 'Product listed successfully!'"></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============= MODULE 2: 内容发布 ============= -->
+        <div x-show="activeMenu === 1" x-transition.opacity.duration.300ms>
+            <div class="card" :class="theme === 'dark' ? 'bg-[#0F172A] border border-gray-700' : 'bg-white border border-gray-200 shadow-sm'">
+                <h2 class="text-lg font-bold mb-1 flex items-center gap-2">
+                    <i class="bi bi-megaphone text-[#F59E0B]"></i>
+                    <span x-text="lang === 'zh' ? 'AI营销内容生成' : lang === 'ko' ? 'AI 마케팅 콘텐츠 생성' : 'AI Marketing Content'"></span>
+                </h2>
+                <p class="text-sm mb-5" :class="theme === 'dark' ? 'text-gray-400' : 'text-gray-500'" x-text="lang === 'zh' ? '选择平台和产品，AI自动生成适配的营销文案' : lang === 'ko' ? '플랫폼과 제품을 선택하면 AI가 자동으로 마케팅 카피를 생성합니다.' : 'Select platform and product, AI auto-generates marketing copy.'"></p>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">
+                    <div>
+                        <label class="block text-sm font-medium mb-1.5" x-text="lang === 'zh' ? '选择平台' : lang === 'ko' ? '플랫폼 선택' : 'Select Platform'"></label>
+                        <select class="input-field" x-model="content.platform">
+                            <template x-for="p in contentPlatforms" :key="p.value">
+                                <option :value="p.value" x-text="p.label"></option>
+                            </template>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1.5" x-text="lang === 'zh' ? '选择产品' : lang === 'ko' ? '제품 선택' : 'Select Product'"></label>
+                        <select class="input-field" x-model="content.product">
+                            <template x-for="p in contentProducts" :key="p.value">
+                                <option :value="p.value" x-text="p.label"></option>
+                            </template>
+                        </select>
+                    </div>
+                </div>
+                <button class="btn-gold px-6 py-2.5 mb-6" @click="generateContent" x-text="lang === 'zh' ? '生成文案' : lang === 'ko' ? '카피 생성' : 'Generate Copy'"></button>
+
+                <div x-show="content.generated" class="space-y-4">
+                    <template x-for="(v, i) in content.versions" :key="i">
+                        <div class="rounded-lg p-4" :class="theme === 'dark' ? 'bg-gray-800/50 border border-gray-700' : 'bg-gray-50 border border-gray-200'">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="badge" :class="i === 0 ? 'bg-[#F59E0B]/20 text-[#F59E0B]' : i === 1 ? 'bg-[#8B5CF6]/20 text-[#8B5CF6]' : 'bg-green-500/20 text-green-400'">
+                                    <span x-text="lang === 'zh' ? ['版本A: 种草风', '版本B: 专业推荐', '版本C: 短平快'][i] : lang === 'ko' ? ['버전 A: 감성 스타일', '버전 B: 전문 추천', '버전 C: 간결 스타일'][i] : ['Version A: Lifestyle', 'Version B: Pro Review', 'Version C: Short & Punchy'][i]"></span>
+                                </span>
+                                <button class="text-xs" :class="theme === 'dark' ? 'text-gray-500 hover:text-[#F59E0B]' : 'text-gray-400 hover:text-[#F59E0B]'" @click="copyText(v)" title="Copy">
+                                    <i class="bi bi-clipboard"></i>
+                                </button>
+                            </div>
+                            <p class="text-sm leading-relaxed whitespace-pre-line" x-text="v"></p>
+                        </div>
+                    </template>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============= MODULE 3: 渠道匹配 ============= -->
+        <div x-show="activeMenu === 2" x-transition.opacity.duration.300ms>
+            <div class="card" :class="theme === 'dark' ? 'bg-[#0F172A] border border-gray-700' : 'bg-white border border-gray-200 shadow-sm'">
+                <h2 class="text-lg font-bold mb-1 flex items-center gap-2">
+                    <i class="bi bi-diagram-3 text-[#F59E0B]"></i>
+                    <span x-text="lang === 'zh' ? '智能渠道匹配' : lang === 'ko' ? '스마트 채널 매칭' : 'Channel Matching'"></span>
+                </h2>
+                <p class="text-sm mb-5" :class="theme === 'dark' ? 'text-gray-400' : 'text-gray-500'" x-text="lang === 'zh' ? 'AI自动分析产品特性，匹配最优销售渠道' : lang === 'ko' ? 'AI가 제품 특성을 분석하여 최적의 판매 채널을 매칭합니다.' : 'AI analyzes product features and matches the best sales channels.'"></p>
+
+                <div class="mb-6">
+                    <label class="block text-sm font-medium mb-1.5" x-text="lang === 'zh' ? '选择产品' : lang === 'ko' ? '제품 선택' : 'Select Product'"></label>
+                    <select class="input-field max-w-xs" x-model="channel.selectedProduct" @change="matchChannels">
+                        <template x-for="p in channelProducts" :key="p.value">
+                            <option :value="p.value" x-text="p.label"></option>
+                        </template>
+                    </select>
+                </div>
+
+                <div x-show="channel.results.length > 0" class="space-y-3">
+                    <template x-for="(ch, i) in channel.results" :key="i">
+                        <div class="flex items-center gap-4 p-3 rounded-lg" :class="theme === 'dark' ? 'bg-gray-800/30' : 'bg-gray-50'">
+                            <div class="w-8 h-8 rounded-lg flex items-center justify-center font-bold text-xs" :class="i < 3 ? 'gold-gradient text-[#0B1120]' : 'bg-gray-700 text-gray-300'">
+                                <span x-text="i + 1"></span>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <div class="font-medium text-sm" x-text="ch.name"></div>
+                                <div class="text-xs mt-0.5" :class="theme === 'dark' ? 'text-gray-400' : 'text-gray-500'" x-text="ch.type + ' | ' + ch.region"></div>
+                            </div>
+                            <div class="text-right shrink-0" style="width:160px;">
+                                <div class="text-xs mb-1" :class="theme === 'dark' ? 'text-gray-400' : 'text-gray-500'" x-text="lang === 'zh' ? '匹配度' : lang === 'ko' ? '매칭도' : 'Match'"></div>
+                                <div class="match-bar">
+                                    <div class="match-fill" :style="'width:' + ch.score + '%'"></div>
+                                </div>
+                                <div class="text-xs mt-0.5 font-medium text-right" style="color:#F59E0B;">
+                                    <span x-text="ch.score + '%'"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============= MODULE 4: 邮件询盘 ============= -->
+        <div x-show="activeMenu === 3" x-transition.opacity.duration.300ms>
+            <div class="card" :class="theme === 'dark' ? 'bg-[#0F172A] border border-gray-700' : 'bg-white border border-gray-200 shadow-sm'">
+                <h2 class="text-lg font-bold mb-1 flex items-center gap-2">
+                    <i class="bi bi-envelope-paper text-[#F59E0B]"></i>
+                    <span x-text="lang === 'zh' ? '邮件询盘管理' : lang === 'ko' ? '이메일 문의 관리' : 'Inquiry Management'"></span>
+                </h2>
+                <p class="text-sm mb-5" :class="theme === 'dark' ? 'text-gray-400' : 'text-gray-500'" x-text="lang === 'zh' ? '查看和管理客户询盘' : lang === 'ko' ? '고객 문의를 확인하고 관리합니다.' : 'View and manage customer inquiries.'"></p>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm">
+                        <thead>
+                            <tr class="table-header text-left">
+                                <th class="p-3 font-medium" x-text="lang === 'zh' ? '客户名' : lang === 'ko' ? '고객명' : 'Customer'"></th>
+                                <th class="p-3 font-medium" x-text="lang === 'zh' ? '公司' : lang === 'ko' ? '회사' : 'Company'"></th>
+                                <th class="p-3 font-medium" x-text="lang === 'zh' ? '产品' : lang === 'ko' ? '제품' : 'Product'"></th>
+                                <th class="p-3 font-medium" x-text="lang === 'zh' ? '时间' : lang === 'ko' ? '시간' : 'Date'"></th>
+                                <th class="p-3 font-medium" x-text="lang === 'zh' ? '状态' : lang === 'ko' ? '상태' : 'Status'"></th>
+                                <th class="p-3 font-medium" x-text="lang === 'zh' ? '操作' : lang === 'ko' ? '작업' : 'Action'"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <template x-for="(inq, idx) in inquiries" :key="idx">
+                                <tr class="table-row">
+                                    <td class="p-3" x-text="inq.customer"></td>
+                                    <td class="p-3" x-text="inq.company"></td>
+                                    <td class="p-3" x-text="inq.product"></td>
+                                    <td class="p-3" x-text="inq.time"></td>
+                                    <td class="p-3">
+                                        <span class="badge text-xs" :class="inq.status === 'pending' ? 'bg-yellow-500/20 text-yellow-400' : inq.status === 'replied' ? 'bg-green-500/20 text-green-400' : 'bg-gray-500/20 text-gray-400'"
+                                              x-text="inq.status === 'pending' ? (lang === 'zh' ? '待回复' : lang === 'ko' ? '미답변' : 'Pending') : inq.status === 'replied' ? (lang === 'zh' ? '已回复' : lang === 'ko' ? '답변완료' : 'Replied') : (lang === 'zh' ? '已关闭' : lang === 'ko' ? '종료' : 'Closed')"></span>
+                                    </td>
+                                    <td class="p-3">
+                                        <button class="text-xs px-3 py-1 rounded" :class="inq.status === 'pending' ? 'btn-purple' : 'text-gray-500 cursor-not-allowed'" :disabled="inq.status !== 'pending'" @click="toggleReply(idx)">
+                                            <i class="bi bi-reply mr-1"></i>
+                                            <span x-text="inq.showReply ? (lang === 'zh' ? '收起' : lang === 'ko' ? '접기' : 'Close') : (lang === 'zh' ? '回复' : lang === 'ko' ? '답변' : 'Reply')"></span>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr x-show="inq.showReply" x-transition>
+                                    <td colspan="6" class="p-3">
+                                        <div class="rounded-lg p-4" :class="theme === 'dark' ? 'bg-gray-800/50' : 'bg-gray-50'">
+                                            <label class="block text-xs font-medium mb-1.5" :class="theme === 'dark' ? 'text-gray-400' : 'text-gray-500'" x-text="lang === 'zh' ? '回复内容' : lang === 'ko' ? '답변 내용' : 'Reply Content'"></label>
+                                            <textarea class="input-field text-sm" rows="3" x-model="inq.replyText" :placeholder="lang === 'zh' ? '请输入回复...' : lang === 'ko' ? '답변을 입력하세요...' : 'Enter your reply...'"></textarea>
+                                            <div class="mt-2 flex justify-end">
+                                                <button class="btn-gold text-xs px-4 py-1.5" @click="sendReply(idx)" x-text="lang === 'zh' ? '发送回复' : lang === 'ko' ? '답변 보내기' : 'Send Reply'"></button>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============= MODULE 5: 合规检查 ============= -->
+        <div x-show="activeMenu === 4" x-transition.opacity.duration.300ms>
+            <div class="card" :class="theme === 'dark' ? 'bg-[#0F172A] border border-gray-700' : 'bg-white border border-gray-200 shadow-sm'">
+                <h2 class="text-lg font-bold mb-1 flex items-center gap-2">
+                    <i class="bi bi-shield-check text-[#F59E0B]"></i>
+                    <span x-text="lang === 'zh' ? '合规检查' : lang === 'ko' ? '규정 준수 확인' : 'Compliance Check'"></span>
+                </h2>
+                <p class="text-sm mb-5" :class="theme === 'dark' ? 'text-gray-400' : 'text-gray-500'" x-text="lang === 'zh' ? '检查产品进出口合规信息' : lang === 'ko' ? '제품 수출입 규정 준수 정보를 확인합니다.' : 'Check product import/export compliance info.'"></p>
+
+                <div class="mb-6">
+                    <label class="block text-sm font-medium mb-1.5" x-text="lang === 'zh' ? '选择产品' : lang === 'ko' ? '제품 선택' : 'Select Product'"></label>
+                    <select class="input-field max-w-xs" x-model="compliance.selected" @change="checkCompliance">
+                        <template x-for="p in complianceProducts" :key="p.value">
+                            <option :value="p.value" x-text="p.label"></option>
+                        </template>
+                    </select>
+                </div>
+
+                <div x-show="compliance.result" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="rounded-lg p-4" :class="theme === 'dark' ? 'bg-gray-800/50 border border-gray-700' : 'bg-gray-50 border border-gray-200'">
+                        <div class="flex items-center gap-2 mb-3">
+                            <i class="bi bi-upc-scan text-[#8B5CF6]"></i>
+                            <span class="font-medium text-sm" x-text="lang === 'zh' ? 'HS编码' : lang === 'ko' ? 'HS 코드' : 'HS Code'"></span>
+                        </div>
+                        <span class="text-lg font-bold text-[#F59E0B]" x-text="compliance.result.hsCode"></span>
+                    </div>
+                    <div class="rounded-lg p-4" :class="theme === 'dark' ? 'bg-gray-800/50 border border-gray-700' : 'bg-gray-50 border border-gray-200'">
+                        <div class="flex items-center gap-2 mb-3">
+                            <i class="bi bi-percent text-[#8B5CF6]"></i>
+                            <span class="font-medium text-sm" x-text="lang === 'zh' ? '关税税率' : lang === 'ko' ? '관세율' : 'Tariff Rate'"></span>
+                        </div>
+                        <span class="text-lg font-bold text-[#F59E0B]" x-text="compliance.result.tariff"></span>
+                    </div>
+                    <div class="rounded-lg p-4" :class="theme === 'dark' ? 'bg-gray-800/50 border border-gray-700' : 'bg-gray-50 border border-gray-200'">
+                        <div class="flex items-center gap-2 mb-3">
+                            <i class="bi bi-tag text-[#8B5CF6]"></i>
+                            <span class="font-medium text-sm" x-text="lang === 'zh' ? '标签要求' : lang === 'ko' ? '라벨 요구사항' : 'Labeling Requirements'"></span>
+                        </div>
+                        <p class="text-sm leading-relaxed" x-text="compliance.result.labeling"></p>
+                    </div>
+                    <div class="rounded-lg p-4" :class="theme === 'dark' ? 'bg-gray-800/50 border border-gray-700' : 'bg-gray-50 border border-gray-200'">
+                        <div class="flex items-center gap-2 mb-3">
+                            <i class="bi bi-file-earmark-text text-[#8B5CF6]"></i>
+                            <span class="font-medium text-sm" x-text="lang === 'zh' ? '原产地证明' : lang === 'ko' ? '원산지 증명' : 'Certificate of Origin'"></span>
+                        </div>
+                        <p class="text-sm leading-relaxed" x-text="compliance.result.certificate"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============= MODULE 6: 充值支付 ============= -->
+        <div x-show="activeMenu === 5" x-transition.opacity.duration.300ms>
+            <div class="card" :class="theme === 'dark' ? 'bg-[#0F172A] border border-gray-700' : 'bg-white border border-gray-200 shadow-sm'">
+                <h2 class="text-lg font-bold mb-1 flex items-center gap-2">
+                    <i class="bi bi-wallet2 text-[#F59E0B]"></i>
+                    <span x-text="lang === 'zh' ? '充值支付' : lang === 'ko' ? '충전 및 결제' : 'Top-up & Payment'"></span>
+                </h2>
+                <p class="text-sm mb-5" :class="theme === 'dark' ? 'text-gray-400' : 'text-gray-500'" x-text="lang === 'zh' ? '管理账户余额，充值并查看交易记录' : lang === 'ko' ? '계정 잔액을 관리하고 충전하며 거래 내역을 확인합니다.' : 'Manage balance, top up, and view transactions.'"></p>
+
+                <!-- Balance Card -->
+                <div class="gold-gradient rounded-xl p-6 mb-6 text-[#0B1120]">
+                    <div class="text-sm opacity-80" x-text="lang === 'zh' ? '账户余额' : lang === 'ko' ? '계정 잔액' : 'Account Balance'"></div>
+                    <div class="text-3xl font-bold mt-1">$<span x-text="payment.balance.toLocaleString()"></span></div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">
+                    <div>
+                        <label class="block text-sm font-medium mb-1.5" x-text="lang === 'zh' ? '充值金额 (USD)' : lang === 'ko' ? '충전 금액 (USD)' : 'Amount (USD)'"></label>
+                        <input type="number" class="input-field" x-model="payment.amount" placeholder="100">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1.5" x-text="lang === 'zh' ? '支付方式' : lang === 'ko' ? '결제 방식' : 'Payment Method'"></label>
+                        <select class="input-field" x-model="payment.method">
+                            <option value="alipay" x-text="lang === 'zh' ? '支付宝' : lang === 'ko' ? '알리페이' : 'Alipay'"></option>
+                            <option value="wechat" x-text="lang === 'zh' ? '微信支付' : lang === 'ko' ? '위챗페이' : 'WeChat Pay'"></option>
+                            <option value="card" x-text="lang === 'zh' ? '银行卡' : lang === 'ko' ? '카드' : 'Bank Card'"></option>
+                            <option value="crypto" x-text="lang === 'zh' ? '加密货币' : lang === 'ko' ? '암호화폐' : 'Crypto'"></option>
+                        </select>
+                    </div>
+                </div>
+                <button class="btn-gold px-6 py-2.5 mb-6" @click="processPayment" x-text="lang === 'zh' ? '立即充值' : lang === 'ko' ? '즉시 충전' : 'Top Up Now'"></button>
+
+                <h3 class="font-medium text-sm mb-3 mt-6" x-text="lang === 'zh' ? '交易记录' : lang === 'ko' ? '거래 내역' : 'Transaction History'"></h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm">
+                        <thead>
+                            <tr class="table-header text-left">
+                                <th class="p-3 font-medium" x-text="lang === 'zh' ? '时间' : lang === 'ko' ? '시간' : 'Date'"></th>
+                                <th class="p-3 font-medium" x-text="lang === 'zh' ? '类型' : lang === 'ko' ? '유형' : 'Type'"></th>
+                                <th class="p-3 font-medium" x-text="lang === 'zh' ? '金额' : lang === 'ko' ? '금액' : 'Amount'"></th>
+                                <th class="p-3 font-medium" x-text="lang === 'zh' ? '状态' : lang === 'ko' ? '상태' : 'Status'"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <template x-for="(t, i) in payment.transactions" :key="i">
+                                <tr class="table-row">
+                                    <td class="p-3" x-text="t.time"></td>
+                                    <td class="p-3" x-text="t.type === 'topup' ? (lang === 'zh' ? '充值' : lang === 'ko' ? '충전' : 'Top-up') : (lang === 'zh' ? '消费' : lang === 'ko' ? '소비' : 'Spend')"></td>
+                                    <td class="p-3" :class="t.type === 'topup' ? 'text-green-400' : 'text-red-400'">
+                                        <span x-text="(t.type === 'topup' ? '+' : '-') + '$' + t.amount"></span>
+                                    </td>
+                                    <td class="p-3">
+                                        <span class="badge text-xs" :class="t.status === 'success' ? 'bg-green-500/20 text-green-400' : t.status === 'pending' ? 'bg-yellow-500/20 text-yellow-400' : 'bg-red-500/20 text-red-400'"
+                                              x-text="t.status === 'success' ? (lang === 'zh' ? '成功' : lang === 'ko' ? '성공' : 'Success') : t.status === 'pending' ? (lang === 'zh' ? '处理中' : lang === 'ko' ? '처리중' : 'Pending') : (lang === 'zh' ? '失败' : lang === 'ko' ? '실패' : 'Failed')"></span>
+                                    </td>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============= MODULE 7: 数据看板 ============= -->
+        <div x-show="activeMenu === 6" x-transition.opacity.duration.300ms>
+            <div class="card" :class="theme === 'dark' ? 'bg-[#0F172A] border border-gray-700' : 'bg-white border border-gray-200 shadow-sm'">
+                <h2 class="text-lg font-bold mb-1 flex items-center gap-2">
+                    <i class="bi bi-bar-chart-line text-[#F59E0B]"></i>
+                    <span x-text="lang === 'zh' ? '数据看板' : lang === 'ko' ? '데이터 대시보드' : 'Analytics Dashboard'"></span>
+                </h2>
+                <p class="text-sm mb-5" :class="theme === 'dark' ? 'text-gray-400' : 'text-gray-500'" x-text="lang === 'zh' ? '平台运营数据概览' : lang === 'ko' ? '플랫폼 운영 데이터 개요' : 'Platform operations overview.'"></p>
+
+                <!-- Stat Cards -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                    <template x-for="(stat, i) in dashboard.stats" :key="i">
+                        <div class="stat-card rounded-xl p-4" :class="theme === 'dark' ? 'bg-gray-800/40 border-gray-700' : 'bg-gray-50 border-gray-200'">
+                            <div class="flex items-center gap-2 mb-2">
+                                <i :class="stat.icon" class="text-lg" style="color:#8B5CF6"></i>
+                                <span class="text-xs" :class="theme === 'dark' ? 'text-gray-400' : 'text-gray-500'" x-text="stat.label"></span>
+                            </div>
+                            <div class="text-2xl font-bold" x-text="stat.value"></div>
+                            <div class="text-xs mt-1" :class="stat.trend > 0 ? 'text-green-400' : 'text-red-400'">
+                                <i :class="stat.trend > 0 ? 'bi bi-arrow-up' : 'bi bi-arrow-down'"></i>
+                                <span x-text="Math.abs(stat.trend) + '% ' + (lang === 'zh' ? '环比' : lang === 'ko' ? '전월비' : 'MoM')"></span>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+
+                <!-- Chart -->
+                <div class="rounded-xl p-4" :class="theme === 'dark' ? 'bg-gray-800/30 border border-gray-700' : 'bg-gray-50 border border-gray-200'">
+                    <h3 class="text-sm font-medium mb-3" x-text="lang === 'zh' ? '近7日询盘趋势' : lang === 'ko' ? '최근 7일 문의 추세' : '7-Day Inquiry Trend'"></h3>
+                    <div id="trendChart" style="width:100%;height:300px;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="mt-8 pt-4 text-center text-xs" :class="theme === 'dark' ? 'text-gray-600' : 'text-gray-400'">
+            &copy; 2026 go-aiport.com <span x-text="lang === 'zh' ? '韩品优选 · 中韩出海数智港' : lang === 'ko' ? '한품우선 · 중한 디지털 포트' : 'K-Brand Select · China-Korea Digital Port'"></span>
+        </div>
+    </main>
+</div>
+
+<script>
+function dashboardApp() {
+    return {
+        // --- state ---
+        theme: localStorage.getItem('kbd_theme') || 'dark',
+        lang: localStorage.getItem('kbd_lang') || 'zh',
+        currentTime: '',
+        activeMenu: 0,
+        menuItems: [
+            { icon: 'bi bi-box-seam',       label: '产品上架',  desc: '上架新产品至平台', label_ko: '제품 등록', label_en: 'Product Listing', desc_ko: '플랫폼에 신제품 등록', desc_en: 'List new products' },
+            { icon: 'bi bi-megaphone',       label: '内容发布',  desc: 'AI生成营销文案', label_ko: '콘텐츠 발행', label_en: 'Content Publish', desc_ko: 'AI 마케팅 카피 생성', desc_en: 'AI marketing copy' },
+            { icon: 'bi bi-diagram-3',       label: '渠道匹配',  desc: '智能匹配销售渠道', label_ko: '채널 매칭', label_en: 'Channel Match', desc_ko: '스마트 채널 매칭', desc_en: 'Smart channel matching' },
+            { icon: 'bi bi-envelope-paper',  label: '邮件询盘',  desc: '询盘管理与回复', label_ko: '이메일 문의', label_en: 'Email Inquiries', desc_ko: '문의 관리 및 답변', desc_en: 'Manage & reply inquiries' },
+            { icon: 'bi bi-shield-check',    label: '合规检查',  desc: '进出口合规信息', label_ko: '규정 준수', label_en: 'Compliance', desc_ko: '수출입 규정 정보', desc_en: 'Import/export compliance' },
+            { icon: 'bi bi-wallet2',         label: '充值支付',  desc: '账户充值与管理', label_ko: '충전 및 결제', label_en: 'Top-up & Pay', desc_ko: '계정 충전 및 관리', desc_en: 'Account top-up & management' },
+            { icon: 'bi bi-bar-chart-line',  label: '数据看板',  desc: '运营数据概览', label_ko: '데이터 대시보드', label_en: 'Analytics', desc_ko: '운영 데이터 개요', desc_en: 'Operations overview' },
+        ],
+        contentPlatforms: [
+            { value:'xiaohongshu', label:'小红书' }, { value:'wechat', label:'公众号' },
+            { value:'moments', label:'朋友圈' }, { value:'douyin', label:'抖音' }
+        ],
+        contentProducts: [
+            { value:'matcha', label:'抹茶拿铁' }, { value:'haitao', label:'济州海苔' },
+            { value:'hongshen', label:'韩天红参' }, { value:'yeast', label:'益生菌' }
+        ],
+        channelProducts: [
+            { value:'matcha', label:'抹茶拿铁' }, { value:'haitao', label:'济州海苔' },
+            { value:'hongshen', label:'韩天红参' }
+        ],
+        complianceProducts: [
+            { value:'matcha', label:'抹茶拿铁' }, { value:'haitao', label:'济州海苔' },
+            { value:'hongshen', label:'韩天红参' }, { value:'yeast', label:'益生菌' }
+        ],
+
+        // --- form data ---
+        form: {
+            product: { name:'', brand:'', origin:'', fob:'', moq:'', flavors:'', desc:'' },
+            showSuccess: false
+        },
+        content: {
+            platform: 'xiaohongshu', product: 'matcha', generated: false, versions: []
+        },
+        channel: {
+            selectedProduct: 'matcha', results: []
+        },
+        inquiries: [
+            { customer:'张伟', company:'上海汇贸', product:'抹茶拿铁', time:'2026-05-14 10:30', status:'pending', showReply:false, replyText:'' },
+            { customer:'Kim Soo', company:'SEOUL FOOD', product:'济州海苔', time:'2026-05-13 14:20', status:'replied', showReply:false, replyText:'' },
+            { customer:'田中', company:'Tokyo Mart', product:'韩天红参', time:'2026-05-12 09:15', status:'pending', showReply:false, replyText:'' },
+            { customer:'李娜', company:'大连海商', product:'益生菌', time:'2026-05-11 16:45', status:'closed', showReply:false, replyText:'' },
+            { customer:'Park J', company:'K-FOOD Inc', product:'抹茶拿铁', time:'2026-05-10 11:00', status:'pending', showReply:false, replyText:'' },
+        ],
+        compliance: {
+            selected: 'matcha', result: null
+        },
+        payment: {
+            balance: 12850,
+            amount: '',
+            method: 'alipay',
+            transactions: [
+                { time:'2026-05-14', type:'topup', amount:5000, status:'success' },
+                { time:'2026-05-12', type:'spend', amount:1200, status:'success' },
+                { time:'2026-05-10', type:'topup', amount:3000, status:'success' },
+                { time:'2026-05-08', type:'topup', amount:2000, status:'success' },
+                { time:'2026-05-05', type:'spend', amount:3500, status:'success' },
+                { time:'2026-05-03', type:'topup', amount:10000, status:'pending' },
+            ]
+        },
+        dashboard: {
+            stats: [
+                { icon:'bi bi-box-seam', label:'总产品', label_ko:'전체 제품', label_en:'Total Products', value:'128', trend:12 },
+                { icon:'bi bi-envelope', label:'总询盘', label_ko:'전체 문의', label_en:'Total Inquiries', value:'47', trend:-5 },
+                { icon:'bi bi-diagram-3', label:'活跃渠道', label_ko:'활성 채널', label_en:'Active Channels', value:'23', trend:8 },
+                { icon:'bi bi-coin', label:'本月成交', label_ko:'이달 거래', label_en:'Monthly Deals', value:'$38,200', trend:15 },
+            ]
+        },
+
+        // --- methods ---
+        init() {
+            this.applyTheme();
+            this.updateTime();
+            setInterval(() => this.updateTime(), 1000);
+            // Load from localStorage
+            const saved = localStorage.getItem('kbd_inquiries');
+            if (saved) this.inquiries = JSON.parse(saved);
+            const savedPay = localStorage.getItem('kbd_payment');
+            if (savedPay) this.payment = JSON.parse(savedPay);
+            // Init channel
+            this.matchChannels();
+            // Init chart on next tick
+            setTimeout(() => this.renderChart(), 300);
+            // Fix menu labels
+            this.updateMenuLabels();
+        },
+
+        updateTime() {
+            const d = new Date();
+            this.currentTime = d.toLocaleString('zh-CN', { hour12: false });
+        },
+
+        applyTheme() {
+            document.documentElement.classList.remove('day-mode', 'dark-mode');
+            if (this.theme === 'light') {
+                document.documentElement.classList.add('day-mode');
+            }
+        },
+
+        toggleTheme() {
+            this.theme = this.theme === 'dark' ? 'light' : 'dark';
+            localStorage.setItem('kbd_theme', this.theme);
+            this.applyTheme();
+            setTimeout(() => this.renderChart(), 200);
+        },
+
+        setLang(l) {
+            this.lang = l;
+            localStorage.setItem('kbd_lang', l);
+            this.updateMenuLabels();
+        },
+
+        updateMenuLabels() {
+            const l = this.lang;
+            this.menuItems.forEach((item, idx) => {
+                if (l === 'ko') {
+                    item.label = item.label_ko;
+                    item.desc = item.desc_ko;
+                } else if (l === 'en') {
+                    item.label = item.label_en;
+                    item.desc = item.desc_en;
+                } else {
+                    // reset to zh
+                    const zh = [
+                        '产品上架','内容发布','渠道匹配','邮件询盘','合规检查','充值支付','数据看板'
+                    ];
+                    const zhDesc = [
+                        '上架新产品至平台','AI生成营销文案','智能匹配销售渠道','询盘管理与回复','进出口合规信息','账户充值与管理','运营数据概览'
+                    ];
+                    const ko = ['제품 등록','콘텐츠 발행','채널 매칭','이메일 문의','규정 준수','충전 및 결제','데이터 대시보드'];
+                    const koDesc = ['플랫폼에 신제품 등록','AI 마케팅 카피 생성','스마트 채널 매칭','문의 관리 및 답변','수출입 규정 정보','계정 충전 및 관리','운영 데이터 개요'];
+                    const en = ['Product Listing','Content Publish','Channel Match','Email Inquiries','Compliance','Top-up & Pay','Analytics'];
+                    const enDesc = ['List new products','AI marketing copy','Smart channel matching','Manage & reply inquiries','Import/export compliance','Account top-up & management','Operations overview'];
+                    item.label = [zh,ko,en][['zh','ko','en'].indexOf(l)][idx];
+                    item.desc = [zhDesc,koDesc,enDesc][['zh','ko','en'].indexOf(l)][idx];
+                }
+            });
+            // Also update dashboard stats labels
+            const zhStat = ['总产品','总询盘','活跃渠道','本月成交'];
+            const koStat = ['전체 제품','전체 문의','활성 채널','이달 거래'];
+            const enStat = ['Total Products','Total Inquiries','Active Channels','Monthly Deals'];
+            this.dashboard.stats.forEach((s, i) => {
+                s.label = [zhStat,koStat,enStat][['zh','ko','en'].indexOf(l)][i];
+            });
+            // Update page title
+            const titles = {
+                zh: '客户操作SaaS后台 | 韩品优选',
+                ko: '고객 SaaS 대시보드 | 한품우선',
+                en: 'Customer Dashboard | K-Brand Select'
+            };
+            document.title = titles[l] || titles.zh;
+            // Update content platform labels
+            this.contentPlatforms = [
+                { value:'xiaohongshu', label: l === 'zh' ? '小红书' : l === 'ko' ? '샤오홍슈' : 'Xiaohongshu' },
+                { value:'wechat', label: l === 'zh' ? '公众号' : l === 'ko' ? '공식계정' : 'WeChat OA' },
+                { value:'moments', label: l === 'zh' ? '朋友圈' : l === 'ko' ? '모멘트' : 'Moments' },
+                { value:'douyin', label: l === 'zh' ? '抖音' : l === 'ko' ? '틱톡' : 'Douyin' }
+            ];
+            this.contentProducts = [
+                { value:'matcha', label: l === 'zh' ? '抹茶拿铁' : l === 'ko' ? '말차 라떼' : 'Matcha Latte' },
+                { value:'haitao', label: l === 'zh' ? '济州海苔' : l === 'ko' ? '제주 김' : 'Jeju Seaweed' },
+                { value:'hongshen', label: l === 'zh' ? '韩天红参' : l === 'ko' ? '한천 홍삼' : 'Hancheon Ginseng' },
+                { value:'yeast', label: l === 'zh' ? '益生菌' : l === 'ko' ? '프로바이오틱스' : 'Probiotics' }
+            ];
+            this.channelProducts = [
+                { value:'matcha', label: l === 'zh' ? '抹茶拿铁' : l === 'ko' ? '말차 라떼' : 'Matcha Latte' },
+                { value:'haitao', label: l === 'zh' ? '济州海苔' : l === 'ko' ? '제주 김' : 'Jeju Seaweed' },
+                { value:'hongshen', label: l === 'zh' ? '韩天红参' : l === 'ko' ? '한천 홍삼' : 'Hancheon Ginseng' }
+            ];
+            this.complianceProducts = this.contentProducts.slice();
+        },
+
+        switchMenu(idx) {
+            this.activeMenu = idx;
+            if (idx === 6) setTimeout(() => this.renderChart(), 250);
+        },
+
+        // Product form
+        submitProduct() {
+            if (!this.form.product.name) return;
+            this.form.showSuccess = true;
+            setTimeout(() => { this.form.showSuccess = false; }, 3000);
+        },
+
+        // Content generation
+        generateContent() {
+            const p = this.content.product;
+            const products = {
+                matcha: { zh: '抹茶拿铁', ko: '말차 라떼', en: 'Matcha Latte' },
+                haitao: { zh: '济州海苔', ko: '제주 김', en: 'Jeju Seaweed' },
+                hongshen: { zh: '韩天红参', ko: '한천 홍삼', en: 'Hancheon Ginseng' },
+                yeast: { zh: '益生菌', ko: '프로바이오틱스', en: 'Probiotics' }
+            };
+            const pn = products[p] ? (products[p][this.lang] || products[p].zh) : p;
+            const plat = this.content.platform;
+            const platformNames = { xiaohongshu: {zh:'小红书',ko:'샤오홍슈',en:'Xiaohongshu'}, wechat: {zh:'公众号',ko:'공식계정',en:'WeChat OA'}, moments: {zh:'朋友圈',ko:'모멘트',en:'Moments'}, douyin: {zh:'抖音',ko:'틱톡',en:'Douyin'} };
+            const pnName = platformNames[plat] ? (platformNames[plat][this.lang] || platformNames[plat].zh) : plat;
+
+            const v1_zh = `【${pnName} · 种草推荐】\n终于找到了！这款${pn}简直太好喝了🥤\n\n精选优质原料，口感丝滑浓郁，一口下去满满的幸福感～\n\n✨ 推荐理由：\n- 100%天然原料，无添加\n- 韩国原装进口，品质保证\n- 办公室必备，下午茶绝配\n\n#美食推荐 #${pn} #韩国美食 #下午茶时光`;
+            const v2_zh = `【${pnName} · 专业测评】\n${pn} 深度评测｜为什么韩国人都在喝？\n\n作为一款来自韩国的明星产品，${pn}凭借其独特的口感和优质的原料，在消费者中获得了极高口碑。\n\n✅ 产品亮点：\n1. 选用济州岛天然原料\n2. 传统工艺与现代技术结合\n3. 口感细腻，回味悠长\n\n适合人群：上班族、学生、健康生活追求者\n\n推荐指数：⭐⭐⭐⭐⭐`;
+            const v3_zh = `🔥 爆款来袭！${pn}限时特惠\n\n韩国直邮·正品保障\n限时折扣，买3送1！\n\n👉 点击链接立即抢购\n\n#${pn} #韩国直邮 #限时特惠`;
+
+            const v1_ko = `【${pnName} · 추천】\n드디어 찾았습니다! 이 ${pn} 정말 맛있어요 🥤\n\n엄선된 원료로 만든 부드럽고 진한 맛, 한 입에 행복~\n\n✨ 추천 이유:\n- 100% 천연 원료, 무첨가\n- 한국 정식 수입, 품질 보장\n- 사무실 필수, 오후 간식 완벽 매치\n\n#맛집추천 #${pn} #한국간식 #오후티타임`;
+            const v2_ko = `【${pnName} · 전문 리뷰】\n${pn} 심층 리뷰｜왜 한국인들이 즐겨 마실까?\n\n한국 스타 제품 ${pn}은 독특한 맛과 프리미엄 원료로 소비자들에게 큰 사랑을 받고 있습니다.\n\n✅ 제품 포인트:\n1. 제주 천연 원료 사용\n2. 전통 공법과 현대 기술의 조화\n3. 부드러운 식감, 오래가는 여운\n\n추천 평점: ⭐⭐⭐⭐⭐`;
+            const v3_ko = `🔥 대박 특가! ${pn} 한정 할인\n\n한국 직배송 · 정품 보장\n한정 할인, 3+1 증정!\n\n👉 지금 바로 구매하기\n\n#${pn} #한국직구 #한정특가`;
+
+            const v1_en = `【${pnName} · Lifestyle】\nFinally found it! This ${pn} is absolutely amazing 🥤\n\nPremium ingredients, silky smooth texture - pure bliss in every sip!\n\n✨ Why we love it:\n- 100% natural, no additives\n- Authentic Korean import\n- Perfect office companion\n\n#Foodie #${pn} #KoreanFood #AfternoonTea`;
+            const v2_en = `【${pnName} · Pro Review】\n${pn} In-Depth Review | Why Koreans Love It\n\nThis Korean star product has won hearts with its unique flavor and premium quality.\n\n✅ Highlights:\n1. Jeju Island natural ingredients\n2. Traditional + modern craftsmanship\n3. Smooth texture, lasting finish\n\nRating: ⭐⭐⭐⭐⭐`;
+            const v3_en = `🔥 Flash Sale! ${pn} Limited Offer\n\nDirect from Korea · Authentic\nBuy 3 Get 1 Free!\n\n👉 Shop Now\n\n#${pn} #KoreaDirect #LimitedOffer`;
+
+            let v1, v2, v3;
+            if (this.lang === 'ko') { v1 = v1_ko; v2 = v2_ko; v3 = v3_ko; }
+            else if (this.lang === 'en') { v1 = v1_en; v2 = v2_en; v3 = v3_en; }
+            else { v1 = v1_zh; v2 = v2_zh; v3 = v3_zh; }
+
+            this.content.versions = [v1, v2, v3];
+            this.content.generated = true;
+        },
+
+        copyText(text) {
+            navigator.clipboard.writeText(text).catch(() => {});
+        },
+
+        // Channel matching
+        matchChannels() {
+            const data = {
+                matcha: [
+                    { name:'天猫国际 · 韩国馆', type:'电商平台', region:'中国大陆', score:95 },
+                    { name:'京东国际 · 冲饮', type:'电商平台', region:'中国大陆', score:92 },
+                    { name:'小红书 · 美食博主', type:'社交电商', region:'中国大陆', score:90 },
+                    { name:'拼多多 · 进口食品', type:'电商平台', region:'中国大陆', score:87 },
+                    { name:'抖音电商 · 饮品', type:'直播电商', region:'中国大陆', score:85 },
+                    { name:'微信小程序商城', type:'私域', region:'中国大陆', score:82 },
+                    { name:'韩国Gmarket', type:'电商平台', region:'韩国', score:78 },
+                    { name:'Amazon Japan', type:'电商平台', region:'日本', score:72 },
+                    { name:'Shopee 台湾', type:'电商平台', region:'东南亚', score:68 },
+                    { name:'Lazada 泰国', type:'电商平台', region:'东南亚', score:65 },
+                ],
+                haitao: [
+                    { name:'天猫国际 · 食品', type:'电商平台', region:'中国大陆', score:96 },
+                    { name:'京东国际 · 海产', type:'电商平台', region:'中国大陆', score:93 },
+                    { name:'山姆会员商店', type:'线下零售', region:'中国大陆', score:91 },
+                    { name:'Costco 中国', type:'线下零售', region:'中国大陆', score:89 },
+                    { name:'盒马鲜生', type:'新零售', region:'中国大陆', score:87 },
+                    { name:'小红书 · 美食探店', type:'社交电商', region:'中国大陆', score:84 },
+                    { name:'抖音生鲜', type:'直播电商', region:'中国大陆', score:81 },
+                    { name:'日本AEON', type:'线下零售', region:'日本', score:76 },
+                    { name:'美国HMart', type:'线下零售', region:'北美', score:70 },
+                    { name:'Amazon Fresh', type:'电商平台', region:'北美', score:66 },
+                ],
+                hongshen: [
+                    { name:'天猫国际 · 保健品', type:'电商平台', region:'中国大陆', score:94 },
+                    { name:'京东健康', type:'医药电商', region:'中国大陆', score:92 },
+                    { name:'小红书 · 养生', type:'社交电商', region:'中国大陆', score:90 },
+                    { name:'拼多多 · 大健康', type:'电商平台', region:'中国大陆', score:86 },
+                    { name:'抖音健康', type:'直播电商', region:'中国大陆', score:84 },
+                    { name:'微信视频号 · 养生', type:'私域', region:'中国大陆', score:81 },
+                    { name:'韩国Coupang', type:'电商平台', region:'韩国', score:79 },
+                    { name:'iHerb', type:'跨境电商', region:'全球', score:75 },
+                    { name:'Amazon Health', type:'电商平台', region:'北美', score:71 },
+                    { name:'日本iHerb', type:'跨境电商', region:'日本', score:67 },
+                ]
+            };
+            this.channel.results = data[this.channel.selectedProduct] || data.matcha;
+        },
+
+        // Inquiries
+        toggleReply(idx) {
+            this.inquiries[idx].showReply = !this.inquiries[idx].showReply;
+            localStorage.setItem('kbd_inquiries', JSON.stringify(this.inquiries));
+        },
+        sendReply(idx) {
+            if (!this.inquiries[idx].replyText.trim()) return;
+            this.inquiries[idx].status = 'replied';
+            this.inquiries[idx].showReply = false;
+            localStorage.setItem('kbd_inquiries', JSON.stringify(this.inquiries));
+        },
+
+        // Compliance
+        checkCompliance() {
+            const data = {
+                matcha: {
+                    hsCode: '2101.20.00',
+                    tariff: '12% (最惠国) / 20% (普通)',
+                    labeling: '中文标签需包含：品名、配料表、净含量、生产日期、保质期、原产国、进口商信息。需取得食品备案号。',
+                    certificate: '需提供：韩国原产地证明（FTA Form）、健康证明、自由销售证明、生产商HACCP认证。'
+                },
+                haitao: {
+                    hsCode: '2008.99.90',
+                    tariff: '10% (最惠国) / 18% (普通)',
+                    labeling: '中文标签需包含：品名、配料表、净含量、生产日期、保质期、贮存条件、原产国。海苔需标注过敏原信息。',
+                    certificate: '需提供：韩国原产地证明（FTA Form）、水产品检疫证明、卫生证书、生产商HACCP认证。'
+                },
+                hongshen: {
+                    hsCode: '2106.90.30',
+                    tariff: '8% (最惠国) / 15% (普通)',
+                    labeling: '保健食品需取得"蓝帽子"认证。标签需包含：保健功能、适宜人群、不适宜人群、食用量及食用方法。',
+                    certificate: '需提供：韩国原产地证明（FTA Form）、保健食品注册证书、自由销售证明、GMP认证。'
+                },
+                yeast: {
+                    hsCode: '3002.90.90',
+                    tariff: '5% (最惠国) / 12% (普通)',
+                    labeling: '益生菌产品需标注菌株名称、活菌数量、保质期内活菌数、贮存方法。需取得食品备案或保健食品批文。',
+                    certificate: '需提供：韩国原产地证明（FTA Form）、菌株安全性评估报告、第三方检测报告、自由销售证明。'
+                }
+            };
+            this.compliance.result = data[this.compliance.selected] || data.matcha;
+        },
+
+        // Payment
+        processPayment() {
+            const amt = parseFloat(this.payment.amount);
+            if (!amt || amt <= 0) return;
+            this.payment.balance += amt;
+            const now = new Date();
+            const timeStr = now.toISOString().slice(0,10);
+            this.payment.transactions.unshift({
+                time: timeStr,
+                type: 'topup',
+                amount: amt,
+                status: 'success'
+            });
+            this.payment.amount = '';
+            localStorage.setItem('kbd_payment', JSON.stringify(this.payment));
+        },
+
+        // Chart
+        renderChart() {
+            const el = document.getElementById('trendChart');
+            if (!el) return;
+            if (this._chart) this._chart.dispose();
+            this._chart = echarts.init(el, this.theme === 'dark' ? 'dark' : undefined);
+
+            const isDark = this.theme === 'dark';
+            const option = {
+                tooltip: { trigger: 'axis' },
+                grid: { left:'3%', right:'4%', bottom:'10%', top:'10%', containLabel:true },
+                xAxis: {
+                    type: 'category',
+                    data: ['5/09','5/10','5/11','5/12','5/13','5/14','5/15'],
+                    axisLabel: { color: isDark ? '#9CA3AF' : '#6B7280' },
+                    axisLine: { lineStyle: { color: isDark ? '#374151' : '#D1D5DB' } }
+                },
+                yAxis: {
+                    type: 'value',
+                    axisLabel: { color: isDark ? '#9CA3AF' : '#6B7280' },
+                    splitLine: { lineStyle: { color: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.06)' } }
+                },
+                series: [{
+                    data: [5, 8, 6, 12, 9, 15, 7],
+                    type: 'line',
+                    smooth: true,
+                    symbol: 'circle',
+                    symbolSize: 8,
+                    lineStyle: { width: 3, color: '#8B5CF6' },
+                    areaStyle: {
+                        color: {
+                            type: 'linear',
+                            x: 0, y: 0, x2: 0, y2: 1,
+                            colorStops: [
+                                { offset: 0, color: 'rgba(139,92,246,0.5)' },
+                                { offset: 1, color: 'rgba(139,92,246,0.02)' }
+                            ]
+                        }
+                    },
+                    itemStyle: { color: '#F59E0B', borderColor: '#8B5CF6', borderWidth: 2 }
+                }]
+            };
+            this._chart.setOption(option);
+            window.addEventListener('resize', () => { if (this._chart) this._chart.resize(); });
+        }
+    };
+}
+</script>
+</body>
+</html>

@@ -1,6 +1,11 @@
 wsl: �hKm0R localhost �NtM�n�FO*g\��P0R WSL0NAT !j_N�v WSL 
 N/ec localhost �Nt0
 
+N/ec localhost �Nt0
+
+wsl: �hKm0R localhost �NtM�n�FO*g\��P0R WSL0NAT !j_N�v WSL 
+N/ec localhost �Nt0
+
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -152,7 +157,6 @@ N/ec localhost �Nt0
         .light .step-number { background: linear-gradient(135deg, rgba(139,92,246,0.08), rgba(245,158,11,0.06)); color: #7C3AED; border: 2px solid rgba(139,92,246,0.15); }
 
         /* Floating animation */
-        .float-anim { animation: float 6s ease-in-out infinite; }
 
         /* Data bars */
         .data-bar { height: 4px; border-radius: 2px; background: linear-gradient(90deg, #F59E0B, #8B5CF6); transition: width 1.5s ease-out; }
@@ -225,6 +229,8 @@ N/ec localhost �Nt0
                     <a href="#capabilities" class="nav-link" data-lang-zh="AI能力" data-lang-ko="AI 역량" data-lang-en="AI Capabilities">AI能力</a>
                     <a href="#process" class="nav-link" data-lang-zh="合作流程" data-lang-ko="협업 프로세스" data-lang-en="Process">合作流程</a>
                     <a href="#insights" class="nav-link" data-lang-zh="数据洞察" data-lang-ko="데이터 인사이트" data-lang-en="Data Insights">数据洞察</a>
+            <a href="customer_dashboard.html" class="nav-link" data-lang-zh="客户后台" data-lang-ko="고객 대시보드" data-lang-en="Dashboard">客户后台</a>
+                    <a href="customer_dashboard.html" class="nav-link" data-lang-zh="客户后台" data-lang-ko="고객 대시보드" data-lang-en="Customer Dashboard">客户后台</a>
                 </div>
             </div>
             <div style="display: flex; align-items: center; gap: 8px;">
@@ -250,6 +256,7 @@ N/ec localhost �Nt0
             <a href="#capabilities" class="nav-link" data-lang-zh="AI能力" data-lang-ko="AI 역량" data-lang-en="AI Capabilities">AI能力</a>
             <a href="#process" class="nav-link" data-lang-zh="合作流程" data-lang-ko="협업 프로세스" data-lang-en="Process">合作流程</a>
             <a href="#insights" class="nav-link" data-lang-zh="数据洞察" data-lang-ko="데이터 인사이트" data-lang-en="Data Insights">数据洞察</a>
+            <a href="customer_dashboard.html" class="nav-link" data-lang-zh="客户后台" data-lang-ko="고객 대시보드" data-lang-en="Dashboard">客户后台</a>
         </div>
     </div>
 </nav>
@@ -277,10 +284,8 @@ N/ec localhost �Nt0
 
                 <p style="font-size: 18px; line-height: 1.7; max-width: 520px; margin-bottom: 36px;"
                    class="dark:text-slate-400 light:text-slate-600"
-                   data-lang-zh="出海时光机 CFC 引擎 + AI 数字员工军团，将中韩贸易决策周期从 <strong>数月缩短至数小时</strong>。从调研、选品、合规、营销、匹配到成交，全链路 AI 赋能。"
                    data-lang-ko="CFC 엔진 + AI 디지털 직원 군단이 중한 무역 결정 주기를 <strong>몇 개월에서 몇 시간</strong>으로 단축합니다. 상품 선정, 마케팅, 매칭부터 성사까지 전 과정을 AI가 지원합니다."
                    data-lang-en="The CFC Engine + AI Digital Employee Legion slashes Korea-China trade decisions from <strong>months to hours</strong>. From product selection to deal closure, AI empowers every step.">
-                    出海时光机 CFC 引擎 + AI 数字员工军团，将中韩贸易决策周期从 <strong style="color: #F1F5F9;">数月缩短至数小时</strong>。从调研、选品、合规、营销、匹配到成交，全链路 AI 赋能。
                 </p>
 
                 <div style="display: flex; gap: 16px; flex-wrap: wrap;">
@@ -332,12 +337,9 @@ N/ec localhost �Nt0
                 </div>
 
                 <!-- Floating badge -->
-                <div style="position: absolute; bottom: -20px; left: -20px; border-radius: 16px; padding: 16px 20px; box-shadow: 0 20px 60px rgba(0,0,0,0.5);" class="float-anim dark:bg-navy-800 light:bg-white" style="border: 1px solid rgba(245,158,11,0.2);">
                     <div style="display: flex; align-items: center; gap: 12px;">
                         <i class="bi bi-robot" style="font-size: 24px; color: #F59E0B;"></i>
                         <div>
-                            <div style="font-size: 13px; font-weight: 700;" data-lang-zh="AI 数字员工军团" data-lang-ko="AI 디지털 직원 군단" data-lang-en="AI Digital Employee Legion">AI 数字员工军团</div>
-                            <div style="font-size: 12px;" class="dark:text-slate-500 light:text-slate-400" data-lang-zh="4 支特种分队 · 110 人" data-lang-ko="4개 특수 분대 · 110명" data-lang-en="4 Squads · 110 Employees">4 支特种分队 · 110 人</div>
                         </div>
                     </div>
                 </div>
@@ -346,8 +348,373 @@ N/ec localhost �Nt0
     </div>
 </section>
 
-<!-- ===== TRUST BAR ===== -->
+<!-- ===== DASHBOARD / DATA KANBAN ===== -->
+<section id="dashboard" style="padding: 80px 24px 40px; position: relative;">
+    <div style="max-width: 1280px; margin: 0 auto;">
+        <div style="text-align: center; margin-bottom: 48px;">
+            <h2 class="gold-purple-text" style="font-size: 36px; font-weight: 800; margin-bottom: 12px;"
+                data-lang-zh="数据看板"
+                data-lang-ko="데이터 대시보드"
+                data-lang-en="Dashboard">数据看板</h2>
+            <p style="font-size: 16px;" class="dark:text-slate-500 light:text-slate-400"
+               data-lang-zh="AI 平台实时运营数据一览"
+               data-lang-ko="AI 플랫폼 실시간 운영 데이터"
+               data-lang-en="Real-time AI platform operational data">AI 平台实时运营数据一览</p>
+        </div>
 
+        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px;">
+            <div class="glass-card stat-card" style="padding: 28px 24px; position: relative; overflow: hidden;">
+                <div style="position: absolute; top: -20px; right: -20px; width: 80px; height: 80px; border-radius: 50%; background: rgba(245,158,11,0.06);"></div>
+                <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 16px;">
+                    <div style="width: 44px; height: 44px; border-radius: 12px; background: linear-gradient(135deg, rgba(245,158,11,0.15), rgba(245,158,11,0.05)); display: flex; align-items: center; justify-content: center;">
+                        <i class="bi bi-file-text" style="font-size: 20px; color: #F59E0B;"></i>
+                    </div>
+                    <span style="font-size: 14px; font-weight: 500;" class="dark:text-slate-400 light:text-slate-500"
+                          data-lang-zh="内容产出" data-lang-ko="콘텐츠 생산" data-lang-en="Content Output">内容产出</span>
+                </div>
+                <div style="display: flex; align-items: baseline; gap: 4px;">
+                    <span style="font-size: 36px; font-weight: 800; color: #F59E0B;">2,847</span>
+                    <span style="font-size: 14px;" class="dark:text-slate-500 light:text-slate-400"
+                          data-lang-zh="篇" data-lang-ko="개" data-lang-en="articles">篇</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 4px; margin-top: 8px;">
+                    <span style="font-size: 12px; color: #10B981;"><i class="bi bi-arrow-up-short"></i>+12.5%</span>
+                    <span style="font-size: 12px;" class="dark:text-slate-600 light:text-slate-400"
+                          data-lang-zh="较上周" data-lang-ko="전주 대비" data-lang-en="vs last week">较上周</span>
+                </div>
+            </div>
+
+            <div class="glass-card stat-card" style="padding: 28px 24px; position: relative; overflow: hidden;">
+                <div style="position: absolute; top: -20px; right: -20px; width: 80px; height: 80px; border-radius: 50%; background: rgba(139,92,246,0.06);"></div>
+                <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 16px;">
+                    <div style="width: 44px; height: 44px; border-radius: 12px; background: linear-gradient(135deg, rgba(139,92,246,0.15), rgba(139,92,246,0.05)); display: flex; align-items: center; justify-content: center;">
+                        <i class="bi bi-eye" style="font-size: 20px; color: #8B5CF6;"></i>
+                    </div>
+                    <span style="font-size: 14px; font-weight: 500;" class="dark:text-slate-400 light:text-slate-500"
+                          data-lang-zh="总曝光量" data-lang-ko="총 노출수" data-lang-en="Total Impressions">总曝光量</span>
+                </div>
+                <div style="display: flex; align-items: baseline; gap: 4px;">
+                    <span style="font-size: 36px; font-weight: 800; color: #8B5CF6;">128.6</span>
+                    <span style="font-size: 14px;" class="dark:text-slate-500 light:text-slate-400"
+                          data-lang-zh="万" data-lang-ko="만" data-lang-en="M">万</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 4px; margin-top: 8px;">
+                    <span style="font-size: 12px; color: #10B981;"><i class="bi bi-arrow-up-short"></i>+8.3%</span>
+                    <span style="font-size: 12px;" class="dark:text-slate-600 light:text-slate-400"
+                          data-lang-zh="较上周" data-lang-ko="전주 대비" data-lang-en="vs last week">较上周</span>
+                </div>
+            </div>
+
+            <div class="glass-card stat-card" style="padding: 28px 24px; position: relative; overflow: hidden;">
+                <div style="position: absolute; top: -20px; right: -20px; width: 80px; height: 80px; border-radius: 50%; background: rgba(245,158,11,0.06);"></div>
+                <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 16px;">
+                    <div style="width: 44px; height: 44px; border-radius: 12px; background: linear-gradient(135deg, rgba(245,158,11,0.15), rgba(245,158,11,0.05)); display: flex; align-items: center; justify-content: center;">
+                        <i class="bi bi-graph-up-arrow" style="font-size: 20px; color: #F59E0B;"></i>
+                    </div>
+                    <span style="font-size: 14px; font-weight: 500;" class="dark:text-slate-400 light:text-slate-500"
+                          data-lang-zh="平均互动率" data-lang-ko="평균 참여율" data-lang-en="Avg Engagement Rate">平均互动率</span>
+                </div>
+                <div style="display: flex; align-items: baseline; gap: 4px;">
+                    <span style="font-size: 36px; font-weight: 800; color: #F59E0B;">6.8<span style="font-size: 20px;">%</span></span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 4px; margin-top: 8px;">
+                    <span style="font-size: 12px; color: #10B981;"><i class="bi bi-arrow-up-short"></i>+1.2pp</span>
+                    <span style="font-size: 12px;" class="dark:text-slate-600 light:text-slate-400"
+                          data-lang-zh="较上周" data-lang-ko="전주 대비" data-lang-en="vs last week">较上周</span>
+                </div>
+            </div>
+
+            <div class="glass-card stat-card" style="padding: 28px 24px; position: relative; overflow: hidden;">
+                <div style="position: absolute; top: -20px; right: -20px; width: 80px; height: 80px; border-radius: 50%; background: rgba(139,92,246,0.06);"></div>
+                <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 16px;">
+                    <div style="width: 44px; height: 44px; border-radius: 12px; background: linear-gradient(135deg, rgba(139,92,246,0.15), rgba(139,92,246,0.05)); display: flex; align-items: center; justify-content: center;">
+                        <i class="bi bi-hdd-stack" style="font-size: 20px; color: #8B5CF6;"></i>
+                    </div>
+                    <span style="font-size: 14px; font-weight: 500;" class="dark:text-slate-400 light:text-slate-500"
+                          data-lang-zh="接入平台" data-lang-ko="연동 플랫폼" data-lang-en="Connected Platforms">接入平台</span>
+                </div>
+                <div style="display: flex; align-items: baseline; gap: 4px;">
+                    <span style="font-size: 36px; font-weight: 800; color: #8B5CF6;">5</span>
+                    <span style="font-size: 14px;" class="dark:text-slate-500 light:text-slate-400"
+                          data-lang-zh="个平台" data-lang-ko="개 플랫폼" data-lang-en="platforms">个平台</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 4px; margin-top: 8px;">
+                    <span style="font-size: 12px; color: #F59E0B;"><i class="bi bi-check-circle"></i></span>
+                    <span style="font-size: 12px;" class="dark:text-slate-600 light:text-slate-400"
+                          data-lang-zh="全渠道覆盖" data-lang-ko="전 채널 커버" data-lang-en="All channels covered">全渠道覆盖</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ===== PLATFORM PERFORMANCE ===== -->
+<section id="performance" style="padding: 60px 24px 80px; position: relative;">
+    <div style="max-width: 1280px; margin: 0 auto;">
+        <div class="glass-card" style="padding: 40px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 32px; flex-wrap: wrap; gap: 12px;">
+                <div>
+                    <h3 class="gold-purple-text" style="font-size: 24px; font-weight: 700; margin-bottom: 4px;"
+                        data-lang-zh="平台表现 · 近7天"
+                        data-lang-ko="플랫폼 성과 · 최근 7일"
+                        data-lang-en="Platform Performance · Last 7 Days">平台表现 · 近7天</h3>
+                    <p style="font-size: 14px;" class="dark:text-slate-500 light:text-slate-400"
+                       data-lang-zh="各平台内容发布与互动数据一览"
+                       data-lang-ko="각 플랫폼 콘텐츠 발행 및 참여 데이터"
+                       data-lang-en="Content publishing and engagement data across platforms">各平台内容发布与互动数据一览</p>
+                </div>
+                <div style="display: flex; gap: 8px; align-items: center;">
+                    <span style="width: 8px; height: 8px; border-radius: 50%; background: #F59E0B;"></span>
+                    <span style="font-size: 12px;" class="dark:text-slate-500 light:text-slate-400"
+                          data-lang-zh="本篇互动率" data-lang-ko="게시글 참여율" data-lang-en="Engagement Rate">本篇互动率</span>
+                    <span style="width: 8px; height: 8px; border-radius: 50%; background: #8B5CF6; margin-left: 8px;"></span>
+                    <span style="font-size: 12px;" class="dark:text-slate-500 light:text-slate-400"
+                          data-lang-zh="内容数量" data-lang-ko="콘텐츠 수" data-lang-en="Content Count">内容数量</span>
+                </div>
+            </div>
+
+            <div style="display: grid; gap: 20px;">
+                <!-- 小红书 -->
+                <div style="display: grid; grid-template-columns: 120px 1fr 100px 80px; gap: 16px; align-items: center; padding: 16px 20px; border-radius: 12px;" class="dark:bg-white/[0.02] light:bg-black/[0.02]">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <span style="width: 32px; height: 32px; border-radius: 8px; background: linear-gradient(135deg, rgba(255,71,71,0.2), rgba(255,71,71,0.05)); display: flex; align-items: center; justify-content: center; font-size: 16px; color: #FF4747;">📕</span>
+                        <span style="font-size: 15px; font-weight: 600;" data-lang-zh="小红书" data-lang-ko="샤오홍슈" data-lang-en="RED">小红书</span>
+                    </div>
+                    <div>
+                        <div style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 6px;">
+                            <span class="dark:text-slate-400 light:text-slate-500" data-lang-zh="互动率" data-lang-ko="참여율" data-lang-en="Engagement">互动率</span>
+                            <span style="color: #F59E0B; font-weight: 600;">7.2%</span>
+                        </div>
+                        <div style="border-radius: 3px; height: 6px; background: rgba(255,255,255,0.04);" class="dark:bg-white/5 light:bg-black/5">
+                            <div class="data-bar" style="width: 72%; height: 6px;"></div>
+                        </div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-size: 20px; font-weight: 700; color: #8B5CF6;">48</div>
+                        <div style="font-size: 11px;" class="dark:text-slate-500 light:text-slate-400"
+                             data-lang-zh="篇/周" data-lang-ko="개/주" data-lang-en="posts/wk">篇/周</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-size: 16px; font-weight: 600; color: #10B981;">+15%</div>
+                        <div style="font-size: 11px;" class="dark:text-slate-500 light:text-slate-400"
+                             data-lang-zh="周环比" data-lang-ko="주간 대비" data-lang-en="WoW">周环比</div>
+                    </div>
+                </div>
+
+                <!-- 抖音 -->
+                <div style="display: grid; grid-template-columns: 120px 1fr 100px 80px; gap: 16px; align-items: center; padding: 16px 20px; border-radius: 12px;" class="dark:bg-white/[0.02] light:bg-black/[0.02]">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <span style="width: 32px; height: 32px; border-radius: 8px; background: linear-gradient(135deg, rgba(0,0,0,0.2), rgba(0,0,0,0.05)); display: flex; align-items: center; justify-content: center; font-size: 16px;">🎵</span>
+                        <span style="font-size: 15px; font-weight: 600;" data-lang-zh="抖音" data-lang-ko="틱톡 중국" data-lang-en="Douyin">抖音</span>
+                    </div>
+                    <div>
+                        <div style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 6px;">
+                            <span class="dark:text-slate-400 light:text-slate-500" data-lang-zh="互动率" data-lang-ko="참여율" data-lang-en="Engagement">互动率</span>
+                            <span style="color: #F59E0B; font-weight: 600;">8.9%</span>
+                        </div>
+                        <div style="border-radius: 3px; height: 6px; background: rgba(255,255,255,0.04);" class="dark:bg-white/5 light:bg-black/5">
+                            <div class="data-bar" style="width: 89%; height: 6px;"></div>
+                        </div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-size: 20px; font-weight: 700; color: #8B5CF6;">36</div>
+                        <div style="font-size: 11px;" class="dark:text-slate-500 light:text-slate-400"
+                             data-lang-zh="篇/周" data-lang-ko="개/주" data-lang-en="posts/wk">篇/周</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-size: 16px; font-weight: 600; color: #10B981;">+22%</div>
+                        <div style="font-size: 11px;" class="dark:text-slate-500 light:text-slate-400"
+                             data-lang-zh="周环比" data-lang-ko="주간 대비" data-lang-en="WoW">周环比</div>
+                    </div>
+                </div>
+
+                <!-- 微信 -->
+                <div style="display: grid; grid-template-columns: 120px 1fr 100px 80px; gap: 16px; align-items: center; padding: 16px 20px; border-radius: 12px;" class="dark:bg-white/[0.02] light:bg-black/[0.02]">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <span style="width: 32px; height: 32px; border-radius: 8px; background: linear-gradient(135deg, rgba(7,193,96,0.2), rgba(7,193,96,0.05)); display: flex; align-items: center; justify-content: center; font-size: 16px; color: #07C160;">💬</span>
+                        <span style="font-size: 15px; font-weight: 600;" data-lang-zh="微信" data-lang-ko="위챗" data-lang-en="WeChat">微信</span>
+                    </div>
+                    <div>
+                        <div style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 6px;">
+                            <span class="dark:text-slate-400 light:text-slate-500" data-lang-zh="互动率" data-lang-ko="참여율" data-lang-en="Engagement">互动率</span>
+                            <span style="color: #F59E0B; font-weight: 600;">5.1%</span>
+                        </div>
+                        <div style="border-radius: 3px; height: 6px; background: rgba(255,255,255,0.04);" class="dark:bg-white/5 light:bg-black/5">
+                            <div class="data-bar" style="width: 51%; height: 6px;"></div>
+                        </div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-size: 20px; font-weight: 700; color: #8B5CF6;">24</div>
+                        <div style="font-size: 11px;" class="dark:text-slate-500 light:text-slate-400"
+                             data-lang-zh="篇/周" data-lang-ko="개/주" data-lang-en="posts/wk">篇/周</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-size: 16px; font-weight: 600; color: #10B981;">+5%</div>
+                        <div style="font-size: 11px;" class="dark:text-slate-500 light:text-slate-400"
+                             data-lang-zh="周环比" data-lang-ko="주간 대비" data-lang-en="WoW">周环比</div>
+                    </div>
+                </div>
+
+                <!-- 视频号 -->
+                <div style="display: grid; grid-template-columns: 120px 1fr 100px 80px; gap: 16px; align-items: center; padding: 16px 20px; border-radius: 12px;" class="dark:bg-white/[0.02] light:bg-black/[0.02]">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <span style="width: 32px; height: 32px; border-radius: 8px; background: linear-gradient(135deg, rgba(7,193,96,0.15), rgba(7,193,96,0.05)); display: flex; align-items: center; justify-content: center; font-size: 16px; color: #07C160;">📹</span>
+                        <span style="font-size: 15px; font-weight: 600;" data-lang-zh="视频号" data-lang-ko="비디오 계정" data-lang-en="Video Channel">视频号</span>
+                    </div>
+                    <div>
+                        <div style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 6px;">
+                            <span class="dark:text-slate-400 light:text-slate-500" data-lang-zh="互动率" data-lang-ko="참여율" data-lang-en="Engagement">互动率</span>
+                            <span style="color: #F59E0B; font-weight: 600;">4.3%</span>
+                        </div>
+                        <div style="border-radius: 3px; height: 6px; background: rgba(255,255,255,0.04);" class="dark:bg-white/5 light:bg-black/5">
+                            <div class="data-bar" style="width: 43%; height: 6px;"></div>
+                        </div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-size: 20px; font-weight: 700; color: #8B5CF6;">18</div>
+                        <div style="font-size: 11px;" class="dark:text-slate-500 light:text-slate-400"
+                             data-lang-zh="篇/周" data-lang-ko="개/주" data-lang-en="posts/wk">篇/周</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-size: 16px; font-weight: 600; color: #10B981;">+11%</div>
+                        <div style="font-size: 11px;" class="dark:text-slate-500 light:text-slate-400"
+                             data-lang-zh="周环比" data-lang-ko="주간 대비" data-lang-en="WoW">周环比</div>
+                    </div>
+                </div>
+
+                <!-- B站 -->
+                <div style="display: grid; grid-template-columns: 120px 1fr 100px 80px; gap: 16px; align-items: center; padding: 16px 20px; border-radius: 12px;" class="dark:bg-white/[0.02] light:bg-black/[0.02]">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <span style="width: 32px; height: 32px; border-radius: 8px; background: linear-gradient(135deg, rgba(0,161,214,0.2), rgba(0,161,214,0.05)); display: flex; align-items: center; justify-content: center; font-size: 16px; color: #00A1D6;">📺</span>
+                        <span style="font-size: 15px; font-weight: 600;" data-lang-zh="B站" data-lang-ko="빌리빌리" data-lang-en="Bilibili">B站</span>
+                    </div>
+                    <div>
+                        <div style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 6px;">
+                            <span class="dark:text-slate-400 light:text-slate-500" data-lang-zh="互动率" data-lang-ko="참여율" data-lang-en="Engagement">互动率</span>
+                            <span style="color: #F59E0B; font-weight: 600;">3.8%</span>
+                        </div>
+                        <div style="border-radius: 3px; height: 6px; background: rgba(255,255,255,0.04);" class="dark:bg-white/5 light:bg-black/5">
+                            <div class="data-bar" style="width: 38%; height: 6px;"></div>
+                        </div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-size: 20px; font-weight: 700; color: #8B5CF6;">12</div>
+                        <div style="font-size: 11px;" class="dark:text-slate-500 light:text-slate-400"
+                             data-lang-zh="篇/周" data-lang-ko="개/주" data-lang-en="posts/wk">篇/周</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-size: 16px; font-weight: 600; color: #EF4444;">-3%</div>
+                        <div style="font-size: 11px;" class="dark:text-slate-500 light:text-slate-400"
+                             data-lang-zh="周环比" data-lang-ko="주간 대비" data-lang-en="WoW">周环比</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ===== CONTENT PRODUCTION FLOW ===== -->
+<section id="content-flow" style="padding: 60px 24px 100px; position: relative;">
+    <div style="max-width: 1280px; margin: 0 auto;">
+        <div style="text-align: center; margin-bottom: 56px;">
+            <h2 class="gold-purple-text" style="font-size: 36px; font-weight: 800; margin-bottom: 12px;"
+                data-lang-zh="内容生产流程"
+                data-lang-ko="콘텐츠 제작 프로세스"
+                data-lang-en="Content Production Workflow">内容生产流程</h2>
+            <p style="font-size: 16px;" class="dark:text-slate-500 light:text-slate-400"
+               data-lang-zh="AI 驱动的全自动化内容生产流水线"
+               data-lang-ko="AI 기반 완전 자동화 콘텐츠 제조 라인"
+               data-lang-en="AI-powered fully automated content production pipeline">AI 驱动的全自动化内容生产流水线</p>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; position: relative;">
+            <!-- Step 1: AI生成 -->
+            <div style="text-align: center; position: relative; padding: 0 16px;">
+                <div class="glass-card" style="padding: 32px 20px; position: relative; z-index: 2;">
+                    <div style="width: 64px; height: 64px; border-radius: 16px; background: linear-gradient(135deg, rgba(245,158,11,0.15), rgba(139,92,246,0.1)); display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;">
+                        <i class="bi bi-stars" style="font-size: 28px; color: #F59E0B;"></i>
+                    </div>
+                    <div style="font-size: 14px; font-weight: 600; padding: 4px 12px; border-radius: 8px; display: inline-block; margin-bottom: 8px; background: linear-gradient(135deg, rgba(245,158,11,0.1), rgba(245,158,11,0.03)); color: #F59E0B;">Step 1</div>
+                    <h4 style="font-size: 18px; font-weight: 700; margin-bottom: 8px;"
+                        data-lang-zh="AI 生成"
+                        data-lang-ko="AI 생성"
+                        data-lang-en="AI Generation">AI 生成</h4>
+                    <p style="font-size: 13px; line-height: 1.6;" class="dark:text-slate-500 light:text-slate-400"
+                       data-lang-zh="基于产品数据，AI自动生成中/韩/英三语营销文案"
+                       data-lang-ko="제품 데이터 기반 AI 자동 중/한/영 3개국어 마케팅 카피 생성"
+                       data-lang-en="AI auto-generates marketing copy in Chinese/Korean/English based on product data">基于产品数据，AI自动生成中/韩/英三语营销文案</p>
+                </div>
+                <!-- Arrow connector -->
+                <div style="position: absolute; top: 50%; right: -16px; transform: translateY(-50%); z-index: 3; font-size: 24px; color: #F59E0B;">
+                    <i class="bi bi-arrow-right"></i>
+                </div>
+            </div>
+
+            <!-- Step 2: 配图 -->
+            <div style="text-align: center; position: relative; padding: 0 16px;">
+                <div class="glass-card" style="padding: 32px 20px; position: relative; z-index: 2;">
+                    <div style="width: 64px; height: 64px; border-radius: 16px; background: linear-gradient(135deg, rgba(139,92,246,0.15), rgba(245,158,11,0.1)); display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;">
+                        <i class="bi bi-image" style="font-size: 28px; color: #8B5CF6;"></i>
+                    </div>
+                    <div style="font-size: 14px; font-weight: 600; padding: 4px 12px; border-radius: 8px; display: inline-block; margin-bottom: 8px; background: linear-gradient(135deg, rgba(139,92,246,0.1), rgba(139,92,246,0.03)); color: #8B5CF6;">Step 2</div>
+                    <h4 style="font-size: 18px; font-weight: 700; margin-bottom: 8px;"
+                        data-lang-zh="AI 配图"
+                        data-lang-ko="AI 이미지"
+                        data-lang-en="AI Image Generation">AI 配图</h4>
+                    <p style="font-size: 13px; line-height: 1.6;" class="dark:text-slate-500 light:text-slate-400"
+                       data-lang-zh="AI根据文案自动生成配图、海报和短视频素材"
+                       data-lang-ko="AI가 카피에 따라 이미지, 포스터, 숏폼 영상 자동 생성"
+                       data-lang-en="AI auto-generates images, posters and short video素材 based on copy">AI根据文案自动生成配图、海报和短视频素材</p>
+                </div>
+                <div style="position: absolute; top: 50%; right: -16px; transform: translateY(-50%); z-index: 3; font-size: 24px; color: #8B5CF6;">
+                    <i class="bi bi-arrow-right"></i>
+                </div>
+            </div>
+
+            <!-- Step 3: 定时发布 -->
+            <div style="text-align: center; position: relative; padding: 0 16px;">
+                <div class="glass-card" style="padding: 32px 20px; position: relative; z-index: 2;">
+                    <div style="width: 64px; height: 64px; border-radius: 16px; background: linear-gradient(135deg, rgba(245,158,11,0.15), rgba(139,92,246,0.1)); display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;">
+                        <i class="bi bi-calendar-check" style="font-size: 28px; color: #F59E0B;"></i>
+                    </div>
+                    <div style="font-size: 14px; font-weight: 600; padding: 4px 12px; border-radius: 8px; display: inline-block; margin-bottom: 8px; background: linear-gradient(135deg, rgba(245,158,11,0.1), rgba(245,158,11,0.03)); color: #F59E0B;">Step 3</div>
+                    <h4 style="font-size: 18px; font-weight: 700; margin-bottom: 8px;"
+                        data-lang-zh="定时发布"
+                        data-lang-ko="예약 발행"
+                        data-lang-en="Scheduled Publishing">定时发布</h4>
+                    <p style="font-size: 13px; line-height: 1.6;" class="dark:text-slate-500 light:text-slate-400"
+                       data-lang-zh="多平台内容排期管理，自动在最佳时段发布到各平台"
+                       data-lang-ko="멀티 플랫폼 콘텐츠 일정 관리, 최적 시간대 자동 발행"
+                       data-lang-en="Multi-platform content scheduling, auto-publish at optimal times">多平台内容排期管理，自动在最佳时段发布到各平台</p>
+                </div>
+                <div style="position: absolute; top: 50%; right: -16px; transform: translateY(-50%); z-index: 3; font-size: 24px; color: #F59E0B;">
+                    <i class="bi bi-arrow-right"></i>
+                </div>
+            </div>
+
+            <!-- Step 4: 效果追踪 -->
+            <div style="text-align: center; padding: 0 16px;">
+                <div class="glass-card" style="padding: 32px 20px; position: relative; z-index: 2;">
+                    <div style="width: 64px; height: 64px; border-radius: 16px; background: linear-gradient(135deg, rgba(139,92,246,0.15), rgba(245,158,11,0.1)); display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;">
+                        <i class="bi bi-graph-up" style="font-size: 28px; color: #8B5CF6;"></i>
+                    </div>
+                    <div style="font-size: 14px; font-weight: 600; padding: 4px 12px; border-radius: 8px; display: inline-block; margin-bottom: 8px; background: linear-gradient(135deg, rgba(139,92,246,0.1), rgba(139,92,246,0.03)); color: #8B5CF6;">Step 4</div>
+                    <h4 style="font-size: 18px; font-weight: 700; margin-bottom: 8px;"
+                        data-lang-zh="效果追踪"
+                        data-lang-ko="효과 추적"
+                        data-lang-en="Performance Tracking">效果追踪</h4>
+                    <p style="font-size: 13px; line-height: 1.6;" class="dark:text-slate-500 light:text-slate-400"
+                       data-lang-zh="实时监控各平台数据，AI自动生成运营报告与优化建议"
+                       data-lang-ko="각 플랫폼 데이터 실시간 모니터링, AI 운영 보고서 및 최적화 제안 자동 생성"
+                       data-lang-en="Real-time multi-platform data monitoring, AI auto-generates reports and optimization suggestions">实时监控各平台数据，AI自动生成运营报告与优化建议</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Connecting line between steps -->
+        <div style="max-width: 1000px; margin: 0 auto; margin-top: -64px; position: relative; z-index: 1; height: 2px; border-radius: 1px; background: linear-gradient(90deg, #F59E0B, #8B5CF6, #F59E0B, #8B5CF6); opacity: 0.2;"></div>
+    </div>
+</section>
 
 <!-- ===== PRODUCTS SHOWCASE ===== -->
 <section id="products" style="padding: 100px 24px;">
@@ -399,11 +766,50 @@ N/ec localhost �Nt0
                    data-lang-ko="서울 프리미엄 커피 브랜드 CAFE MORI, 제주도 말차를 엄선하여 6종 맛으로 다양한 소비场景에 대응. AI 추천 채널: 편의점, 커뮤니티 그룹구매, 프리미엄 마트."
                    data-lang-en="Seoul's premium coffee brand CAFE MORI, featuring Jeju matcha in 6 flavors. AI recommends: convenience stores, community group-buy, premium supermarkets.">
                     首尔精品咖啡品牌 CAFE MORI 出品，甄选济州岛抹茶，6 种口味满足不同消费场景。AI 渠道匹配推荐：便利店、社区团购、精品超市。
-                </p>
+
+                <!-- Data table -->
+                <div style="margin-bottom: 24px; margin-top: 4px;">
+                    <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
+                        <thead>
+                            <tr style="border-bottom: 1px solid rgba(255,255,255,0.06);">
+                                <th style="padding: 8px 6px; text-align: left; font-weight: 500;" class="dark:text-slate-500 light:text-slate-400">口味</th>
+                                <th style="padding: 8px 6px; text-align: center; font-weight: 500;" class="dark:text-slate-500 light:text-slate-400">篇数</th>
+                                <th style="padding: 8px 6px; text-align: center; font-weight: 500;" class="dark:text-slate-500 light:text-slate-400">互动率</th>
+                                <th style="padding: 8px 6px; text-align: center; font-weight: 500;" class="dark:text-slate-500 light:text-slate-400">热度</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr style="border-bottom: 1px solid rgba(255,255,255,0.03);">
+                                <td style="padding: 10px 6px;">原味</td>
+                                <td style="padding: 10px 6px; text-align: center; color: #8B5CF6; font-weight: 600;">18</td>
+                                <td style="padding: 10px 6px; text-align: center; color: #F59E0B;">8.2%</td>
+                                <td style="padding: 10px 6px; text-align: center;"><div style="display: inline-block; width: 60px; height: 4px; border-radius: 2px; background: rgba(255,255,255,0.06);"><div class="data-bar" style="width: 92%; height: 4px;"></div></div></td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid rgba(255,255,255,0.03);">
+                                <td style="padding: 10px 6px;">燕麦</td>
+                                <td style="padding: 10px 6px; text-align: center; color: #8B5CF6; font-weight: 600;">14</td>
+                                <td style="padding: 10px 6px; text-align: center; color: #F59E0B;">7.5%</td>
+                                <td style="padding: 10px 6px; text-align: center;"><div style="display: inline-block; width: 60px; height: 4px; border-radius: 2px; background: rgba(255,255,255,0.06);"><div class="data-bar" style="width: 78%; height: 4px;"></div></div></td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid rgba(255,255,255,0.03);">
+                                <td style="padding: 10px 6px;">榛果</td>
+                                <td style="padding: 10px 6px; text-align: center; color: #8B5CF6; font-weight: 600;">10</td>
+                                <td style="padding: 10px 6px; text-align: center; color: #F59E0B;">6.8%</td>
+                                <td style="padding: 10px 6px; text-align: center;"><div style="display: inline-block; width: 60px; height: 4px; border-radius: 2px; background: rgba(255,255,255,0.06);"><div class="data-bar" style="width: 65%; height: 4px;"></div></div></td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 10px 6px;">抹茶</td>
+                                <td style="padding: 10px 6px; text-align: center; color: #8B5CF6; font-weight: 600;">22</td>
+                                <td style="padding: 10px 6px; text-align: center; color: #F59E0B;">9.1%</td>
+                                <td style="padding: 10px 6px; text-align: center;"><div style="display: inline-block; width: 60px; height: 4px; border-radius: 2px; background: rgba(255,255,255,0.06);"><div class="data-bar" style="width: 100%; height: 4px;"></div></div></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
 
                 <div style="display: flex; gap: 12px;">
-                    <a href="product_matcha_latte.html" class="btn-primary" style="padding: 12px 24px; font-size: 14px;"><i class="bi bi-bag"></i> <span data-lang-zh="查看详情 · 询盘" data-lang-ko="상세보기 · 문의" data-lang-en="Details · Inquiry">查看详情 · 询盘</span></a>
-                    <a href="#" class="btn-secondary" style="padding: 12px 24px; font-size: 14px;" onclick="alert('联系人: 浩然 (WeChat: haoran_kr)'); return false;"><i class="bi bi-chat-dots"></i> <span data-lang-zh="联系韩方代理" data-lang-ko="한국 에이전트 문의" data-lang-en="Contact Korean Agent">联系韩方代理</span></a>
+                    <a href="product_matcha_latte.html" class="btn-primary" style="padding: 12px 24px; font-size: 14px;"><i class="bi bi-bag"></i> <span data-lang-zh="查看详情" data-lang-ko="상세보기 · 문의" data-lang-en="Details · Inquiry">查看详情</span></a>
+                    <a href="#" class="btn-secondary" style="padding: 12px 24px; font-size: 14px;" onclick="alert('联系人: 浩然 (WeChat: haoran_kr)'); return false;"><i class="bi bi-chat-dots"></i> <span data-lang-zh="" data-lang-ko="한국 에이전트 문의" data-lang-en="Contact Korean Agent"></span></a>
                 </div>
             </div>
         </div>
@@ -449,10 +855,49 @@ N/ec localhost �Nt0
                    data-lang-ko="济州岛纯净海域有机海苔，5种口味可选。非油炸、低卡路里，韩国传统工艺制作。"
                    data-lang-en="济州岛纯净海域有机海苔，5种口味可选。非油炸、低卡路里，韩国传统工艺制作。">
                     济州岛纯净海域有机海苔，5种口味可选。非油炸、低卡路里，韩国传统工艺制作。
-                </p>
+
+                <!-- Data table -->
+                <div style="margin-bottom: 24px; margin-top: 4px;">
+                    <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
+                        <thead>
+                            <tr style="border-bottom: 1px solid rgba(255,255,255,0.06);">
+                                <th style="padding: 8px 6px; text-align: left; font-weight: 500;" class="dark:text-slate-500 light:text-slate-400">口味</th>
+                                <th style="padding: 8px 6px; text-align: center; font-weight: 500;" class="dark:text-slate-500 light:text-slate-400">篇数</th>
+                                <th style="padding: 8px 6px; text-align: center; font-weight: 500;" class="dark:text-slate-500 light:text-slate-400">互动率</th>
+                                <th style="padding: 8px 6px; text-align: center; font-weight: 500;" class="dark:text-slate-500 light:text-slate-400">热度</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr style="border-bottom: 1px solid rgba(255,255,255,0.03);">
+                                <td style="padding: 10px 6px;">原味</td>
+                                <td style="padding: 10px 6px; text-align: center; color: #8B5CF6; font-weight: 600;">25</td>
+                                <td style="padding: 10px 6px; text-align: center; color: #F59E0B;">6.4%</td>
+                                <td style="padding: 10px 6px; text-align: center;"><div style="display: inline-block; width: 60px; height: 4px; border-radius: 2px; background: rgba(255,255,255,0.06);"><div class="data-bar" style="width: 88%; height: 4px;"></div></div></td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid rgba(255,255,255,0.03);">
+                                <td style="padding: 10px 6px;">芥末</td>
+                                <td style="padding: 10px 6px; text-align: center; color: #8B5CF6; font-weight: 600;">8</td>
+                                <td style="padding: 10px 6px; text-align: center; color: #F59E0B;">4.1%</td>
+                                <td style="padding: 10px 6px; text-align: center;"><div style="display: inline-block; width: 60px; height: 4px; border-radius: 2px; background: rgba(255,255,255,0.06);"><div class="data-bar" style="width: 35%; height: 4px;"></div></div></td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid rgba(255,255,255,0.03);">
+                                <td style="padding: 10px 6px;">蜂蜜黄油</td>
+                                <td style="padding: 10px 6px; text-align: center; color: #8B5CF6; font-weight: 600;">20</td>
+                                <td style="padding: 10px 6px; text-align: center; color: #F59E0B;">9.2%</td>
+                                <td style="padding: 10px 6px; text-align: center;"><div style="display: inline-block; width: 60px; height: 4px; border-radius: 2px; background: rgba(255,255,255,0.06);"><div class="data-bar" style="width: 95%; height: 4px;"></div></div></td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 10px 6px;">烧烤</td>
+                                <td style="padding: 10px 6px; text-align: center; color: #8B5CF6; font-weight: 600;">12</td>
+                                <td style="padding: 10px 6px; text-align: center; color: #F59E0B;">5.8%</td>
+                                <td style="padding: 10px 6px; text-align: center;"><div style="display: inline-block; width: 60px; height: 4px; border-radius: 2px; background: rgba(255,255,255,0.06);"><div class="data-bar" style="width: 50%; height: 4px;"></div></div></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
 
                 <div style="display: flex; gap: 12px;">
-                    <a href="#" class="btn-primary" style="padding: 12px 24px; font-size: 14px;" onclick="alert('咨询代理请联系浩然 (WeChat: haoran_kr)');return false;"><i class="bi bi-bag"></i> <span data-lang-zh="咨询代理" data-lang-ko="咨询代理" data-lang-en="咨询代理">咨询代理</span></a>
+                    <a href="#" class="btn-primary" style="padding: 12px 24px; font-size: 14px;" onclick="alert('查看详情请联系浩然 (WeChat: haoran_kr)');return false;"><i class="bi bi-bag"></i> <span data-lang-zh="查看详情" data-lang-ko="查看详情" data-lang-en="查看详情">查看详情</span></a>
                 </div>
             </div>
         </div>
@@ -495,10 +940,49 @@ N/ec localhost �Nt0
                    data-lang-ko="韩国6年根红参浓缩液，传统工艺萃取。富含人参皂苷，增强免疫力、抗疲劳。适合企业团购和礼品市场。"
                    data-lang-en="韩国6年根红参浓缩液，传统工艺萃取。富含人参皂苷，增强免疫力、抗疲劳。适合企业团购和礼品市场。">
                     韩国6年根红参浓缩液，传统工艺萃取。富含人参皂苷，增强免疫力、抗疲劳。适合企业团购和礼品市场。
-                </p>
+
+                <!-- Data table -->
+                <div style="margin-bottom: 24px; margin-top: 4px;">
+                    <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
+                        <thead>
+                            <tr style="border-bottom: 1px solid rgba(255,255,255,0.06);">
+                                <th style="padding: 8px 6px; text-align: left; font-weight: 500;" class="dark:text-slate-500 light:text-slate-400">规格</th>
+                                <th style="padding: 8px 6px; text-align: center; font-weight: 500;" class="dark:text-slate-500 light:text-slate-400">篇数</th>
+                                <th style="padding: 8px 6px; text-align: center; font-weight: 500;" class="dark:text-slate-500 light:text-slate-400">互动率</th>
+                                <th style="padding: 8px 6px; text-align: center; font-weight: 500;" class="dark:text-slate-500 light:text-slate-400">热度</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr style="border-bottom: 1px solid rgba(255,255,255,0.03);">
+                                <td style="padding: 10px 6px;">6年根浓缩液</td>
+                                <td style="padding: 10px 6px; text-align: center; color: #8B5CF6; font-weight: 600;">32</td>
+                                <td style="padding: 10px 6px; text-align: center; color: #F59E0B;">7.8%</td>
+                                <td style="padding: 10px 6px; text-align: center;"><div style="display: inline-block; width: 60px; height: 4px; border-radius: 2px; background: rgba(255,255,255,0.06);"><div class="data-bar" style="width: 96%; height: 4px;"></div></div></td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid rgba(255,255,255,0.03);">
+                                <td style="padding: 10px 6px;">礼盒装</td>
+                                <td style="padding: 10px 6px; text-align: center; color: #8B5CF6; font-weight: 600;">18</td>
+                                <td style="padding: 10px 6px; text-align: center; color: #F59E0B;">5.6%</td>
+                                <td style="padding: 10px 6px; text-align: center;"><div style="display: inline-block; width: 60px; height: 4px; border-radius: 2px; background: rgba(255,255,255,0.06);"><div class="data-bar" style="width: 72%; height: 4px;"></div></div></td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid rgba(255,255,255,0.03);">
+                                <td style="padding: 10px 6px;">切片红参</td>
+                                <td style="padding: 10px 6px; text-align: center; color: #8B5CF6; font-weight: 600;">15</td>
+                                <td style="padding: 10px 6px; text-align: center; color: #F59E0B;">4.9%</td>
+                                <td style="padding: 10px 6px; text-align: center;"><div style="display: inline-block; width: 60px; height: 4px; border-radius: 2px; background: rgba(255,255,255,0.06);"><div class="data-bar" style="width: 58%; height: 4px;"></div></div></td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 10px 6px;">红参茶包</td>
+                                <td style="padding: 10px 6px; text-align: center; color: #8B5CF6; font-weight: 600;">10</td>
+                                <td style="padding: 10px 6px; text-align: center; color: #F59E0B;">3.2%</td>
+                                <td style="padding: 10px 6px; text-align: center;"><div style="display: inline-block; width: 60px; height: 4px; border-radius: 2px; background: rgba(255,255,255,0.06);"><div class="data-bar" style="width: 40%; height: 4px;"></div></div></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
 
                 <div style="display: flex; gap: 12px;">
-                    <a href="#" class="btn-primary" style="padding: 12px 24px; font-size: 14px;" onclick="alert('咨询代理请联系浩然 (WeChat: haoran_kr)');return false;"><i class="bi bi-bag"></i> <span data-lang-zh="咨询代理" data-lang-ko="咨询代理" data-lang-en="咨询代理">咨询代理</span></a>
+                    <a href="#" class="btn-primary" style="padding: 12px 24px; font-size: 14px;" onclick="alert('查看详情请联系浩然 (WeChat: haoran_kr)');return false;"><i class="bi bi-bag"></i> <span data-lang-zh="查看详情" data-lang-ko="查看详情" data-lang-en="查看详情">查看详情</span></a>
                 </div>
             </div>
         </div>
@@ -599,37 +1083,7 @@ N/ec localhost �Nt0
 </section>
 
 <!-- ===== INSIGHTS / DATA ===== -->
-<section id="insights" style="padding: 100px 24px;">
-    <div style="max-width: 1280px; margin: 0 auto;">
-        <div style="text-align: center; margin-bottom: 60px;">
-            <h2 class="gold-purple-text" style="font-size: 40px; font-weight: 800; margin-bottom: 16px;" data-lang-zh="数据洞察" data-lang-ko="데이터 인사이트" data-lang-en="Data Insights">数据洞察</h2>
-            <p style="font-size: 18px;" class="dark:text-slate-500 light:text-slate-400" data-lang-zh="出海时光机引擎实时分析的中韩贸易数据" data-lang-ko="CFC 엔진이 실시간 분석하는 중한 무역 데이터" data-lang-en="Real-time Korea-China trade data analyzed by the CFC Engine">出海时光机引擎实时分析的中韩贸易数据</p>
-        </div>
 
-        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;">
-            <div class="glass-card" style="padding: 28px; text-align: center;">
-                <i class="bi bi-globe2" style="font-size: 28px; color: #F59E0B; margin-bottom: 12px;"></i>
-                <div style="font-size: 32px; font-weight: 800; color: #F59E0B;">195</div>
-                <div style="font-size: 13px;" class="dark:text-slate-500 light:text-slate-400" data-lang-zh="国市场数据" data-lang-ko="개국 시장 데이터" data-lang-en="Country Markets">国市场数据</div>
-            </div>
-            <div class="glass-card" style="padding: 28px; text-align: center;">
-                <i class="bi bi-robot" style="font-size: 28px; color: #8B5CF6; margin-bottom: 12px;"></i>
-                <div style="font-size: 32px; font-weight: 800; color: #8B5CF6;">110</div>
-                <div style="font-size: 13px;" class="dark:text-slate-500 light:text-slate-400" data-lang-zh="AI 数字员工" data-lang-ko="AI 디지털 직원" data-lang-en="AI Employees">AI 数字员工</div>
-            </div>
-            <div class="glass-card" style="padding: 28px; text-align: center;">
-                <i class="bi bi-diagram-3" style="font-size: 28px; color: #F59E0B; margin-bottom: 12px;"></i>
-                <div style="font-size: 32px; font-weight: 800; color: #F59E0B;">195</div>
-                <div style="font-size: 13px;" class="dark:text-slate-500 light:text-slate-400" data-lang-zh="渠道类型覆盖" data-lang-ko="채널 유형 커버리지" data-lang-en="Channel Types">渠道类型覆盖</div>
-            </div>
-            <div class="glass-card" style="padding: 28px; text-align: center;">
-                <i class="bi bi-check2-circle" style="font-size: 28px; color: #8B5CF6; margin-bottom: 12px;"></i>
-                <div style="font-size: 32px; font-weight: 800; color: #8B5CF6;">85<span style="font-size: 18px;">%</span></div>
-                <div style="font-size: 13px;" class="dark:text-slate-500 light:text-slate-400" data-lang-zh="匹配精准度" data-lang-ko="매칭 정확도" data-lang-en="Match Accuracy">匹配精准度</div>
-            </div>
-        </div>
-    </div>
-</section>
 
 <!-- ===== CTA ===== -->
 <section style="padding: 100px 24px; position: relative; overflow: hidden;">
@@ -637,10 +1091,8 @@ N/ec localhost �Nt0
     <div style="max-width: 640px; margin: 0 auto; text-align: center; position: relative; z-index: 10;">
         <h2 class="gold-purple-text" style="font-size: 36px; font-weight: 800; margin-bottom: 16px;" data-lang-zh="准备把韩国好产品带到中国？" data-lang-ko="한국 좋은 제품을 중국에 가져올 준비가 되셨나요?" data-lang-en="Ready to bring Korean products to China?">准备把韩国好产品带到中国？</h2>
         <p style="font-size: 16px; margin-bottom: 32px;" class="dark:text-slate-500 light:text-slate-400"
-           data-lang-zh="AI 数字员工军团 7×24h 待命，从选品到成交全链路赋能。"
            data-lang-ko="AI 디지털 직원 군단이 7×24시간 대기하며, 상품 선정부터 성사까지 전 과정을 지원합니다."
            data-lang-en="The AI Digital Employee Legion is on standby 24/7, empowering every step from selection to deal.">
-            AI 数字员工军团 7×24h 待命，从选品到成交全链路赋能。
         </p>
         <div style="display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;">
             <a href="#products" class="btn-primary"><i class="bi bi-bag-check"></i> <span data-lang-zh="浏览精选韩品" data-lang-ko="한국 상품 보기" data-lang-en="Browse K-Products">浏览精选韩品</span></a>
@@ -678,7 +1130,6 @@ N/ec localhost �Nt0
                 <h4 style="font-size: 14px; font-weight: 700; margin-bottom: 16px;" data-lang-zh="技术底座" data-lang-ko="기술 기반" data-lang-en="Tech Stack">技术底座</h4>
                 <div style="display: flex; flex-direction: column; gap: 4px;">
                     <span style="font-size: 14px;" class="dark:text-slate-600 light:text-slate-400" data-lang-zh="出海时光机 CFC 引擎" data-lang-ko="CFC 엔진" data-lang-en="CFC Engine">出海时光机 CFC 引擎</span>
-                    <span style="font-size: 14px;" class="dark:text-slate-600 light:text-slate-400" data-lang-zh="AI 数字员工军团 110 人" data-lang-ko="AI 디지털 직원 군단 110명" data-lang-en="110 AI Digital Employees">AI 数字员工军团 110 人</span>
                     <span style="font-size: 14px;" class="dark:text-slate-600 light:text-slate-400" data-lang-zh="195 国市场数据库" data-lang-ko="195개국 시장 DB" data-lang-en="195-Country Market DB">195 国市场数据库</span>
                     <span style="font-size: 14px;" class="dark:text-slate-600 light:text-slate-400" data-lang-zh="蜂巢决策系统" data-lang-ko="허브 의사결정 시스템" data-lang-en="Hive Decision System">蜂巢决策系统</span>
                 </div>
@@ -868,5 +1319,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
 </body>
 </html>
+/bin/bash: line 5: D:/向海容的知识库/wiki/wiki/记忆宫殿/cache/terminal/hermes-snap-2050d0a46346.sh: No such file or directory
+/bin/bash: line 6: D:/向海容的知识库/wiki/wiki/记忆宫殿/cache/terminal/hermes-cwd-2050d0a46346.txt: No such file or directory
+/bin/bash: line 5: D:/向海容的知识库/wiki/wiki/记忆宫殿/cache/terminal/hermes-snap-b15274d81d98.sh: No such file or directory
+/bin/bash: line 6: D:/向海容的知识库/wiki/wiki/记忆宫殿/cache/terminal/hermes-cwd-b15274d81d98.txt: No such file or directory
 /bin/bash: line 5: D:/向海容的知识库/wiki/wiki/记忆宫殿/cache/terminal/hermes-snap-2050d0a46346.sh: No such file or directory
 /bin/bash: line 6: D:/向海容的知识库/wiki/wiki/记忆宫殿/cache/terminal/hermes-cwd-2050d0a46346.txt: No such file or directory
