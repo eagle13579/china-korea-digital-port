@@ -76,6 +76,53 @@ def init_db():
         )
     """)
 
+    # 用户表 — 注册登录
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS users (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT UNIQUE NOT NULL,
+            email TEXT UNIQUE NOT NULL,
+            password_hash TEXT NOT NULL,
+            display_name TEXT,
+            company TEXT,
+            phone TEXT,
+            avatar TEXT,
+            role TEXT NOT NULL DEFAULT 'user' CHECK(role IN ('user','vip','admin')),
+            is_active INTEGER NOT NULL DEFAULT 1,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP
+        )
+    """)
+
+    # 会员资料扩展表
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS member_profiles (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER NOT NULL UNIQUE,
+            company_name TEXT,
+            company_reg_number TEXT,
+            contact_person TEXT,
+            contact_phone TEXT,
+            contact_email TEXT,
+            business_scope TEXT,
+            membership_level TEXT NOT NULL DEFAULT 'basic' CHECK(membership_level IN ('basic','silver','gold','platinum')),
+            points INTEGER NOT NULL DEFAULT 0,
+            total_spent REAL NOT NULL DEFAULT 0.0,
+            membership_expires TIMESTAMP,
+            FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+        )
+    """)
+
+    # 迁移：users 表和 member_profiles 表兼容已有字段
+    cursor.execute("PRAGMA table_info(users)")
+    user_cols = [r[1] for r in cursor.fetchall()]
+    for col in ['display_name', 'company', 'phone', 'avatar']:
+        if col not in user_cols:
+            try:
+                cursor.execute(f"ALTER TABLE users ADD COLUMN {col} TEXT")
+            except Exception:
+                pass
+
     # 服务邀请表（数字员工邀请）
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS service_inquiries (
@@ -118,11 +165,6 @@ def init_db():
         cursor.execute("UPDATE orders SET order_no = 'ORD' || printf('%06d', id) WHERE order_no IS NULL")
     if 'license_key' not in cols:
         cursor.execute("ALTER TABLE orders ADD COLUMN license_key TEXT")
-    if 'paid_at' not in cols:
-        cursor.execute("ALTER TABLE orders ADD COLUMN paid_at TIMESTAMP")
-    if 'customer_name' not in cols:
-        # user_name already covers this; adding alias column for compatibility
-        pass
 
     # 支付表 — 三种付款方式 + 凭证上传
     cursor.execute("""
@@ -138,77 +180,63 @@ def init_db():
         )
     """)
 
-    # 合规自检表
+    # AI数字员工对话历史表
     cursor.execute("""
-        CREATE TABLE IF NOT EXISTS compliance_checks (
+        CREATE TABLE IF NOT EXISTS chat_history (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            token TEXT UNIQUE NOT NULL,
-            answers TEXT NOT NULL,
-            company_name TEXT,
-            contact_name TEXT,
-            email TEXT NOT NULL,
-            phone TEXT,
-            language TEXT DEFAULT 'zh-CN',
-            score INTEGER,
-            score_detail TEXT,
-            report_generated INTEGER DEFAULT 0,
-            report_downloaded INTEGER DEFAULT 0,
-            status TEXT DEFAULT 'completed',
+            role TEXT NOT NULL CHECK(role IN ('user', 'assistant')),
+            content TEXT NOT NULL,
+            dimension TEXT,
+            dimension_label TEXT,
+            source TEXT,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
     """)
 
-    # 合规线索表（销售线索，跟 admin 的 leads 同步）
+    # ── 渠道/KOI追踪系统 ────────────────────────────
     cursor.execute("""
-        CREATE TABLE IF NOT EXISTS compliance_leads (
+        CREATE TABLE IF NOT EXISTS channels (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            check_id INTEGER NOT NULL,
-            token TEXT NOT NULL,
-            email TEXT NOT NULL,
-            company_name TEXT,
-            contact_name TEXT,
-            phone TEXT,
-            language TEXT DEFAULT 'zh-CN',
-            score INTEGER NOT NULL,
-            score_detail TEXT,
-            priority TEXT DEFAULT 'normal',
-            status TEXT DEFAULT 'new',
-            source TEXT DEFAULT '合规自检',
+            name TEXT NOT NULL,
+            contact TEXT,
+            type TEXT NOT NULL CHECK(type IN ('KOI','渠道','合作方')),
+            commission_rate REAL NOT NULL DEFAULT 0.0,
+            ref_code TEXT UNIQUE NOT NULL,
+            status TEXT NOT NULL DEFAULT 'active' CHECK(status IN ('active','inactive')),
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            FOREIGN KEY (check_id) REFERENCES compliance_checks(id)
-        )
-    """)
-
-    # 报价表（销售漏斗用）
-    cursor.execute("""
-        CREATE TABLE IF NOT EXISTS quotes (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            quote_no TEXT UNIQUE,
-            lead_table TEXT NOT NULL,
-            lead_id INTEGER NOT NULL,
-            lead_name TEXT,
-            lead_company TEXT,
-            lead_email TEXT,
-            plan_name TEXT NOT NULL,
-            plan_price REAL NOT NULL DEFAULT 0,
-            status TEXT DEFAULT 'draft' CHECK(status IN ('draft','sent','accepted','rejected')),
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            sent_at TIMESTAMP,
             updated_at TIMESTAMP
         )
     """)
 
-    # 为线索表添加 stage 字段（销售漏斗阶段）
-    for tbl in ["contacts", "demo_requests", "pricing_inquiries"]:
-        cursor.execute(f"PRAGMA table_info({tbl})")
-        cols = [r[1] for r in cursor.fetchall()]
-        if "stage" not in cols:
-            cursor.execute(f"ALTER TABLE {tbl} ADD COLUMN stage TEXT DEFAULT 'new_lead'")
-        if "stage_changed_at" not in cols:
-            cursor.execute(f"ALTER TABLE {tbl} ADD COLUMN stage_changed_at TIMESTAMP")
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS channel_tracking (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            ref_code TEXT NOT NULL,
+            visitor_ip TEXT,
+            visitor_session TEXT,
+            page_url TEXT,
+            ref_params TEXT,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (ref_code) REFERENCES channels(ref_code)
+        )
+    """)
 
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS channel_orders (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            order_id INTEGER NOT NULL,
+            ref_code TEXT NOT NULL,
+            commission_rate REAL NOT NULL DEFAULT 0.0,
+            commission_amount REAL NOT NULL DEFAULT 0.0,
+            order_amount REAL NOT NULL DEFAULT 0.0,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (order_id) REFERENCES orders(id),
+            FOREIGN KEY (ref_code) REFERENCES channels(ref_code)
+        )
+    """)
     conn.commit()
     conn.close()
+
     print(f"✅ 数据库初始化完成: {DB_PATH}")
 
 

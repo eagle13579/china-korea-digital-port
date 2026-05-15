@@ -1,7 +1,5 @@
-"""
-中韩出海数智港 - FastAPI应用入口
-"""
-from fastapi import FastAPI
+"""中韩出海数智港 - FastAPI应用入口"""
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 import os
@@ -10,17 +8,23 @@ from dotenv import load_dotenv
 # 必须在import所有模块之前加载.env
 load_dotenv()
 
+import sys
+sys.path.insert(0, os.path.join("/mnt/d", "向海容的知识库", "wiki", "wiki", "记忆宫殿"))
+
 from backend.database import init_db
-from backend.routers import contact, demo, pricing, admin, employees, service_inquiry, payment, compliance
-# order.py 已废弃并合并到 payment.py 中
+from backend.analytics.event_tracker import init_analytics_db, track_event
+from backend.routers import contact, demo, pricing, admin, employees, service_inquiry, payment, auth, members, compliance, cortex_api, ai_dialogue
+from backend.routers.payment_v2 import router as payment_v2_router
+from backend.routers.invoice import router as invoice_router
+from backend.channel_tracker import router as channel_router, channel_tracking_middleware
 
 # 项目根目录
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 app = FastAPI(
     title="中韩出海数智港 API",
-    description="China-Korea Digital Port Backend API",
-    version="1.1.0",
+    description="China-Korea Digital Trade Gateway Backend API",
+    version="1.2.0",
 )
 
 # CORS配置
@@ -51,9 +55,107 @@ app.include_router(admin.router)
 app.include_router(employees.router)
 app.include_router(service_inquiry.router)
 app.include_router(payment.router)
+app.include_router(auth.router)
+app.include_router(members.router)
 app.include_router(compliance.router)
+app.include_router(cortex_api.router)
+app.include_router(ai_dialogue.router)
+app.include_router(payment_v2_router)
+app.include_router(invoice_router)
+app.include_router(channel_router)
 
-# 静态文件路由
+# ── 渠道/KOI追踪中间件 ────────────────────────────────
+@app.middleware("http")
+async def channel_middleware(request: Request, call_next):
+    """自动检测 ?ref=CH-XXXX 并记录追踪"""
+    return await channel_tracking_middleware(request, call_next)
+
+# ── 用户行为追踪中间件 ─────────────────────────────────
+@app.middleware("http")
+async def analytics_middleware(request: Request, call_next):
+    """自动追踪页面访问事件"""
+    import time
+    start_time = time.time()
+    response = await call_next(request)
+
+    # 仅追踪 HTML 页面请求（非 API、非静态资源）
+    path = request.url.path
+    if (
+        response.status_code == 200
+        and not path.startswith("/api/")
+        and not path.startswith("/css/")
+        and not path.startswith("/js/")
+        and not path.startswith("/uploads/")
+        and not path.startswith("/admin")
+        and path != "/health"
+        and not path.startswith("/analytics")
+    ):
+        try:
+            user_id = request.client.host if request.client else "unknown"
+            session_id = request.headers.get("x-session-id", None)
+            if not session_id:
+                session_id = request.headers.get("cookie", "")
+            track_event(
+                user_id=user_id,
+                event_type="page_view",
+                page_url=str(request.url.path),
+                session_id=session_id[:128] if session_id else None,
+                ip_address=user_id,
+                user_agent=request.headers.get("user-agent", None),
+            )
+        except Exception:
+            pass
+
+    response.headers["X-Process-Time"] = str(time.time() - start_time)
+    return response
+
+# ── 分析 API 端点 ──────────────────────────────────────
+@app.get("/analytics/dashboard")
+async def analytics_dashboard_api():
+    """获取分析仪表盘数据（JSON格式）"""
+    from backend.analytics.event_tracker import (
+        get_today_active_users, get_today_events_count,
+        get_popular_pages, get_conversion_funnel, get_event_type_breakdown,
+    )
+    return {
+        "today": {
+            "active_users": get_today_active_users(),
+            "total_events": get_today_events_count(),
+            "event_breakdown": get_event_type_breakdown(),
+        },
+        "popular_pages": get_popular_pages(),
+        "conversion_funnel": get_conversion_funnel(),
+    }
+
+@app.get("/analytics/funnel")
+async def analytics_funnel_api():
+    """获取转化漏斗数据"""
+    from backend.analytics.event_tracker import get_conversion_funnel
+    return {"funnel": get_conversion_funnel()}
+
+@app.get("/analytics/track")
+async def analytics_track_event(
+    request: Request,
+    event_type: str = "click",
+    page_url: str = None,
+    data: str = None,
+):
+    """手动追踪事件（供前端JS调用）"""
+    import json
+    user_id = request.client.host if request.client else "unknown"
+    event_data = json.loads(data) if data else {}
+    track_event(
+        user_id=user_id,
+        event_type=event_type,
+        event_data=event_data,
+        page_url=page_url,
+        session_id=request.headers.get("x-session-id", None),
+        ip_address=user_id,
+        user_agent=request.headers.get("user-agent", None),
+    )
+    return {"success": True}
+
+# ── 静态文件路由 ───────────────────────────────────────
 @app.get("/")
 async def root():
     return FileResponse(os.path.join(ROOT_DIR, "index.html"))
@@ -61,6 +163,10 @@ async def root():
 @app.get("/index.html")
 async def index_html():
     return FileResponse(os.path.join(ROOT_DIR, "index.html"))
+
+@app.get("/chat.html")
+async def chat_html():
+    return FileResponse(os.path.join(ROOT_DIR, "chat.html"))
 
 @app.get("/pricing.html")
 async def pricing_html():
@@ -74,37 +180,13 @@ async def pricing_v2_html():
 async def order_html():
     return FileResponse(os.path.join(ROOT_DIR, "order.html"))
 
-@app.get("/checkout.html")
-async def checkout_html():
-    return FileResponse(os.path.join(ROOT_DIR, "checkout.html"))
-
-@app.get("/payment-success.html")
-async def payment_success_html():
-    return FileResponse(os.path.join(ROOT_DIR, "payment-success.html"))
-
-@app.get("/demo.html")
-async def demo_html():
-    return FileResponse(os.path.join(ROOT_DIR, "demo.html"))
-
-@app.get("/admin/funnel.html")
-async def admin_funnel_html():
-    return FileResponse(os.path.join(ROOT_DIR, "admin", "funnel.html"))
-
-@app.get("/admin/quote.html")
-async def admin_quote_html():
-    return FileResponse(os.path.join(ROOT_DIR, "admin", "quote.html"))
+@app.get("/payment.html")
+async def payment_html():
+    return FileResponse(os.path.join(ROOT_DIR, "payment.html"))
 
 @app.get("/team.html")
 async def team_html():
     return FileResponse(os.path.join(ROOT_DIR, "team.html"))
-
-@app.get("/compliance-demo.html")
-async def compliance_demo_html():
-    return FileResponse(os.path.join(ROOT_DIR, "compliance-demo.html"))
-
-@app.get("/compliance-check.html")
-async def compliance_check_html():
-    return FileResponse(os.path.join(ROOT_DIR, "compliance-check.html"))
 
 @app.get("/privacy.html")
 async def privacy_html():
@@ -113,6 +195,10 @@ async def privacy_html():
 @app.get("/terms.html")
 async def terms_html():
     return FileResponse(os.path.join(ROOT_DIR, "terms.html"))
+
+@app.get("/channel-dashboard.html")
+async def channel_dashboard_html():
+    return FileResponse(os.path.join(ROOT_DIR, "channel_dashboard.html"))
 
 @app.get("/robots.txt")
 async def robots_txt():
@@ -155,9 +241,9 @@ async def admin_files(path: str):
 async def health():
     return {"status": "ok"}
 
+# ── 启动事件 ───────────────────────────────────────────
 @app.on_event("startup")
 async def startup():
     """启动时初始化数据库"""
     init_db()
-
-
+    init_analytics_db()

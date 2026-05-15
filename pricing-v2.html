@@ -3,24 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>定价方案 - 中韩出海数智港</title>
-    <meta name="description" content="选择适合您的中韩出海方案：免费初评、深度方案（¥9,800）、年订阅（¥58,000）。AI数字员工驱动的跨境合规服务，按需选择。">
-    <meta name="keywords" content="韩企中国合规,中韩出海,合规咨询,中国合规,深度方案,年订阅,中韩跨境服务,数字员工">
+    <title>SaaS定价 - 中韩出海数智港</title>
+    <meta name="description" content="SaaS月付/年付方案：基础版¥4,900/月、专业版¥9,900/月、企业版¥29,900/月。年付享8折优惠。AI数字员工驱动的跨境合规服务。">
+    <meta name="keywords" content="SaaS定价,月付,年付,AI合规官,中韩出海,合规服务">
     <!-- Open Graph -->
     <meta property="og:type" content="website">
-    <meta property="og:title" content="定价方案 - 中韩出海数智港">
-    <meta property="og:description" content="AI数字员工驱动的跨境合规服务，免费初评、深度方案、年订阅，按需选择。">
+    <meta property="og:title" content="SaaS定价 - 中韩出海数智港">
+    <meta property="og:description" content="AI数字员工驱动的跨境合规服务，月付/年付SaaS方案，按需选择。">
     <meta property="og:image" content="https://go-aiport.com/favicon.ico">
     <meta property="og:url" content="https://go-aiport.com/pricing-v2.html">
     <meta property="og:locale" content="zh_CN">
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary">
-    <meta name="twitter:title" content="定价方案 - 中韩出海数智港">
-    <meta name="twitter:description" content="AI数字员工驱动的跨境合规服务，免费初评、深度方案、年订阅，按需选择。">
+    <meta name="twitter:title" content="SaaS定价 - 中韩出海数智港">
+    <meta name="twitter:description" content="AI数字员工驱动的跨境合规服务，月付/年付SaaS方案，按需选择。">
     <!-- Hreflang -->
     <link rel="alternate" hreflang="zh-CN" href="https://go-aiport.com/pricing-v2.html">
     <link rel="alternate" hreflang="ko-KR" href="https://go-aiport.com/pricing-v2.html?lang=ko-KR">
-    <link rel="alternate" hreflang="en" href="https://go-aiport.com/pricing-v2.html?lang=en">
     <link rel="alternate" hreflang="x-default" href="https://go-aiport.com/pricing-v2.html">
     <link rel="icon" href="favicon.ico">
     <link rel="stylesheet" href="css/style.css">
@@ -28,24 +27,38 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         .pricing-page { padding-top: 120px; padding-bottom: 80px; }
-        .pricing-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 30px; max-width: 1100px; margin: 0 auto; }
-        .pricing-card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 20px; padding: 40px 30px; text-align: center; transition: all .3s ease; position: relative; }
+        .pricing-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 30px; max-width: 1140px; margin: 0 auto; }
+        .pricing-card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 20px; padding: 40px 30px; text-align: center; transition: all .3s ease; position: relative; display: flex; flex-direction: column; }
         .pricing-card:hover { transform: translateY(-5px); box-shadow: 0 20px 40px rgba(0,0,0,.1); }
         .pricing-card.featured { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
         .pricing-card.featured .pricing-badge { background: var(--accent); color: #fff; padding: 6px 16px; border-radius: 20px; font-size: 13px; position: absolute; top: -12px; left: 50%; transform: translateX(-50%); white-space: nowrap; }
-        .pricing-name { font-size: 20px; font-weight: 600; margin-bottom: 8px; }
-        .pricing-name-ko { font-size: 14px; color: var(--text-secondary); margin-bottom: 20px; }
-        .pricing-price { font-size: 48px; font-weight: 700; margin-bottom: 20px; }
-        .pricing-price span { font-size: 18px; font-weight: 400; color: var(--text-secondary); }
-        .pricing-desc { color: var(--text-secondary); margin-bottom: 30px; line-height: 1.6; }
-        .pricing-features { list-style: none; padding: 0; margin: 0 0 30px; text-align: left; }
-        .pricing-features li { padding: 10px 0; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; gap: 10px; }
-        .pricing-features li i { color: #22c55e; font-size: 18px; }
-        .pricing-cta { display: inline-block; padding: 14px 40px; border: none; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer; transition: all .3s ease; text-decoration: none; width: 100%; }
+        .pricing-name { font-size: 20px; font-weight: 600; margin-bottom: 4px; }
+        .pricing-name-ko { font-size: 14px; color: var(--text-secondary); margin-bottom: 16px; }
+        .pricing-price { font-size: 42px; font-weight: 700; margin-bottom: 4px; }
+        .pricing-price .period { font-size: 16px; font-weight: 400; color: var(--text-secondary); }
+        .pricing-price .original-price { font-size: 16px; font-weight: 400; color: #999; text-decoration: line-through; margin-left: 8px; }
+        .pricing-discount-badge { display: inline-block; background: #dc2626; color: #fff; font-size: 12px; font-weight: 600; padding: 2px 10px; border-radius: 10px; margin-left: 8px; vertical-align: super; }
+        .pricing-desc { color: var(--text-secondary); margin-bottom: 16px; line-height: 1.6; font-size: 14px; }
+        .pricing-features { list-style: none; padding: 0; margin: 0 0 auto 0; text-align: left; flex-grow: 1; }
+        .pricing-features li { padding: 10px 0; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; gap: 10px; font-size: 14px; }
+        .pricing-features li i { color: #22c55e; font-size: 18px; flex-shrink: 0; }
+        .pricing-features li .feature-icon { width: 20px; text-align: center; flex-shrink: 0; }
+        .pricing-cta { display: inline-block; padding: 14px 40px; border: none; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer; transition: all .3s ease; text-decoration: none; width: 100%; margin-top: 24px; }
         .pricing-cta.primary { background: var(--accent); color: #fff; }
         .pricing-cta.primary:hover { opacity: .9; }
         .pricing-cta.secondary { background: transparent; border: 2px solid var(--accent); color: var(--accent); }
         .pricing-cta.secondary:hover { background: var(--accent); color: #fff; }
+
+        /* 月付/年付切换 */
+        .billing-toggle { display: flex; align-items: center; justify-content: center; gap: 16px; margin-bottom: 40px; }
+        .billing-toggle .toggle-label { font-size: 15px; font-weight: 500; color: var(--text-secondary); cursor: pointer; transition: color .2s; }
+        .billing-toggle .toggle-label.active { color: var(--text-primary); font-weight: 600; }
+        .billing-toggle .toggle-switch { position: relative; width: 56px; height: 28px; background: var(--border-color); border-radius: 14px; cursor: pointer; transition: background .3s; flex-shrink: 0; }
+        .billing-toggle .toggle-switch.active { background: var(--accent); }
+        .billing-toggle .toggle-switch .toggle-knob { position: absolute; top: 3px; left: 3px; width: 22px; height: 22px; background: #fff; border-radius: 50%; transition: transform .3s ease; box-shadow: 0 2px 4px rgba(0,0,0,.2); }
+        .billing-toggle .toggle-switch.active .toggle-knob { transform: translateX(28px); }
+        .billing-toggle .savings-badge { background: #dc2626; color: #fff; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 12px; white-space: nowrap; }
+
         .pricing-faq { max-width: 800px; margin: 60px auto 0; }
         .pricing-faq h2 { text-align: center; margin-bottom: 30px; }
         .faq-item { padding: 20px 0; border-bottom: 1px solid var(--border-color); }
@@ -64,7 +77,7 @@
         .modal-content .modal-sub { color: var(--text-secondary); margin-bottom: 24px; font-size: 14px; }
         .modal-content .form__group { margin-bottom: 16px; }
         .modal-content .form__label { display: block; margin-bottom: 6px; font-size: 14px; font-weight: 500; }
-        .modal-content .form__input, .modal-content .form__select { width: 100%; padding: 12px 16px; border-radius: 10px; border: 1px solid var(--border-color); background: var(--bg-primary); color: var(--text-primary); font-size: 15px; outline: none; transition: border-color .2s; }
+        .modal-content .form__input, .modal-content .form__select { width: 100%; padding: 12px 16px; border-radius: 10px; border: 1px solid var(--border-color); background: var(--bg-primary); color: var(--text-primary); font-size: 15px; outline: none; transition: border-color .2s; box-sizing: border-box; }
         .modal-content .form__input:focus, .modal-content .form__select:focus { border-color: var(--accent); }
         .modal-content .form__input--readonly { opacity: 0.7; cursor: not-allowed; }
         .modal-content .btn { width: 100%; padding: 14px; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer; border: none; }
@@ -77,6 +90,14 @@
         .modal-pricing-info { background: var(--bg-tertiary); border-radius: 12px; padding: 16px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
         .modal-pricing-info .plan-label { font-weight: 600; }
         .modal-pricing-info .plan-price { font-size: 24px; font-weight: 700; color: var(--accent); }
+        .modal-pricing-info .plan-cycle { font-size: 13px; color: var(--text-secondary); margin-top: 2px; }
+        .payment-method-select { display: flex; gap: 12px; margin-bottom: 20px; }
+        .payment-method-select button { flex: 1; padding: 12px; border-radius: 12px; border: 2px solid var(--border-color); background: var(--bg-primary); color: var(--text-primary); font-size: 15px; font-weight: 500; cursor: pointer; transition: all .2s; }
+        .payment-method-select button.active { border-color: var(--accent); background: var(--bg-tertiary); }
+        .payment-method-select button:hover { border-color: var(--accent); }
+        .payment-method-select button i { margin-right: 6px; }
+        .payment-method-select button .pay-alipay { color: #1677ff; }
+        .payment-method-select button .pay-wechat { color: #07c160; }
     </style>
 </head>
 <body>
@@ -99,7 +120,6 @@
                 <div class="header__lang">
                     <button class="lang-btn" data-lang="zh-CN">中文</button>
                     <button class="lang-btn" data-lang="ko-KR">한국어</button>
-                    <button class="lang-btn" data-lang="en">English</button>
                 </div>
                 <div class="header__theme">
                     <button class="theme-btn" id="themeToggle" aria-label="切换主题">
@@ -110,76 +130,50 @@
         </div>
     </header>
 
-    <!-- 定价页面 -->
+    <!-- SaaS定价页面 -->
     <section class="pricing-page">
         <div class="container">
             <div class="section__header">
-                <h2 class="section__title" data-lang-key="pricing_title">选择适合您的方案</h2>
-                <p class="section__subtitle" data-lang-key="pricing_subtitle">AI数字员工驱动的跨境合规服务，按需选择</p>
+                <h2 class="section__title" data-lang-key="saas_pricing_title">SaaS订阅方案</h2>
+                <p class="section__subtitle" data-lang-key="saas_pricing_subtitle">AI合规官驱动的跨境合规SaaS，按月/按年灵活订阅</p>
             </div>
-            <div class="pricing-grid">
-                <!-- 免费初评 -->
-                <div class="pricing-card">
-                    <div class="pricing-name">免费初评</div>
-                    <div class="pricing-name-ko">무료 초기 평가</div>
-                    <div class="pricing-price">¥0</div>
-                    <div class="pricing-desc" data-lang-key="pricing_free_desc">适合初步了解中国市场的韩企</div>
-                    <ul class="pricing-features">
-                        <li><i class="bi bi-check-circle"></i> <span data-lang-key="pricing_free_f1">30分钟在线咨询</span></li>
-                        <li><i class="bi bi-check-circle"></i> <span data-lang-key="pricing_free_f2">中国市场概况报告</span></li>
-                        <li><i class="bi bi-check-circle"></i> <span data-lang-key="pricing_free_f3">基础合规清单</span></li>
-                    </ul>
-                    <button class="pricing-cta secondary" onclick="location.href='checkout.html?plan=free'" data-lang-key="pricing_buy_free">免费获取</button>
-                </div>
 
-                <!-- 深度方案 -->
-                <div class="pricing-card featured">
-                    <div class="pricing-badge" data-lang-key="pricing_recommended">推荐</div>
-                    <div class="pricing-name">深度方案</div>
-                    <div class="pricing-name-ko">심층 컨설팅 패키지</div>
-                    <div class="pricing-price">¥9,800 <span data-lang-key="pricing_one_time">一次性</span></div>
-                    <div class="pricing-desc" data-lang-key="pricing_depth_desc">适合已决定进入中国市场的韩企</div>
-                    <ul class="pricing-features">
-                        <li><i class="bi bi-check-circle"></i> <span data-lang-key="pricing_depth_f1">全案市场进入策划</span></li>
-                        <li><i class="bi bi-check-circle"></i> <span data-lang-key="pricing_depth_f2">中韩双语品牌内容</span></li>
-                        <li><i class="bi bi-check-circle"></i> <span data-lang-key="pricing_depth_f3">SEO优化方案</span></li>
-                        <li><i class="bi bi-check-circle"></i> <span data-lang-key="pricing_depth_f4">竞品深度分析</span></li>
-                        <li><i class="bi bi-check-circle"></i> <span data-lang-key="pricing_depth_f5">合规完整诊断（6位数字员工）</span></li>
-                    </ul>
-                    <button class="pricing-cta primary" onclick="location.href='checkout.html?plan=depth'" data-lang-key="pricing_buy_depth">立即购买</button>
+            <!-- 月付/年付切换 -->
+            <div class="billing-toggle">
+                <span class="toggle-label active" id="labelMonthly" data-lang-key="billing_monthly">月付</span>
+                <div class="toggle-switch" id="billingToggle" onclick="toggleBilling()">
+                    <div class="toggle-knob"></div>
                 </div>
+                <span class="toggle-label" id="labelYearly" data-lang-key="billing_yearly">年付</span>
+                <span class="savings-badge" data-lang-key="billing_save">享8折</span>
+            </div>
 
-                <!-- 年订阅 -->
-                <div class="pricing-card">
-                    <div class="pricing-name">年订阅</div>
-                    <div class="pricing-name-ko">연간 구독</div>
-                    <div class="pricing-price">¥58,000 <span data-lang-key="pricing_per_year">/年</span></div>
-                    <div class="pricing-desc" data-lang-key="pricing_annual_desc">适合持续运营中国业务的韩企</div>
-                    <ul class="pricing-features">
-                        <li><i class="bi bi-check-circle"></i> <span data-lang-key="pricing_annual_f1">含深度方案全部内容</span></li>
-                        <li><i class="bi bi-check-circle"></i> <span data-lang-key="pricing_annual_f2">不限次AI数字员工分析</span></li>
-                        <li><i class="bi bi-check-circle"></i> <span data-lang-key="pricing_annual_f3">实时市场情报监控</span></li>
-                        <li><i class="bi bi-check-circle"></i> <span data-lang-key="pricing_annual_f4">优先技术支持</span></li>
-                        <li><i class="bi bi-check-circle"></i> <span data-lang-key="pricing_annual_f5">季度战略复盘</span></li>
-                    </ul>
-                    <button class="pricing-cta secondary" onclick="location.href='checkout.html?plan=annual'" data-lang-key="pricing_buy_annual">立即订阅</button>
-                </div>
+            <div class="pricing-grid" id="pricingGrid">
+                <!-- 由JS动态渲染 -->
             </div>
 
             <!-- FAQ -->
             <div class="pricing-faq">
-                <h2 data-lang-key="pricing_faq_title">常见问题</h2>
+                <h2 data-lang-key="faq_title">常见问题</h2>
                 <div class="faq-item">
-                    <div class="faq-q" data-lang-key="faq_q1">Q: 深度方案和年订阅有什么区别？</div>
-                    <div class="faq-a" data-lang-key="faq_a1">深度方案是一次性交付的完整方案，适合短期内完成市场进入的韩企。年订阅包含全年持续服务，包括不限次的AI数字员工分析、实时情报监控和季度复盘，适合长期运营中国业务的韩企。</div>
+                    <div class="faq-q" data-lang-key="faq_q1">Q: SaaS月付和年付有什么区别？</div>
+                    <div class="faq-a" data-lang-key="faq_a1">月付按月扣费，灵活退订；年付一次性支付全年费用，享8折优惠（相当于免费使用2.4个月）。两种方案均可随时升级套餐。</div>
                 </div>
                 <div class="faq-item">
-                    <div class="faq-q" data-lang-key="faq_q2">Q: 数字员工具体能做什么？</div>
-                    <div class="faq-a" data-lang-key="faq_a2">6位AI数字合规官分别覆盖：行业准入（徐准）、数据安全（刘真）、知识产权（志浩）、跨境财税（宰贤）、劳动用工（贤宇）、签证移民（美英），提供一站式合规诊断和方案输出。</div>
+                    <div class="faq-q" data-lang-key="faq_q2">Q: 什么是AI合规官？</div>
+                    <div class="faq-a" data-lang-key="faq_a2">6位AI数字合规官分别覆盖：行业准入（徐准）、数据安全（刘真）、知识产权（志浩）、跨境财税（宰贤）、劳动用工（贤宇）、签证移民（美英），提供一站式合规诊断和方案输出。基础版包含1位，专业版6位全开。</div>
                 </div>
                 <div class="faq-item">
-                    <div class="faq-q" data-lang-key="faq_q3">Q: 付款方式和发票？</div>
-                    <div class="faq-a" data-lang-key="faq_a3">支持支付宝、微信支付和银行转账，提供增值税专用发票。跨境支付支持美元和韩元结算。</div>
+                    <div class="faq-q" data-lang-key="faq_q3">Q: 合规诊断每月多少次？</div>
+                    <div class="faq-a" data-lang-key="faq_a3">基础版每月5次合规诊断，专业版和企业版不限次数。诊断范围覆盖市场准入、数据合规、知识产权、财税、用工和签证六大领域。</div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-q" data-lang-key="faq_q4">Q: 支持哪些支付方式？</div>
+                    <div class="faq-a" data-lang-key="faq_a4">支持支付宝当面付和微信Native Pay扫码支付。企业客户可开具增值税电子普通发票。跨境支付支持美元和韩元结算。</div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-q" data-lang-key="faq_q5">Q: 可以退款吗？</div>
+                    <div class="faq-a" data-lang-key="faq_a5">支持7天无理由退款。退款后订阅立即失效，已使用的合规诊断次数按比例扣除。</div>
                 </div>
             </div>
 
@@ -193,18 +187,31 @@
     <div class="modal-overlay" id="orderModal">
         <div class="modal-content">
             <span class="modal-close" onclick="closeOrderModal()">&times;</span>
-            <h3 data-lang-key="order_modal_title">创建订单</h3>
-            <p class="modal-sub" data-lang-key="order_modal_sub">填写以下信息，完成下单</p>
+            <h3 data-lang-key="order_modal_title">创建订阅</h3>
+            <p class="modal-sub" data-lang-key="order_modal_sub">填写以下信息，完成订阅下单</p>
             <div class="modal-pricing-info">
                 <div>
-                    <div class="plan-label" id="modalPlanLabel">深度方案</div>
-                    <div style="font-size:13px;color:var(--text-secondary)" id="modalPlanType">depth</div>
+                    <div class="plan-label" id="modalPlanLabel">基础版</div>
+                    <div class="plan-cycle" id="modalPlanCycle">月付 · ¥4,900/月</div>
                 </div>
-                <div class="plan-price" id="modalPlanPrice">¥9,800</div>
+                <div class="plan-price" id="modalPlanPrice">¥4,900</div>
             </div>
+
+            <!-- 支付方式选择 -->
+            <div class="payment-method-select" id="paymentMethodSelect">
+                <button class="active" data-method="alipay" onclick="selectPaymentMethod('alipay')">
+                    <i class="bi bi-alipay pay-alipay"></i> 支付宝
+                </button>
+                <button data-method="wechat" onclick="selectPaymentMethod('wechat')">
+                    <i class="bi bi-wechat pay-wechat"></i> 微信支付
+                </button>
+            </div>
+
             <form id="orderForm">
-                <input type="hidden" name="plan_type" id="orderPlanType" value="depth">
-                <input type="hidden" name="price" id="orderPrice" value="9800">
+                <input type="hidden" name="plan_type" id="orderPlanType" value="basic">
+                <input type="hidden" name="billing_cycle" id="orderBillingCycle" value="monthly">
+                <input type="hidden" name="price" id="orderPrice" value="4900">
+                <input type="hidden" name="payment_method" id="orderPaymentMethod" value="alipay">
                 <div class="form__group">
                     <label class="form__label" data-lang-key="form_company">企业名称</label>
                     <input type="text" class="form__input" name="user_company" required placeholder="请输入企业名称">
@@ -221,9 +228,28 @@
                     <label class="form__label" data-lang-key="form_email">邮箱</label>
                     <input type="email" class="form__input" name="user_email" required placeholder="请输入邮箱地址">
                 </div>
-                <button type="submit" class="btn btn--primary" data-lang-key="order_submit_btn">确认下单</button>
+                <button type="submit" class="btn btn--primary" data-lang-key="order_submit_btn">确认下单并支付</button>
                 <button type="button" class="btn btn--secondary" onclick="closeOrderModal()" data-lang-key="order_cancel_btn">取消</button>
             </form>
+        </div>
+    </div>
+
+    <!-- 支付弹窗（扫码支付） -->
+    <div class="modal-overlay" id="paymentModal">
+        <div class="modal-content" style="text-align:center;">
+            <span class="modal-close" onclick="closePaymentModal()">&times;</span>
+            <h3 data-lang-key="payment_modal_title">扫码支付</h3>
+            <p class="modal-sub" id="paymentModalDesc" data-lang-key="payment_modal_desc">请使用支付宝/微信扫码完成支付</p>
+            <div style="margin:20px auto;width:300px;height:300px;background:var(--bg-primary);border-radius:16px;display:flex;align-items:center;justify-content:center;border:2px dashed var(--border-color);">
+                <img id="paymentQrCode" src="" alt="支付二维码" style="max-width:280px;max-height:280px;display:none;">
+                <div id="qrPlaceholder" style="color:var(--text-secondary);font-size:14px;">
+                    <i class="bi bi-qr-code" style="font-size:64px;display:block;margin-bottom:12px;"></i>
+                    <span data-lang-key="payment_qr_loading">生成二维码中...</span>
+                </div>
+            </div>
+            <p style="font-size:14px;color:var(--text-secondary);margin-bottom:8px;" data-lang-key="payment_amount_label">支付金额: <strong id="paymentAmount" style="color:var(--accent);">¥4,900</strong></p>
+            <p style="font-size:13px;color:var(--text-secondary);margin-bottom:20px;" id="paymentStatusText" data-lang-key="payment_awaiting">等待用户扫码支付...</p>
+            <button class="btn btn--secondary" onclick="closePaymentModal()" data-lang-key="payment_close">关闭</button>
         </div>
     </div>
 
@@ -231,7 +257,7 @@
     <footer class="footer">
         <div class="container">
             <div class="footer__bottom">
-                <p class="footer__copyright">© 2026 中韩出海数智港. 保留所有权利.</p>
+                <p class="footer__copyright">© 2026 中韩出海数智港. 保留所有权利. <a href="https://beian.miit.gov.cn" target="_blank" rel="nofollow" style="color:inherit;text-decoration:none;">沪ICP备2026007459号-1</a></p>
             </div>
         </div>
     </footer>
@@ -239,123 +265,141 @@
     <script src="js/toast.js"></script>
     <script src="js/main.js"></script>
     <script>
-        // 定价页面扩展翻译
+        // ── 定价页面翻译 ──
         (function() {
             if (typeof translations !== 'undefined') {
                 var extra = {
                     'zh-CN': {
-                        pricing_title: '选择适合您的方案',
-                        pricing_subtitle: 'AI数字员工驱动的跨境合规服务，按需选择',
-                        pricing_free_desc: '适合初步了解中国市场的韩企',
-                        pricing_free_f1: '30分钟在线咨询',
-                        pricing_free_f2: '中国市场概况报告',
-                        pricing_free_f3: '基础合规清单',
-                        pricing_buy_free: '免费获取',
-                        pricing_recommended: '推荐',
-                        pricing_one_time: '一次性',
-                        pricing_depth_desc: '适合已决定进入中国市场的韩企',
-                        pricing_depth_f1: '全案市场进入策划',
-                        pricing_depth_f2: '中韩双语品牌内容',
-                        pricing_depth_f3: 'SEO优化方案',
-                        pricing_depth_f4: '竞品深度分析',
-                        pricing_depth_f5: '合规完整诊断（6位数字员工）',
-                        pricing_buy_depth: '立即购买',
-                        pricing_per_year: '/年',
-                        pricing_annual_desc: '适合持续运营中国业务的韩企',
-                        pricing_annual_f1: '含深度方案全部内容',
-                        pricing_annual_f2: '不限次AI数字员工分析',
-                        pricing_annual_f3: '实时市场情报监控',
-                        pricing_annual_f4: '优先技术支持',
-                        pricing_annual_f5: '季度战略复盘',
-                        pricing_buy_annual: '立即订阅',
-                        pricing_faq_title: '常见问题',
-                        faq_q1: 'Q: 深度方案和年订阅有什么区别？',
-                        faq_a1: '深度方案是一次性交付的完整方案，适合短期内完成市场进入的韩企。年订阅包含全年持续服务，包括不限次的AI数字员工分析、实时情报监控和季度复盘，适合长期运营中国业务的韩企。',
-                        faq_q2: 'Q: 数字员工具体能做什么？',
-                        faq_a2: '6位AI数字合规官分别覆盖：行业准入（徐准）、数据安全（刘真）、知识产权（志浩）、跨境财税（宰贤）、劳动用工（贤宇）、签证移民（美英），提供一站式合规诊断和方案输出。',
-                        faq_q3: 'Q: 付款方式和发票？',
-                        faq_a3: '支持支付宝、微信支付和银行转账，提供增值税专用发票。跨境支付支持美元和韩元结算。',
-                        pricing_back: '← 返回首页',
-                        order_modal_title: '创建订单',
-                        order_modal_sub: '填写以下信息，完成下单',
-                        order_submit_btn: '确认下单',
+                        saas_pricing_title: 'SaaS订阅方案',
+                        saas_pricing_subtitle: 'AI合规官驱动的跨境合规SaaS，按月/按年灵活订阅',
+                        billing_monthly: '月付',
+                        billing_yearly: '年付',
+                        billing_save: '享8折',
+                        plan_basic_name: '基础版',
+                        plan_basic_ko: '베이직',
+                        plan_basic_desc: '适合初步了解中国市场的韩企，入门级合规诊断',
+                        plan_basic_f1: '1位AI合规官',
+                        plan_basic_f2: '5次/月合规诊断',
+                        plan_basic_f3: '基础合规报告',
+                        plan_basic_f4: '邮件支持',
+                        plan_basic_cta: '立即订阅',
+                        plan_prof_name: '专业版',
+                        plan_prof_ko: '프로페셔널',
+                        plan_prof_desc: '适合已进入中国市场的韩企，全方位合规护航',
+                        plan_prof_f1: '6位AI合规官全开',
+                        plan_prof_f2: '不限次数合规诊断',
+                        plan_prof_f3: '完整合规报告',
+                        plan_prof_f4: '优先技术支持',
+                        plan_prof_f5: '实时市场情报',
+                        plan_prof_cta: '立即订阅',
+                        plan_ent_name: '企业版',
+                        plan_ent_ko: '엔터프라이즈',
+                        plan_ent_desc: '适合大规模运营中国业务的韩企，深度定制',
+                        plan_ent_f1: 'API接入',
+                        plan_ent_f2: '专属知识库',
+                        plan_ent_f3: '定制合规方案',
+                        plan_ent_f4: '7×24小时技术支持',
+                        plan_ent_f5: '专属客户经理',
+                        plan_ent_f6: '季度战略复盘',
+                        plan_ent_cta: '联系销售',
+                        faq_title: '常见问题',
+                        faq_q1: 'Q: SaaS月付和年付有什么区别？',
+                        faq_a1: '月付按月扣费，灵活退订；年付一次性支付全年费用，享8折优惠（相当于免费使用2.4个月）。两种方案均可随时升级套餐。',
+                        faq_q2: 'Q: 什么是AI合规官？',
+                        faq_a2: '6位AI数字合规官分别覆盖：行业准入（徐准）、数据安全（刘真）、知识产权（志浩）、跨境财税（宰贤）、劳动用工（贤宇）、签证移民（美英），提供一站式合规诊断和方案输出。基础版包含1位，专业版6位全开。',
+                        faq_q3: 'Q: 合规诊断每月多少次？',
+                        faq_a3: '基础版每月5次合规诊断，专业版和企业版不限次数。诊断范围覆盖市场准入、数据合规、知识产权、财税、用工和签证六大领域。',
+                        faq_q4: 'Q: 支持哪些支付方式？',
+                        faq_a4: '支持支付宝当面付和微信Native Pay扫码支付。企业客户可开具增值税电子普通发票。跨境支付支持美元和韩元结算。',
+                        faq_q5: 'Q: 可以退款吗？',
+                        faq_a5: '支持7天无理由退款。退款后订阅立即失效，已使用的合规诊断次数按比例扣除。',
+                        order_modal_title: '创建订阅',
+                        order_modal_sub: '填写以下信息，完成订阅下单',
+                        order_submit_btn: '确认下单并支付',
                         order_cancel_btn: '取消',
+                        payment_modal_title: '扫码支付',
+                        payment_modal_desc: '请使用支付宝/微信扫码完成支付',
+                        payment_qr_loading: '生成二维码中...',
+                        payment_amount_label: '支付金额:',
+                        payment_awaiting: '等待用户扫码支付...',
+                        payment_close: '关闭',
+                        payment_success: '支付成功！',
+                        payment_success_msg: '订阅已激活，感谢您的购买！',
+                        payment_failed: '支付失败',
+                        payment_retry: '重试',
+                        pricing_back: '← 返回首页',
+                        per_month: '/月',
+                        per_year: '/年',
+                        recommended: '推荐',
+                        save_20: '省20%',
+                        monthly: '月付',
+                        yearly: '年付',
                     },
                     'ko-KR': {
-                        pricing_title: '적합한 플랜을 선택하세요',
-                        pricing_subtitle: 'AI 디지털 직원 기반 크로스보더 규제 서비스',
-                        pricing_free_desc: '중국 시장을 처음 알아보는 한국 기업에 적합',
-                        pricing_free_f1: '30분 온라인 상담',
-                        pricing_free_f2: '중국 시장 개황 보고서',
-                        pricing_free_f3: '기본 규제 체크리스트',
-                        pricing_buy_free: '무료로 받기',
-                        pricing_recommended: '추천',
-                        pricing_one_time: '일회성',
-                        pricing_depth_desc: '중국 시장 진출을 결정한 한국 기업에 적합',
-                        pricing_depth_f1: '전체 시장 진출 기획',
-                        pricing_depth_f2: '중한 이중 언어 브랜드 콘텐츠',
-                        pricing_depth_f3: 'SEO 최적화 방안',
-                        pricing_depth_f4: '경쟁사 심층 분석',
-                        pricing_depth_f5: '규제 완전 진단 (6명 디지털 직원)',
-                        pricing_buy_depth: '지금 구매',
-                        pricing_per_year: '/년',
-                        pricing_annual_desc: '중국 사업을 지속 운영하는 한국 기업에 적합',
-                        pricing_annual_f1: '심층 컨설팅 패키지 전체 내용 포함',
-                        pricing_annual_f2: '무제한 AI 디지털 직원 분석',
-                        pricing_annual_f3: '실시간 시장 정보 모니터링',
-                        pricing_annual_f4: '우선 기술 지원',
-                        pricing_annual_f5: '분기별 전략 검토',
-                        pricing_buy_annual: '지금 구독',
-                        pricing_faq_title: '자주 묻는 질문',
-                        faq_q1: 'Q: 심층 컨설팅과 연간 구독의 차이점은?',
-                        faq_a1: '심층 컨설팅은 일회성 완전 패키지로 단기간에 시장 진출을 완료하려는 기업에 적합합니다. 연간 구독은 연중 지속 서비스로 무제한 AI 분석, 실시간 모니터링, 분기별 검토를 포함합니다.',
-                        faq_q2: 'Q: 디지털 직원은 무엇을 할 수 있나요?',
-                        faq_a2: '6명의 AI 디지털 규제 전문가가 산업 허가, 데이터 보안, 지식재산권, 재무세무, 고용, 비자를 각각 담당합니다.',
-                        faq_q3: 'Q: 결제 방법과 세금 계산서는?',
-                        faq_a3: '알리페이, 위챗페이, 은행 송금을 지원합니다. 부가가치세 전용 세금 계산서를 제공합니다.',
-                        pricing_back: '← 홈으로',
-                        order_modal_title: '주문 생성',
-                        order_modal_sub: '정보를 입력하여 주문을 완료하세요',
-                        order_submit_btn: '주문 확인',
+                        saas_pricing_title: 'SaaS 구독 플랜',
+                        saas_pricing_subtitle: 'AI 규제 전문가 기반 크로스보더 규제 SaaS, 월간/연간 유연 구독',
+                        billing_monthly: '월간',
+                        billing_yearly: '연간',
+                        billing_save: '20% 할인',
+                        plan_basic_name: '베이직',
+                        plan_basic_ko: '베이직',
+                        plan_basic_desc: '중국 시장을 처음 알아보는 한국 기업, 입문용 규제 진단',
+                        plan_basic_f1: 'AI 규제 전문가 1명',
+                        plan_basic_f2: '월 5회 규제 진단',
+                        plan_basic_f3: '기본 규제 보고서',
+                        plan_basic_f4: '이메일 지원',
+                        plan_basic_cta: '지금 구독',
+                        plan_prof_name: '프로페셔널',
+                        plan_prof_ko: '프로페셔널',
+                        plan_prof_desc: '중국 시장에 진출한 한국 기업, 종합 규제 지원',
+                        plan_prof_f1: 'AI 규제 전문가 6명 전원 활성화',
+                        plan_prof_f2: '무제한 규제 진단',
+                        plan_prof_f3: '전체 규제 보고서',
+                        plan_prof_f4: '우선 기술 지원',
+                        plan_prof_f5: '실시간 시장 정보',
+                        plan_prof_cta: '지금 구독',
+                        plan_ent_name: '엔터프라이즈',
+                        plan_ent_ko: '엔터프라이즈',
+                        plan_ent_desc: '중국에서 대규모 사업 운영, 맞춤형 솔루션',
+                        plan_ent_f1: 'API 연동',
+                        plan_ent_f2: '전용 지식 베이스',
+                        plan_ent_f3: '맞춤형 규제 솔루션',
+                        plan_ent_f4: '24/7 기술 지원',
+                        plan_ent_f5: '전담 고객 매니저',
+                        plan_ent_f6: '분기별 전략 검토',
+                        plan_ent_cta: '영업 문의',
+                        faq_title: '자주 묻는 질문',
+                        faq_q1: 'Q: 월간과 연간 구독의 차이점은?',
+                        faq_a1: '월간은 매월 결제로 유연하게 해지 가능합니다. 연간은 연간 요금을 선납하며 20% 할인 혜택이 있습니다. 두 플랜 모두 언제든지 업그레이드 가능합니다.',
+                        faq_q2: 'Q: AI 규제 전문가란?',
+                        faq_a2: '6명의 AI 규제 전문가가 산업 허가, 데이터 보안, 지식재산권, 재무세무, 고용, 비자를 각각 담당합니다. 베이직은 1명, 프로페셔널은 6명 전원 활성화됩니다.',
+                        faq_q3: 'Q: 규제 진단 횟수 제한은?',
+                        faq_a3: '베이직은 월 5회, 프로페셔널과 엔터프라이즈는 무제한입니다. 진단 범위는 시장 진입, 데이터 규제, 지식재산권, 재무세무, 고용, 비자의 6개 영역입니다.',
+                        faq_q4: 'Q: 결제 방법은?',
+                        faq_a4: '알리페이와 위챗페이 QR 코드 결제를 지원합니다. 기업 고객은 부가가치세 전자 세금 계산서를 발행받을 수 있습니다.',
+                        faq_q5: 'Q: 환불이 가능한가요?',
+                        faq_a5: '7일 이내 무료 환불이 가능합니다. 환불 후 구독은 즉시 종료되며, 사용한 규제 진단 횟수는 비례하여 차감됩니다.',
+                        order_modal_title: '구독 생성',
+                        order_modal_sub: '정보를 입력하여 구독을 완료하세요',
+                        order_submit_btn: '주문 및 결제',
                         order_cancel_btn: '취소',
-                    },
-                    'en': {
-                        pricing_title: 'Choose Your Plan',
-                        pricing_subtitle: 'AI digital employee-driven cross-border compliance services — pick what suits you',
-                        pricing_free_desc: 'Best for Korean enterprises exploring the Chinese market',
-                        pricing_free_f1: '30-minute online consultation',
-                        pricing_free_f2: 'China market overview report',
-                        pricing_free_f3: 'Basic compliance checklist',
-                        pricing_buy_free: 'Get Free',
-                        pricing_recommended: 'Recommended',
-                        pricing_one_time: 'One-time',
-                        pricing_depth_desc: 'Best for Korean enterprises committed to entering China',
-                        pricing_depth_f1: 'Full market entry strategy',
-                        pricing_depth_f2: 'Bilingual Chinese-Korean brand content',
-                        pricing_depth_f3: 'SEO optimization plan',
-                        pricing_depth_f4: 'In-depth competitor analysis',
-                        pricing_depth_f5: 'Complete compliance diagnosis (6 digital employees)',
-                        pricing_buy_depth: 'Buy Now',
-                        pricing_per_year: '/year',
-                        pricing_annual_desc: 'Best for Korean enterprises with ongoing China operations',
-                        pricing_annual_f1: 'All depth plan features included',
-                        pricing_annual_f2: 'Unlimited AI digital employee analysis',
-                        pricing_annual_f3: 'Real-time market intelligence monitoring',
-                        pricing_annual_f4: 'Priority technical support',
-                        pricing_annual_f5: 'Quarterly strategic review',
-                        pricing_buy_annual: 'Subscribe Now',
-                        pricing_faq_title: 'Frequently Asked Questions',
-                        faq_q1: 'Q: What is the difference between the Depth Plan and Annual Subscription?',
-                        faq_a1: 'The Depth Plan is a one-time complete solution, ideal for Korean enterprises aiming to enter the market quickly. The Annual Subscription includes year-round continuous service, including unlimited AI analysis, real-time intelligence monitoring, and quarterly reviews — best for long-term China operations.',
-                        faq_q2: 'Q: What can the digital employees actually do?',
-                        faq_a2: '6 AI digital compliance officers cover: Industry Access (Xu Zhun), Data Security (Liu Zhen), Intellectual Property (Zhi Hao), Cross-Border Tax (Jae Hyun), Labor & Employment (Hyun Woo), and Visa & Immigration (Mi Young), providing one-stop compliance diagnostics and solutions.',
-                        faq_q3: 'Q: What payment methods are accepted?',
-                        faq_a3: 'We accept Alipay, WeChat Pay, and bank transfers. VAT special invoices are available. Cross-border payments support USD and KRW settlement.',
-                        pricing_back: '← Back to Home',
-                        order_modal_title: 'Create Order',
-                        order_modal_sub: 'Fill in the details to complete your order',
-                        order_submit_btn: 'Confirm Order',
-                        order_cancel_btn: 'Cancel',
+                        payment_modal_title: 'QR 결제',
+                        payment_modal_desc: '알리페이 또는 위챗페이로 QR 코드를 스캔하세요',
+                        payment_qr_loading: 'QR 코드 생성 중...',
+                        payment_amount_label: '결제 금액:',
+                        payment_awaiting: '사용자 결제 대기 중...',
+                        payment_close: '닫기',
+                        payment_success: '결제 성공!',
+                        payment_success_msg: '구독이 활성화되었습니다. 감사합니다!',
+                        payment_failed: '결제 실패',
+                        payment_retry: '재시도',
+                        pricing_back: '← 홈으로',
+                        per_month: '/월',
+                        per_year: '/년',
+                        recommended: '추천',
+                        save_20: '20% 할인',
+                        monthly: '월간',
+                        yearly: '연간',
                     }
                 };
                 for (var lang in extra) {
@@ -365,26 +409,169 @@
             }
         })();
 
-        // 定价方案数据
-        var planData = {
-            'free': { name: '免费初评', name_ko: '무료 초기 평가', name_en: 'Free Assessment', price: 0, price_display: '¥0', type: 'free' },
-            'depth': { name: '深度方案', name_ko: '심층 컨설팅 패키지', name_en: 'Depth Plan', price: 9800, price_display: '¥9,800', type: 'depth' },
-            'annual': { name: '年订阅', name_ko: '연간 구독', name_en: 'Annual Subscription', price: 58000, price_display: '¥58,000', type: 'annual' },
+        // ── SaaS套餐数据 ──
+        var saasPlans = {
+            basic: {
+                name: '基础版',
+                name_ko: '베이직',
+                monthly_price: 4900,
+                yearly_price: 47040,   // 4900*12*0.8
+                monthly_display: '¥4,900',
+                yearly_display: '¥47,040',
+                per_month_effective: '¥3,920/月', // 年付折合月付
+                features_zh: ['1位AI合规官', '5次/月合规诊断', '基础合规报告', '邮件支持'],
+                features_ko: ['AI 규제 전문가 1명', '월 5회 규제 진단', '기본 규제 보고서', '이메일 지원'],
+                desc_zh: '适合初步了解中国市场的韩企，入门级合规诊断',
+                desc_ko: '중국 시장을 처음 알아보는 한국 기업, 입문용 규제 진단',
+                cta_zh: '立即订阅',
+                cta_ko: '지금 구독',
+            },
+            professional: {
+                name: '专业版',
+                name_ko: '프로페셔널',
+                monthly_price: 9900,
+                yearly_price: 95040,   // 9900*12*0.8
+                monthly_display: '¥9,900',
+                yearly_display: '¥95,040',
+                per_month_effective: '¥7,920/月',
+                features_zh: ['6位AI合规官全开', '不限次数合规诊断', '完整合规报告', '优先技术支持', '实时市场情报'],
+                features_ko: ['AI 규제 전문가 6명 전원 활성화', '무제한 규제 진단', '전체 규제 보고서', '우선 기술 지원', '실시간 시장 정보'],
+                desc_zh: '适合已进入中国市场的韩企，全方位合规护航',
+                desc_ko: '중국 시장에 진출한 한국 기업, 종합 규제 지원',
+                cta_zh: '立即订阅',
+                cta_ko: '지금 구독',
+                featured: true,
+            },
+            enterprise: {
+                name: '企业版',
+                name_ko: '엔터프라이즈',
+                monthly_price: 29900,
+                yearly_price: 287040,  // 29900*12*0.8
+                monthly_display: '¥29,900',
+                yearly_display: '¥287,040',
+                per_month_effective: '¥23,920/月',
+                features_zh: ['API接入', '专属知识库', '定制合规方案', '7×24小时技术支持', '专属客户经理', '季度战略复盘'],
+                features_ko: ['API 연동', '전용 지식 베이스', '맞춤형 규제 솔루션', '24/7 기술 지원', '전담 고객 매니저', '분기별 전략 검토'],
+                desc_zh: '适合大规模运营中国业务的韩企，深度定制',
+                desc_ko: '중국에서 대규모 사업 운영, 맞춤형 솔루션',
+                cta_zh: '联系销售',
+                cta_ko: '영업 문의',
+            },
         };
 
-        // 打开下单弹窗
+        var currentBilling = 'monthly'; // 'monthly' or 'yearly'
+        var currentSubscriptionId = null;
+        var currentTransactionId = null;
+        var paymentPollTimer = null;
+
+        // ── 渲染定价卡片 ──
+        function renderPricing() {
+            var grid = document.getElementById('pricingGrid');
+            var lang = localStorage.getItem('lang') || 'zh-CN';
+            var isYearly = currentBilling === 'yearly';
+            var html = '';
+
+            var i = 0;
+            for (var key in saasPlans) {
+                var plan = saasPlans[key];
+                var price = isYearly ? plan.yearly_price : plan.monthly_price;
+                var priceDisplay = isYearly ? plan.yearly_display : plan.monthly_display;
+                var priceLabel = isYearly ? (lang === 'ko-KR' ? plan.per_month_effective : plan.per_month_effective) : (lang === 'ko-KR' ? plan.monthly_display + '/월' : plan.monthly_display + '/月');
+                var periodText = isYearly ? (lang === 'ko-KR' ? '/년' : '/年') : (lang === 'ko-KR' ? '/월' : '/月');
+                var features = lang === 'ko-KR' ? plan.features_ko : plan.features_zh;
+                var desc = lang === 'ko-KR' ? plan.desc_ko : plan.desc_zh;
+                var ctaText = lang === 'ko-KR' ? plan.cta_ko : plan.cta_zh;
+                var planName = lang === 'ko-KR' ? plan.name_ko : plan.name;
+                var featuredClass = plan.featured ? ' featured' : '';
+                var badgeText = lang === 'ko-KR' ? '추천' : '推荐';
+                var saveText = lang === 'ko-KR' ? '20% 할인' : '省20%';
+
+                html += '<div class="pricing-card' + featuredClass + '">';
+                if (plan.featured) {
+                    html += '<div class="pricing-badge">' + badgeText + '</div>';
+                }
+                html += '<div class="pricing-name">' + planName + '</div>';
+                if (lang === 'ko-KR') {
+                    html += '<div class="pricing-name-ko">' + plan.name_ko + '</div>';
+                } else {
+                    html += '<div class="pricing-name-ko">' + plan.name_ko + '</div>';
+                }
+
+                // 价格显示
+                html += '<div class="pricing-price">';
+                if (isYearly) {
+                    html += priceDisplay + ' <span class="period">' + periodText + '</span>';
+                    html += '<span class="savings-badge">' + saveText + '</span>';
+                } else {
+                    html += priceDisplay + ' <span class="period">' + periodText + '</span>';
+                }
+                html += '</div>';
+
+                // 年付时显示折合月付价格
+                if (isYearly) {
+                    html += '<div style="color:var(--text-secondary);font-size:13px;margin-bottom:4px;">';
+                    html += lang === 'ko-KR' ? '월 할인가: ' + plan.per_month_effective : '折合 ' + plan.per_month_effective;
+                    html += '</div>';
+                }
+
+                html += '<div class="pricing-desc">' + desc + '</div>';
+                html += '<ul class="pricing-features">';
+                for (var f = 0; f < features.length; f++) {
+                    html += '<li><i class="bi bi-check-circle"></i> ' + features[f] + '</li>';
+                }
+                html += '</ul>';
+
+                var btnClass = (plan.featured || key === 'professional') ? 'primary' : 'secondary';
+                html += '<button class="pricing-cta ' + btnClass + '" onclick="openOrderModal(\'' + key + '\')">' + ctaText + '</button>';
+                html += '</div>';
+                i++;
+            }
+
+            grid.innerHTML = html;
+            applyTranslations();
+        }
+
+        // ── 月付/年付切换 ──
+        function toggleBilling() {
+            var toggle = document.getElementById('billingToggle');
+            var labelM = document.getElementById('labelMonthly');
+            var labelY = document.getElementById('labelYearly');
+
+            currentBilling = toggle.classList.contains('active') ? 'monthly' : 'yearly';
+            toggle.classList.toggle('active');
+
+            labelM.classList.toggle('active', currentBilling === 'monthly');
+            labelY.classList.toggle('active', currentBilling === 'yearly');
+
+            renderPricing();
+        }
+
+        // ── 支付方式选择 ──
+        function selectPaymentMethod(method) {
+            document.getElementById('orderPaymentMethod').value = method;
+            document.querySelectorAll('#paymentMethodSelect button').forEach(function(btn) {
+                btn.classList.toggle('active', btn.dataset.method === method);
+            });
+        }
+
+        // ── 打开下单弹窗 ──
         function openOrderModal(planType) {
-            var plan = planData[planType];
+            var plan = saasPlans[planType];
             if (!plan) return;
 
             var lang = localStorage.getItem('lang') || 'zh-CN';
-            var planName = lang === 'ko-KR' ? plan.name_ko : lang === 'en' ? plan.name_en : plan.name;
+            var isYearly = currentBilling === 'yearly';
+            var price = isYearly ? plan.yearly_price : plan.monthly_price;
+            var priceDisplay = isYearly ? plan.yearly_display : plan.monthly_display;
+            var cycleText = isYearly ? (lang === 'ko-KR' ? '연간' : '年付') : (lang === 'ko-KR' ? '월간' : '月付');
+            var planName = lang === 'ko-KR' ? plan.name_ko : plan.name;
 
             document.getElementById('modalPlanLabel').textContent = planName;
-            document.getElementById('modalPlanType').textContent = plan.type;
-            document.getElementById('modalPlanPrice').textContent = plan.price_display;
-            document.getElementById('orderPlanType').value = plan.type;
-            document.getElementById('orderPrice').value = plan.price;
+            document.getElementById('modalPlanCycle').textContent = cycleText + ' · ' + priceDisplay + (isYearly ? (lang === 'ko-KR' ? '/년' : '/年') : (lang === 'ko-KR' ? '/월' : '/月'));
+            document.getElementById('modalPlanPrice').textContent = priceDisplay;
+            document.getElementById('orderPlanType').value = planType;
+            document.getElementById('orderBillingCycle').value = isYearly ? 'yearly' : 'monthly';
+            document.getElementById('orderPrice').value = price;
 
             document.getElementById('orderModal').classList.add('active');
         }
@@ -393,12 +580,82 @@
             document.getElementById('orderModal').classList.remove('active');
         }
 
-        // 点击遮罩关闭
-        document.getElementById('orderModal').addEventListener('click', function(e) {
-            if (e.target === this) closeOrderModal();
-        });
+        // ── 打开支付弹窗 ──
+        function openPaymentModal(subscriptionId, transactionId, qrCode, amount, channel) {
+            currentSubscriptionId = subscriptionId;
+            currentTransactionId = transactionId;
 
-        // 订单表单提交
+            var lang = localStorage.getItem('lang') || 'zh-CN';
+            document.getElementById('paymentAmount').textContent = '¥' + amount.toLocaleString('zh-CN');
+            document.getElementById('paymentModalDesc').textContent = channel === 'alipay'
+                ? (lang === 'ko-KR' ? '알리페이로 QR 코드를 스캔하세요' : '请使用支付宝扫码完成支付')
+                : (lang === 'ko-KR' ? '위챗페이로 QR 코드를 스캔하세요' : '请使用微信扫码完成支付');
+            document.getElementById('paymentStatusText').textContent = lang === 'ko-KR' ? '사용자 결제 대기 중...' : '等待用户扫码支付...';
+
+            var qrImg = document.getElementById('paymentQrCode');
+            var placeholder = document.getElementById('qrPlaceholder');
+            if (qrCode) {
+                qrImg.src = qrCode;
+                qrImg.style.display = 'block';
+                placeholder.style.display = 'none';
+            } else {
+                qrImg.style.display = 'none';
+                placeholder.style.display = 'block';
+            }
+
+            document.getElementById('orderModal').classList.remove('active');
+            document.getElementById('paymentModal').classList.add('active');
+
+            // 开始轮询支付状态
+            startPaymentPolling(transactionId);
+        }
+
+        function closePaymentModal() {
+            document.getElementById('paymentModal').classList.remove('active');
+            stopPaymentPolling();
+        }
+
+        // ── 支付状态轮询 ──
+        function startPaymentPolling(transactionId) {
+            stopPaymentPolling();
+            paymentPollTimer = setInterval(function() {
+                pollPaymentStatus(transactionId);
+            }, 3000);
+            // 立即轮询一次
+            pollPaymentStatus(transactionId);
+        }
+
+        function stopPaymentPolling() {
+            if (paymentPollTimer) {
+                clearInterval(paymentPollTimer);
+                paymentPollTimer = null;
+            }
+        }
+
+        async function pollPaymentStatus(transactionId) {
+            try {
+                var response = await fetch('/api/v2/payment/alipay/query', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ transaction_id: transactionId }),
+                });
+                var result = await response.json();
+                if (result.success && result.paid) {
+                    stopPaymentPolling();
+                    var lang = localStorage.getItem('lang') || 'zh-CN';
+                    document.getElementById('paymentStatusText').textContent = lang === 'ko-KR' ? '결제 성공!' : '支付成功！';
+                    document.getElementById('paymentStatusText').style.color = '#22c55e';
+                    setTimeout(function() {
+                        showToast(lang === 'ko-KR' ? '구독이 활성화되었습니다!' : '订阅已激活！', 'success');
+                        closePaymentModal();
+                    }, 1500);
+                }
+            } catch (err) {
+                console.log('轮询支付状态失败:', err);
+            }
+        }
+
+        // ── 订单表单提交（创建订阅 + 发起支付） ──
         document.addEventListener('DOMContentLoaded', function() {
             var orderForm = document.getElementById('orderForm');
             if (orderForm) {
@@ -410,8 +667,9 @@
                         if (el.name) formData[el.name] = el.value;
                     });
 
-                    // 客户端校验
                     var lang = localStorage.getItem('lang') || 'zh-CN';
+
+                    // 客户端校验
                     var requiredFields = orderForm.querySelectorAll('[required]');
                     var valid = true;
                     requiredFields.forEach(function(el) {
@@ -423,50 +681,106 @@
                         }
                     });
                     if (!valid) {
-                        showToast(window.getToastMessage('validation_required'), 'error');
+                        showToast(lang === 'ko-KR' ? '필수 필드를 입력하세요' : '请填写必填字段', 'error');
                         return;
                     }
 
                     if (formData.user_email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.user_email)) {
-                        showToast(window.getToastMessage('validation_email'), 'error');
+                        showToast(lang === 'ko-KR' ? '올바른 이메일을 입력하세요' : '请输入有效的邮箱地址', 'error');
                         return;
                     }
 
                     var submitBtn = orderForm.querySelector('button[type="submit"]');
                     submitBtn.disabled = true;
                     var originalText = submitBtn.textContent;
-                    submitBtn.textContent = lang === 'ko-KR' ? '제출 중...' : '提交中...';
+                    submitBtn.textContent = lang === 'ko-KR' ? '처리 중...' : '处理中...';
 
                     try {
-                        var response = await fetch('/api/v1/orders', {
+                        // 1. 创建订阅
+                        var subResponse = await fetch('/api/v2/payment/subscription/create', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify(formData)
+                            body: JSON.stringify({
+                                user_company: formData.user_company,
+                                user_name: formData.user_name,
+                                user_phone: formData.user_phone || '',
+                                user_email: formData.user_email,
+                                plan_type: formData.plan_type,
+                                billing_cycle: formData.billing_cycle,
+                            }),
                         });
-                        var result = await response.json();
+                        var subResult = await subResponse.json();
 
-                        if (response.ok && result.success) {
-                            showToast('订单创建成功！正在跳转到支付页面...', 'success');
-                            setTimeout(function() {
-                                window.location.href = '/order.html?id=' + result.order_id;
-                            }, 1000);
-                        } else {
-                            var errMsg = result.detail || result.message || '创建订单失败';
+                        if (!subResponse.ok || !subResult.success) {
+                            var errMsg = subResult.detail || subResult.message || '创建订阅失败';
                             showToast(errMsg, 'error');
+                            submitBtn.disabled = false;
+                            submitBtn.textContent = originalText;
+                            return;
                         }
+
+                        var subscriptionId = subResult.data.subscription_id;
+                        var amount = parseFloat(formData.price);
+                        var paymentMethod = formData.payment_method || 'alipay';
+
+                        // 2. 发起支付
+                        var payEndpoint = paymentMethod === 'alipay'
+                            ? '/api/v2/payment/alipay/precreate'
+                            : '/api/v2/payment/wechat/native';
+
+                        var payResponse = await fetch(payEndpoint, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ subscription_id: subscriptionId }),
+                        });
+                        var payResult = await payResponse.json();
+
+                        if (!payResponse.ok || !payResult.success) {
+                            var payErr = payResult.detail || payResult.message || '创建支付失败';
+                            showToast(payErr, 'error');
+                            submitBtn.disabled = false;
+                            submitBtn.textContent = originalText;
+                            return;
+                        }
+
+                        // 3. 打开支付弹窗，展示二维码
+                        openPaymentModal(
+                            subscriptionId,
+                            payResult.transaction_id,
+                            payResult.qr_code,
+                            amount,
+                            paymentMethod
+                        );
+
                     } catch (err) {
-                        showToast(window.getToastMessage('error_network'), 'error');
+                        showToast(lang === 'ko-KR' ? '네트워크 오류' : '网络错误，请重试', 'error');
                     } finally {
                         submitBtn.disabled = false;
                         submitBtn.textContent = originalText;
                     }
                 });
             }
+
+            // 点击遮罩关闭
+            document.getElementById('orderModal').addEventListener('click', function(e) {
+                if (e.target === this) closeOrderModal();
+            });
+            document.getElementById('paymentModal').addEventListener('click', function(e) {
+                if (e.target === this) closePaymentModal();
+            });
+
+            // 初始化渲染
+            renderPricing();
         });
+
+        // ── 语言切换后重渲染 ──
+        (function() {
+            var origApply = window.applyTranslations;
+            window.applyTranslations = function() {
+                if (origApply) origApply();
+                renderPricing();
+            };
+        })();
     </script>
 </body>
 </html>
-logout
-logout
-logout
-logout

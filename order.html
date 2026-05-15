@@ -184,10 +184,11 @@
 
                             <!-- 支付宝 -->
                             <div class="payment-panel active" data-panel="alipay">
-                                <div class="qr-placeholder">
+                                <div class="qr-placeholder" id="alipayQrArea">
+                                    <img id="alipayQrImg" src="" alt="支付宝收款二维码" style="width:200px;height:200px;object-fit:contain;display:none;margin:0 auto;">
                                     <i class="bi bi-alipay"></i>
                                     <span data-lang-key="payment_qr_placeholder">支付宝收款二维码</span>
-                                    <span style="font-size:12px;color:var(--text-muted)" data-lang-key="payment_qr_note">（实际部署时替换为真实二维码）</span>
+                                    <span style="font-size:12px;color:var(--text-muted)" data-lang-key="payment_qr_note">加载支付二维码...</span>
                                 </div>
                                 <p style="text-align:center;color:var(--text-secondary);font-size:14px;" data-lang-key="payment_alipay_hint">打开支付宝扫一扫完成支付</p>
                             </div>
@@ -195,9 +196,10 @@
                             <!-- 微信支付 -->
                             <div class="payment-panel" data-panel="wechat">
                                 <div class="qr-placeholder">
+                                    <img id="wechatQrImg" src="" alt="微信支付收款二维码" style="width:200px;height:200px;object-fit:contain;display:none;margin:0 auto;">
                                     <i class="bi bi-wechat"></i>
                                     <span data-lang-key="payment_qr_placeholder">微信支付收款二维码</span>
-                                    <span style="font-size:12px;color:var(--text-muted)" data-lang-key="payment_qr_note">（实际部署时替换为真实二维码）</span>
+                                    <span style="font-size:12px;color:var(--text-muted)" data-lang-key="payment_qr_note">加载支付二维码...</span>
                                 </div>
                                 <p style="text-align:center;color:var(--text-secondary);font-size:14px;" data-lang-key="payment_wechat_hint">打开微信扫一扫完成支付</p>
                             </div>
@@ -281,7 +283,7 @@
     <footer class="footer">
         <div class="container">
             <div class="footer__bottom">
-                <p class="footer__copyright">© 2026 中韩出海数智港. 保留所有权利.</p>
+                <p class="footer__copyright">© 2026 中韩出海数智港. 保留所有权利. <a href="https://beian.miit.gov.cn" target="_blank" rel="nofollow" style="color:inherit;text-decoration:none;">沪ICP备2026007459号-1</a></p>
             </div>
         </div>
     </footer>
@@ -432,6 +434,19 @@
                 if (response.ok && result.success) {
                     orderData = result.data;
                     renderOrder();
+                    // 获取支付二维码
+                    fetch('/api/v1/payment/alipay/precreate', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({order_id: orderId})
+                    }).then(function(r) { return r.json(); }).then(function(d) {
+                        if (d.success && d.qr_code) {
+                            var img = document.getElementById('alipayQrImg');
+                            if (img) { img.src = d.qr_code; img.style.display = 'block'; }
+                            var note = document.querySelector('[data-lang-key="payment_qr_note"]');
+                            if (note) note.textContent = '扫码完成支付';
+                        }
+                    }).catch(function(e) { console.error('QR获取失败', e); });
                 } else {
                     showError(result.detail || '订单不存在');
                 }
@@ -602,5 +617,3 @@
     </script>
 </body>
 </html>
-logout
-logout
