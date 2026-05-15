@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-lang-zh="韩品优选 — AI驱动的中韩跨境贸易智能平台"
+           data-lang-ko="한품우선 — AI 기반 한중跨境 무역 스마트 플랫폼"
+           data-lang-en="K-Brand Select — AI-Powered China-Korea Cross-Border Trade Platform">
+           go-aiport.com 韩品优选
+    </title>
+    <meta name="description"
+          data-lang-zh="go-aiport.com 韩品优选 — 从韩国到中国，AI帮您精准匹配渠道。出海时光机CFC引擎驱动，AI数字员工执行，让中韩贸易决策从数月缩短至数小时。"
+          data-lang-ko="go-aiport.com 한품우선 — 한국에서 중국까지, AI가 정확한 채널 매칭을 도와드립니다. CFC 엔진과 AI 디지털 직원이 중한 무역 결정을 몇 개월에서 몇 시간으로 단축합니다."
+          data-lang-en="go-aiport.com K-Brand Select — From Korea to China, AI matches the right channels. CFC Engine + AI Digital Employees slash trade decisions from months to hours."
+          content="go-aiport.com 韩品优选 — 从韩国到中国，AI帮您精准匹配渠道。">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="icon" href="favicon.ico">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        navy: { 900: '#0B1120', 800: '#0F172A', 700: '#1E293B' },
+                        gold: { 400: '#F59E0B', 500: '#D97706' },
+                        purple: { 500: '#7C3AED', 400: '#8B5CF6' },
+                        lightbg: '#F8F9FA'
+                    },
+                    fontFamily: {
+                        sans: ['-apple-system', 'BlinkMacSystemFont', '"PingFang SC"', '"Microsoft YaHei"', 'sans-serif']
+                    },
+                    animation: {
+                        'fade-up': 'fadeUp 0.6s ease-out forwards',
+                        'fade-in': 'fadeIn 0.8s ease-out forwards',
+                        'slide-up': 'slideUp 0.5s ease-out forwards',
+                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'float': 'float 6s ease-in-out infinite'
+                    },
+                    keyframes: {
+                        fadeUp: { '0%': { opacity: '0', transform: 'translateY(30px)' }, '100%': { opacity: '1', transform: 'translateY(0)' } },
+                        fadeIn: { '0%': { opacity: '0' }, '100%': { opacity: '1' } },
+                        slideUp: { '0%': { opacity: '0', transform: 'translateY(20px)' }, '100%': { opacity: '1', transform: 'translateY(0)' } },
+                        float: { '0%, 100%': { transform: 'translateY(0)' }, '50%': { transform: 'translateY(-20px)' } }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+            overflow-x: hidden;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+        body.dark { background: #0B1120; color: #F1F5F9; }
+        body.light { background: #F8F9FA; color: #1E293B; }
+
+        /* Hero background grid */
+        .hero-grid { background-image: linear-gradient(rgba(139,92,246,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(139,92,246,0.03) 1px, transparent 1px); background-size: 60px 60px; }
+        .hero-glow { position: absolute; width: 600px; height: 600px; border-radius: 50%; filter: blur(120px); pointer-events: none; }
+        .dark .hero-glow-1 { top: -200px; left: -200px; background: rgba(245,158,11,0.08); }
+        .light .hero-glow-1 { top: -200px; left: -200px; background: rgba(245,158,11,0.12); }
+        .dark .hero-glow-2 { bottom: -300px; right: -200px; background: rgba(139,92,246,0.06); }
+        .light .hero-glow-2 { bottom: -300px; right: -200px; background: rgba(139,92,246,0.10); }
+
+        /* Glass card */
+        .glass-card {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 16px;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            transition: all 0.4s cubic-bezier(0.4,0,0.2,1);
+        }
+        .glass-card:hover { transform: translateY(-4px); border-color: rgba(255,255,255,0.12); box-shadow: 0 20px 60px rgba(0,0,0,0.15); }
+        .light .glass-card { background: rgba(255,255,255,0.8); border-color: rgba(0,0,0,0.06); }
+        .light .glass-card:hover { border-color: rgba(217,119,6,0.2); box-shadow: 0 20px 60px rgba(217,119,6,0.08); }
+
+        /* Stat card */
+        .stat-card {
+            border-radius: 12px;
+            padding: 24px;
+            transition: all 0.3s ease;
+        }
+        .dark .stat-card { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); }
+        .light .stat-card { background: rgba(255,255,255,0.9); border: 1px solid rgba(0,0,0,0.04); box-shadow: 0 2px 8px rgba(0,0,0,0.02); }
+
+        /* Buttons */
+        .btn-primary {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 14px 32px; border-radius: 12px;
+            font-weight: 700; font-size: 16px;
+            background: linear-gradient(135deg, #F59E0B, #8B5CF6);
+            color: white; border: none; cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 12px 40px rgba(245,158,11,0.25); }
+        .btn-primary i { font-size: 18px; }
+
+        .btn-secondary {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 14px 32px; border-radius: 12px;
+            font-weight: 600; font-size: 16px;
+            transition: all 0.3s ease; cursor: pointer;
+            text-decoration: none;
+        }
+        .dark .btn-secondary { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); color: #CBD5E1; }
+        .dark .btn-secondary:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.2); color: white; }
+        .light .btn-secondary { background: rgba(0,0,0,0.03); border: 1px solid rgba(0,0,0,0.08); color: #475569; }
+        .light .btn-secondary:hover { background: rgba(0,0,0,0.05); border-color: rgba(0,0,0,0.15); color: #1E293B; }
+
+        /* Gradient text */
+        .gold-text { background: linear-gradient(135deg, #F59E0B, #D97706); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .purple-text { background: linear-gradient(135deg, #8B5CF6, #7C3AED); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .gold-purple-text { background: linear-gradient(135deg, #F59E0B, #8B5CF6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+
+        /* Nav link */
+        .nav-link { text-decoration: none; font-size: 15px; font-weight: 500; padding: 8px 16px; border-radius: 8px; transition: all 0.2s ease; }
+        .dark .nav-link { color: #94A3B8; }
+        .dark .nav-link:hover { color: white; background: rgba(255,255,255,0.04); }
+        .light .nav-link { color: #64748B; }
+        .light .nav-link:hover { color: #0B1120; background: rgba(0,0,0,0.03); }
+
+        /* Product card */
+        .product-card {
+            border-radius: 20px;
+            overflow: hidden;
+            transition: all 0.4s ease;
+        }
+        .dark .product-card { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); }
+        .dark .product-card:hover { border-color: rgba(245,158,11,0.3); box-shadow: 0 20px 60px rgba(245,158,11,0.06); }
+        .light .product-card { background: white; border: 1px solid rgba(0,0,0,0.04); box-shadow: 0 4px 20px rgba(0,0,0,0.02); }
+        .light .product-card:hover { border-color: rgba(217,119,6,0.2); box-shadow: 0 20px 60px rgba(217,119,6,0.06); }
+
+        /* Step timeline */
+        .step-line { position: absolute; left: 27px; top: 60px; bottom: 0; width: 2px; }
+        .dark .step-line { background: linear-gradient(180deg, rgba(139,92,246,0.4), rgba(245,158,11,0.1)); }
+        .light .step-line { background: linear-gradient(180deg, rgba(139,92,246,0.2), rgba(245,158,11,0.1)); }
+
+        .step-number {
+            min-width: 56px; height: 56px;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 800; font-size: 20px;
+        }
+        .dark .step-number { background: linear-gradient(135deg, rgba(139,92,246,0.15), rgba(245,158,11,0.1)); color: #F59E0B; border: 2px solid rgba(139,92,246,0.2); }
+        .light .step-number { background: linear-gradient(135deg, rgba(139,92,246,0.08), rgba(245,158,11,0.06)); color: #7C3AED; border: 2px solid rgba(139,92,246,0.15); }
+
+        /* Floating animation */
+        .float-anim { animation: float 6s ease-in-out infinite; }
+
+        /* Data bars */
+        .data-bar { height: 4px; border-radius: 2px; background: linear-gradient(90deg, #F59E0B, #8B5CF6); transition: width 1.5s ease-out; }
+
+        /* Partner logos */
+        .partner-logo { height: 32px; opacity: 0.4; filter: grayscale(1); transition: all 0.3s ease; }
+        .partner-logo:hover { opacity: 0.7; filter: grayscale(0); }
+
+        /* Language switches */
+        .lang-btn { padding: 6px 14px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; border: none; transition: all 0.2s ease; background: transparent; }
+        .dark .lang-btn { color: #64748B; }
+        .light .lang-btn { color: #94A3B8; }
+        .lang-btn.active { background: linear-gradient(135deg, rgba(245,158,11,0.2), rgba(139,92,246,0.15)); }
+        .dark .lang-btn.active { color: #F59E0B; }
+        .light .lang-btn.active { color: #7C3AED; }
+
+        /* Theme toggle */
+        .theme-btn { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; cursor: pointer; border: none; font-size: 18px; transition: all 0.2s ease; }
+        .dark .theme-btn { background: rgba(255,255,255,0.04); color: #F59E0B; }
+        .dark .theme-btn:hover { background: rgba(255,255,255,0.08); color: #F59E0B; }
+        .light .theme-btn { background: rgba(0,0,0,0.03); color: #7C3AED; }
+        .light .theme-btn:hover { background: rgba(0,0,0,0.06); color: #7C3AED; }
+
+        /* Footer links */
+        .footer-link { font-size: 14px; text-decoration: none; transition: color 0.2s ease; display: block; padding: 4px 0; }
+        .dark .footer-link { color: #475569; }
+        .dark .footer-link:hover { color: #F59E0B; }
+        .light .footer-link { color: #64748B; }
+        .light .footer-link:hover { color: #7C3AED; }
+
+        /* Tag badges */
+        .tag-badge { font-size: 12px; padding: 4px 12px; border-radius: 12px; font-weight: 500; display: inline-block; }
+
+        /* AI Chat widget offline banner */
+        .ai-offline-banner { display: none; }
+        .ai-offline-banner.show { display: flex; }
+
+        /* Mobile nav */
+        .mobile-menu { display: none; }
+        .mobile-menu.open { display: flex; }
+
+        @media (max-width: 768px) {
+            .hero-title { font-size: 32px !important; line-height: 1.2 !important; }
+            .section-title { font-size: 28px !important; }
+            .desktop-nav { display: none !important; }
+            .mobile-menu-toggle { display: flex !important; }
+            .hero-viz { display: none !important; }
+        }
+        @media (min-width: 769px) {
+            .mobile-menu-toggle { display: none !important; }
+        }
+    </style>
+</head>
+<body class="dark">
+
+<!-- ===== NAV ===== -->
+<nav id="navbar" style="position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    transition: background 0.3s ease, border-bottom 0.3s ease;">
+    <div class="dark:bg-navy-900/85 light:bg-white/85" style="backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255,255,255,0.04);">
+        <div style="max-width: 1280px; margin: 0 auto; padding: 0 24px; display: flex; align-items: center; justify-content: space-between; height: 68px;">
+            <div style="display: flex; align-items: center; gap: 40px;">
+                <a href="/" style="display: flex; align-items: center; gap: 10px; text-decoration: none;">
+                    <span style="background: linear-gradient(135deg, #F59E0B, #8B5CF6); width: 34px; height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 700; color: white;">G</span>
+                    <span style="font-size: 20px; font-weight: 800; letter-spacing: -0.5px;">
+                        <span class="gold-text">go</span><span style="">-aiport</span>
+                    </span>
+                </a>
+                <div class="desktop-nav" style="display: flex; gap: 4px;">
+                    <a href="#products" class="nav-link" data-lang-zh="精选韩品" data-lang-ko="한국 상품" data-lang-en="K-Products">精选韩品</a>
+                    <a href="#capabilities" class="nav-link" data-lang-zh="AI能力" data-lang-ko="AI 역량" data-lang-en="AI Capabilities">AI能力</a>
+                    <a href="#process" class="nav-link" data-lang-zh="合作流程" data-lang-ko="협업 프로세스" data-lang-en="Process">合作流程</a>
+                    <a href="#insights" class="nav-link" data-lang-zh="数据洞察" data-lang-ko="데이터 인사이트" data-lang-en="Data Insights">数据洞察</a>
+                </div>
+            </div>
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <!-- Lang switches -->
+                <div style="display: flex; background: transparent; border-radius: 8px; padding: 2px; gap: 2px;">
+                    <button class="lang-btn active" onclick="switchLang('zh')" data-lang-code="zh">中文</button>
+                    <button class="lang-btn" onclick="switchLang('ko')" data-lang-code="ko">한국어</button>
+                    <button class="lang-btn" onclick="switchLang('en')" data-lang-code="en">English</button>
+                </div>
+                <!-- Theme toggle -->
+                <button class="theme-btn" onclick="toggleTheme()" id="themeToggle" aria-label="切换主题">
+                    <i class="bi bi-moon-fill" id="themeIcon"></i>
+                </button>
+                <!-- Mobile menu toggle -->
+                <button class="mobile-menu-toggle" onclick="toggleMobileMenu()" style="background: transparent; border: none; font-size: 24px; cursor: pointer; padding: 8px;">
+                    <i class="bi bi-list" style="color: #94A3B8;"></i>
+                </button>
+            </div>
+        </div>
+        <!-- Mobile nav -->
+        <div class="mobile-menu" id="mobileMenu" style="flex-direction: column; padding: 16px 24px; gap: 8px; border-top: 1px solid rgba(255,255,255,0.04);">
+            <a href="#products" class="nav-link" data-lang-zh="精选韩品" data-lang-ko="한국 상품" data-lang-en="K-Products">精选韩品</a>
+            <a href="#capabilities" class="nav-link" data-lang-zh="AI能力" data-lang-ko="AI 역량" data-lang-en="AI Capabilities">AI能力</a>
+            <a href="#process" class="nav-link" data-lang-zh="合作流程" data-lang-ko="협업 프로세스" data-lang-en="Process">合作流程</a>
+            <a href="#insights" class="nav-link" data-lang-zh="数据洞察" data-lang-ko="데이터 인사이트" data-lang-en="Data Insights">数据洞察</a>
+        </div>
+    </div>
+</nav>
+
+<!-- ===== HERO ===== -->
+<section style="min-height: 100vh; display: flex; align-items: center; position: relative; overflow: hidden; padding-top: 68px;" class="hero-grid">
+    <div class="hero-glow hero-glow-1"></div>
+    <div class="hero-glow hero-glow-2"></div>
+
+    <div style="max-width: 1280px; margin: 0 auto; padding: 80px 24px; width: 100%; position: relative; z-index: 10;">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center;">
+            <!-- Left: Text -->
+            <div style="animation: fadeUp 0.8s ease-out forwards;">
+                <div style="display: inline-flex; align-items: center; gap: 8px; border-radius: 20px; padding: 6px 16px 6px 6px; margin-bottom: 28px;"
+                     class="dark:bg-purple-500/8 light:bg-purple-500/5"
+                     style="border: 1px solid rgba(139,92,246,0.15);">
+                    <span style="background: linear-gradient(135deg, #F59E0B, #8B5CF6); padding: 2px 10px; border-radius: 14px; font-size: 12px; font-weight: 700; color: white;" data-lang-zh="AI驱动" data-lang-ko="AI 구동" data-lang-en="AI DRIVEN">AI驱动</span>
+                    <span style="font-size: 13px; color: #94A3B8;" data-lang-zh="出海时光机 CFC 引擎驱动" data-lang-ko="CFC 엔진 기반" data-lang-en="CFC Engine Powered">出海时光机 CFC 引擎驱动</span>
+                </div>
+
+                <h1 style="font-size: 52px; font-weight: 800; line-height: 1.1; letter-spacing: -1px; margin-bottom: 24px;" class="hero-title">
+                    <span data-lang-zh="从韩国到中国" data-lang-ko="한국에서 중국까지" data-lang-en="From Korea to China">从韩国到中国</span><br>
+                    <span class="gold-purple-text" data-lang-zh="AI 帮您精准匹配渠道" data-lang-ko="AI가 정확한 채널을 매칭합니다" data-lang-en="AI Matches the Right Channels">AI 帮您精准匹配渠道</span>
+                </h1>
+
+                <p style="font-size: 18px; line-height: 1.7; max-width: 520px; margin-bottom: 36px;"
+                   class="dark:text-slate-400 light:text-slate-600"
+                   data-lang-zh="出海时光机 CFC 引擎 + AI 数字员工军团，将中韩贸易决策周期从 <strong>数月缩短至数小时</strong>。从选品、营销、匹配到成交，全链路 AI 赋能。"
+                   data-lang-ko="CFC 엔진 + AI 디지털 직원 군단이 중한 무역 결정 주기를 <strong>몇 개월에서 몇 시간</strong>으로 단축합니다. 상품 선정, 마케팅, 매칭부터 성사까지 전 과정을 AI가 지원합니다."
+                   data-lang-en="The CFC Engine + AI Digital Employee Legion slashes Korea-China trade decisions from <strong>months to hours</strong>. From product selection to deal closure, AI empowers every step.">
+                    出海时光机 CFC 引擎 + AI 数字员工军团，将中韩贸易决策周期从 <strong style="color: #F1F5F9;">数月缩短至数小时</strong>。从选品、营销、匹配到成交，全链路 AI 赋能。
+                </p>
+
+                <div style="display: flex; gap: 16px; flex-wrap: wrap;">
+                    <a href="#products" class="btn-primary"><i class="bi bi-bag-check"></i> <span data-lang-zh="浏览精选韩品" data-lang-ko="한국 상품 보기" data-lang-en="Browse K-Products">浏览精选韩品</span></a>
+                    <a href="#capabilities" class="btn-secondary"><i class="bi bi-cpu"></i> <span data-lang-zh="了解 AI 能力" data-lang-ko="AI 역량 알아보기" data-lang-en="AI Capabilities">了解 AI 能力</span></a>
+                </div>
+
+                <!-- Trust bar -->
+                <div style="margin-top: 48px; padding-top: 32px; border-top: 1px solid rgba(255,255,255,0.04);">
+                    <div style="display: flex; gap: 32px; flex-wrap: wrap;">
+                        <div><span style="font-size: 28px; font-weight: 800; color: #F59E0B;">20</span><span class="dark:text-slate-500 light:text-slate-400" style="font-size: 14px; margin-left: 4px;" data-lang-zh="国市场数据" data-lang-ko="개국 시장 데이터" data-lang-en="Country Markets">国市场数据</span></div>
+                        <div><span style="font-size: 28px; font-weight: 800; color: #8B5CF6;">110</span><span class="dark:text-slate-500 light:text-slate-400" style="font-size: 14px; margin-left: 4px;" data-lang-zh="AI数字员工" data-lang-ko="AI 디지털 직원" data-lang-en="AI Employees">AI数字员工</span></div>
+                        <div><span style="font-size: 28px; font-weight: 800; color: #F59E0B;">85<span style="font-size: 16px;">%</span></span><span class="dark:text-slate-500 light:text-slate-400" style="font-size: 14px; margin-left: 4px;" data-lang-zh="渠道匹配精准度" data-lang-ko="채널 매칭 정확도" data-lang-en="Match Accuracy">渠道匹配精准度</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right: Data viz panel -->
+            <div class="hero-viz" style="position: relative;">
+                <div class="glass-card" style="padding: 32px;">
+                    <!-- Radar chart sim -->
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px;">
+                        <div>
+                            <div style="font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;" class="dark:text-slate-500 light:text-slate-400" data-lang-zh="CFC匹配分析" data-lang-ko="CFC 매칭 분석" data-lang-en="CFC Match Analysis">CFC匹配分析</div>
+                            <div style="font-size: 24px; font-weight: 700;">
+                                <span data-lang-zh="韩国" data-lang-ko="한국" data-lang-en="Korea">韩国</span> <span style="color: #8B5CF6;">≈</span> <span data-lang-zh="中国" data-lang-ko="중국" data-lang-en="China">中国</span> <span style="color: #F59E0B;">2026</span>
+                            </div>
+                        </div>
+                        <div style="text-align: right;">
+                            <div style="font-size: 28px; font-weight: 800; color: #F59E0B;">70.6<span style="font-size: 16px;">%</span></div>
+                            <div style="font-size: 12px;" class="dark:text-slate-500 light:text-slate-400" data-lang-zh="综合匹配度" data-lang-ko="종합 매칭도" data-lang-en="Match Score">综合匹配度</div>
+                        </div>
+                    </div>
+
+                    <!-- 5-dimension bars -->
+                    <div style="display: grid; gap: 12px;">
+                        <div><div style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 4px;"><span class="dark:text-slate-400 light:text-slate-500" data-lang-zh="数字基建" data-lang-ko="디지털 인프라" data-lang-en="Digital Infra">数字基建</span><span style="color: #F59E0B;">91.4%</span></div><div style="border-radius: 2px; height: 4px;" class="dark:bg-white/5 light:bg-black/5"><div class="data-bar" style="width: 91.4%;"></div></div></div>
+                        <div><div style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 4px;"><span class="dark:text-slate-400 light:text-slate-500" data-lang-zh="物流成熟度" data-lang-ko="물류 성숙도" data-lang-en="Logistics">物流成熟度</span><span style="color: #F59E0B;">84.2%</span></div><div style="border-radius: 2px; height: 4px;" class="dark:bg-white/5 light:bg-black/5"><div class="data-bar" style="width: 84.2%;"></div></div></div>
+                        <div><div style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 4px;"><span class="dark:text-slate-400 light:text-slate-500" data-lang-zh="支付生态" data-lang-ko="결제 생태계" data-lang-en="Payments">支付生态</span><span style="color: #8B5CF6;">81.5%</span></div><div style="border-radius: 2px; height: 4px;" class="dark:bg-white/5 light:bg-black/5"><div class="data-bar" style="width: 81.5%;"></div></div></div>
+                        <div><div style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 4px;"><span class="dark:text-slate-400 light:text-slate-500" data-lang-zh="消费力" data-lang-ko="소비력" data-lang-en="Consumption">消费力</span><span style="color: #8B5CF6;">46.6%</span></div><div style="border-radius: 2px; height: 4px;" class="dark:bg-white/5 light:bg-black/5"><div class="data-bar" style="width: 46.6%;"></div></div></div>
+                        <div><div style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 4px;"><span class="dark:text-slate-400 light:text-slate-500" data-lang-zh="政策风险" data-lang-ko="정책 리스크" data-lang-en="Policy Risk">政策风险</span><span style="color: #F59E0B;">66.9%</span></div><div style="border-radius: 2px; height: 4px;" class="dark:bg-white/5 light:bg-black/5"><div class="data-bar" style="width: 66.9%;"></div></div></div>
+                    </div>
+
+                    <!-- Bottom insight -->
+                    <div style="display: flex; align-items: center; gap: 8px; margin-top: 20px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.04);">
+                        <span style="background: linear-gradient(135deg, #F59E0B, #8B5CF6); font-size: 10px; padding: 2px 8px; border-radius: 4px; color: white; font-weight: 700;" data-lang-zh="洞察" data-lang-ko="인사이트" data-lang-en="INSIGHT">洞察</span>
+                        <span style="font-size: 13px;" class="dark:text-slate-500 light:text-slate-400" data-lang-zh="韩国数字基建评分 91.4%，适合快速部署数字化贸易" data-lang-ko="한국 디지털 인프라 점수 91.4%, 디지털 무역 신속 구축에 적합" data-lang-en="Korea scores 91.4% on digital infra, ideal for fast digital trade deployment.">韩国数字基建评分 91.4%，适合快速部署数字化贸易</span>
+                    </div>
+                </div>
+
+                <!-- Floating badge -->
+                <div style="position: absolute; bottom: -20px; left: -20px; border-radius: 16px; padding: 16px 20px; box-shadow: 0 20px 60px rgba(0,0,0,0.5);" class="float-anim dark:bg-navy-800 light:bg-white" style="border: 1px solid rgba(245,158,11,0.2);">
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <i class="bi bi-robot" style="font-size: 24px; color: #F59E0B;"></i>
+                        <div>
+                            <div style="font-size: 13px; font-weight: 700;" data-lang-zh="AI 数字员工军团" data-lang-ko="AI 디지털 직원 군단" data-lang-en="AI Digital Employee Legion">AI 数字员工军团</div>
+                            <div style="font-size: 12px;" class="dark:text-slate-500 light:text-slate-400" data-lang-zh="4 支特种分队 · 110 人" data-lang-ko="4개 특수 분대 · 110명" data-lang-en="4 Squads · 110 Employees">4 支特种分队 · 110 人</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ===== TRUST BAR ===== -->
+<section style="padding: 40px 24px; border-top: 1px solid rgba(255,255,255,0.03); border-bottom: 1px solid rgba(255,255,255,0.03);">
+    <div style="max-width: 1280px; margin: 0 auto;">
+        <p style="text-align: center; font-size: 13px; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 24px;" class="dark:text-slate-600 light:text-slate-400" data-lang-zh="技术底座" data-lang-ko="기술 기반" data-lang-en="Technology Stack">技术底座</p>
+        <div style="display: flex; justify-content: center; gap: 48px; flex-wrap: wrap; align-items: center;">
+            <span class="dark:text-slate-600 light:text-slate-400" style="font-size: 18px; font-weight: 700; letter-spacing: 1px;" data-lang-zh="出海时光机" data-lang-ko="CFC 엔진" data-lang-en="CFC Engine">出海时光机</span>
+            <span class="dark:text-slate-600 light:text-slate-400" style="font-size: 16px; font-weight: 600;" data-lang-zh="CFC 引擎" data-lang-ko="CFC 엔진" data-lang-en="CFC Engine">CFC 引擎</span>
+            <span class="dark:text-slate-600 light:text-slate-400" style="font-size: 16px; font-weight: 600;" data-lang-zh="AI 数字军团" data-lang-ko="AI 디지털 군단" data-lang-en="AI Legion">AI 数字军团</span>
+            <span class="dark:text-slate-600 light:text-slate-400" style="font-size: 16px; font-weight: 600;" data-lang-zh="20国数据库" data-lang-ko="20개국 DB" data-lang-en="20-Country DB">20国数据库</span>
+            <span class="dark:text-slate-600 light:text-slate-400" style="font-size: 16px; font-weight: 600;" data-lang-zh="蜂巢决策" data-lang-ko="허브 의사결정" data-lang-en="Hive Decision">蜂巢决策</span>
+        </div>
+    </div>
+</section>
+
+<!-- ===== PRODUCTS SHOWCASE ===== -->
+<section id="products" style="padding: 100px 24px;">
+    <div style="max-width: 1280px; margin: 0 auto;">
+        <div style="text-align: center; margin-bottom: 60px;">
+            <h2 class="gold-purple-text" style="font-size: 40px; font-weight: 800; margin-bottom: 16px;" data-lang-zh="精选韩品" data-lang-ko="한국 선별 상품" data-lang-en="Featured K-Products">精选韩品</h2>
+            <p style="font-size: 18px; max-width: 600px; margin: 0 auto;" class="dark:text-slate-500 light:text-slate-400" data-lang-zh="AI 从 20 国市场数据中筛选出的高潜力韩国产品" data-lang-ko="AI가 20개국 시장 데이터에서 선별한 고성장 한국 상품" data-lang-en="High-potential Korean products AI-selected from 20 market databases">AI 从 20 国市场数据中筛选出的高潜力韩国产品</p>
+        </div>
+
+        <div class="product-card" style="display: grid; grid-template-columns: 1fr 1fr; gap: 0;">
+            <!-- Product Image -->
+            <div style="padding: 40px; display: flex; flex-direction: column; justify-content: center; min-height: 360px;"
+                 class="dark:bg-gradient-to-br dark:from-purple-500/5 dark:to-gold-400/5 light:bg-gradient-to-br light:from-purple-500/3 light:to-gold-400/3">
+                <div style="display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap;">
+                    <span class="tag-badge" style="background: rgba(245,158,11,0.1); color: #F59E0B; border: 1px solid rgba(245,158,11,0.2);" data-lang-zh="🔥 新品首发" data-lang-ko="🔥 신규 출시" data-lang-en="🔥 New Launch">🔥 新品首发</span>
+                    <span class="tag-badge" style="background: rgba(139,92,246,0.1); color: #8B5CF6; border: 1px solid rgba(139,92,246,0.2);" data-lang-zh="🇰🇷 韩国原装" data-lang-ko="🇰🇷 한국 정품" data-lang-en="🇰🇷 Made in Korea">🇰🇷 韩国原装</span>
+                    <span class="tag-badge" style="background: rgba(245,158,11,0.06); color: #D97706; border: 1px solid rgba(245,158,11,0.15);" data-lang-zh="6 种口味" data-lang-ko="6종 맛" data-lang-en="6 Flavors">6 种口味</span>
+                </div>
+                <div style="width: 100%; aspect-ratio: 4/3; border-radius: 16px; display: flex; align-items: center; justify-content: center; border: 1px dashed rgba(139,92,246,0.2);"
+                     class="dark:bg-gradient-to-br dark:from-navy-800 dark:to-navy-900 light:bg-gradient-to-br light:from-gray-100 light:to-gray-50">
+                    <div style="text-align: center;">
+                        <i class="bi bi-cup-hot" style="font-size: 48px; color: #F59E0B;"></i>
+                        <p style="color: #475569; font-size: 13px; margin-top: 8px;" data-lang-zh="产品图片" data-lang-ko="제품 이미지" data-lang-en="Product Image">产品图片</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Product Info -->
+            <div style="padding: 40px;">
+                <h3 style="font-size: 24px; font-weight: 700; margin-bottom: 4px;">CAFE MORI 抹茶拿铁</h3>
+                <p style="font-size: 14px;" class="dark:text-slate-500 light:text-slate-400" data-lang-zh="JARDIN 系列 · 6 口味装" data-lang-ko="JARDIN 시리즈 · 6종 세트" data-lang-en="JARDIN Series · 6-Flavor Pack">JARDIN 系列 · 6 口味装</p>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 24px; margin-top: 20px;">
+                    <div class="stat-card"><span style="font-size: 12px;" class="dark:text-slate-500 light:text-slate-400" data-lang-zh="FOB 报价" data-lang-ko="FOB 가격" data-lang-en="FOB Price">FOB 报价</span><p style="font-size: 20px; font-weight: 700; margin-top: 4px;">$3.50<span style="font-size: 14px; font-weight: 400;" class="dark:text-slate-500 light:text-slate-400"> /盒</span></p></div>
+                    <div class="stat-card"><span style="font-size: 12px;" class="dark:text-slate-500 light:text-slate-400" data-lang-zh="最小起订" data-lang-ko="최소 주문량" data-lang-en="MOQ">最小起订</span><p style="font-size: 20px; font-weight: 700; margin-top: 4px;">500<span style="font-size: 14px; font-weight: 400;" class="dark:text-slate-500 light:text-slate-400"> 盒</span></p></div>
+                </div>
+
+                <div style="display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 24px;">
+                    <span class="tag-badge" style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06);" class="dark:text-slate-400 light:text-slate-500">原味</span>
+                    <span class="tag-badge" style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06);" class="dark:text-slate-400 light:text-slate-500">燕麦</span>
+                    <span class="tag-badge" style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06);" class="dark:text-slate-400 light:text-slate-500">榛果</span>
+                    <span class="tag-badge" style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06);" class="dark:text-slate-400 light:text-slate-500">香草</span>
+                    <span class="tag-badge" style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06);" class="dark:text-slate-400 light:text-slate-500">焦糖</span>
+                    <span class="tag-badge" style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06);" class="dark:text-slate-400 light:text-slate-500">巧克力</span>
+                </div>
+
+                <p style="font-size: 14px; line-height: 1.7; margin-bottom: 24px;" class="dark:text-slate-500 light:text-slate-400"
+                   data-lang-zh="首尔精品咖啡品牌 CAFE MORI 出品，甄选济州岛抹茶，6 种口味满足不同消费场景。AI 渠道匹配推荐：便利店、社区团购、精品超市。"
+                   data-lang-ko="서울 프리미엄 커피 브랜드 CAFE MORI, 제주도 말차를 엄선하여 6종 맛으로 다양한 소비场景에 대응. AI 추천 채널: 편의점, 커뮤니티 그룹구매, 프리미엄 마트."
+                   data-lang-en="Seoul's premium coffee brand CAFE MORI, featuring Jeju matcha in 6 flavors. AI recommends: convenience stores, community group-buy, premium supermarkets.">
+                    首尔精品咖啡品牌 CAFE MORI 出品，甄选济州岛抹茶，6 种口味满足不同消费场景。AI 渠道匹配推荐：便利店、社区团购、精品超市。
+                </p>
+
+                <div style="display: flex; gap: 12px;">
+                    <a href="product_matcha_latte.html" class="btn-primary" style="padding: 12px 24px; font-size: 14px;"><i class="bi bi-bag"></i> <span data-lang-zh="查看详情 · 询盘" data-lang-ko="상세보기 · 문의" data-lang-en="Details · Inquiry">查看详情 · 询盘</span></a>
+                    <a href="#" class="btn-secondary" style="padding: 12px 24px; font-size: 14px;" onclick="alert('联系人: 浩然 (WeChat: haoran_kr)'); return false;"><i class="bi bi-chat-dots"></i> <span data-lang-zh="联系韩方代理" data-lang-ko="한국 에이전트 문의" data-lang-en="Contact Korean Agent">联系韩方代理</span></a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ===== AI CAPABILITIES ===== -->
+<section id="capabilities" style="padding: 100px 24px;">
+    <div style="max-width: 1280px; margin: 0 auto;">
+        <div style="text-align: center; margin-bottom: 60px;">
+            <h2 class="gold-purple-text" style="font-size: 40px; font-weight: 800; margin-bottom: 16px;" data-lang-zh="AI 智能能力" data-lang-ko="AI 스마트 역량" data-lang-en="AI Capabilities">AI 智能能力</h2>
+            <p style="font-size: 18px; max-width: 600px; margin: 0 auto;" class="dark:text-slate-500 light:text-slate-400" data-lang-zh="出海时光机内核 + 四支 AI 数字员工特种分队" data-lang-ko="CFC 엔진 + 4개 AI 디지털 직원 특수 분대" data-lang-en="CFC Engine + 4 AI Digital Employee Squads">出海时光机内核 + 四支 AI 数字员工特种分队</p>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;">
+            <!-- Card 1: 获客 -->
+            <div class="glass-card" style="padding: 32px;">
+                <div style="width: 48px; height: 48px; border-radius: 14px; display: flex; align-items: center; justify-content: center; margin-bottom: 20px; background: linear-gradient(135deg, rgba(245,158,11,0.15), rgba(245,158,11,0.05));">
+                    <i class="bi bi-people" style="font-size: 24px; color: #F59E0B;"></i>
+                </div>
+                <h3 style="font-size: 20px; font-weight: 700; margin-bottom: 8px;" data-lang-zh="AI 智能获客" data-lang-ko="AI 스마트 고객 확보" data-lang-en="AI Smart Acquisition">AI 智能获客</h3>
+                <p style="font-size: 14px; line-height: 1.7; margin-bottom: 16px;" class="dark:text-slate-500 light:text-slate-400"
+                   data-lang-zh="自动化挖掘中国渠道商，智能评分排序，精准推送韩企产品资料。"
+                   data-lang-ko="중국 채널 파트너를 자동 발굴하고, 스마트 점수로 정렬하여 한국 기업 제품을 정확히 푸시합니다."
+                   data-lang-en="Automatically discover Chinese channel partners, smart-score them, and push Korean product profiles precisely.">
+                    自动化挖掘中国渠道商，智能评分排序，精准推送韩企产品资料。
+                </p>
+                <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                    <span class="tag-badge" style="background: rgba(245,158,11,0.06); border: 1px solid rgba(245,158,11,0.1); color: #D97706;" data-lang-zh="渠道画像" data-lang-ko="채널 프로파일" data-lang-en="Channel Profile">渠道画像</span>
+                    <span class="tag-badge" style="background: rgba(245,158,11,0.06); border: 1px solid rgba(245,158,11,0.1); color: #D97706;" data-lang-zh="线索评分" data-lang-ko="리드 스코어" data-lang-en="Lead Scoring">线索评分</span>
+                    <span class="tag-badge" style="background: rgba(245,158,11,0.06); border: 1px solid rgba(245,158,11,0.1); color: #D97706;" data-lang-zh="自动跟进" data-lang-ko="자동 후속" data-lang-en="Auto Follow-up">自动跟进</span>
+                </div>
+                <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid rgba(255,255,255,0.04);">
+                    <span style="font-size: 24px; font-weight: 800; color: #F59E0B;">26</span>
+                    <span style="font-size: 13px;" class="dark:text-slate-500 light:text-slate-400" data-lang-zh="人获客分队" data-lang-ko="명 영업 분대" data-lang-en="Member Squad">人获客分队</span>
+                </div>
+            </div>
+
+            <!-- Card 2: 营销 -->
+            <div class="glass-card" style="padding: 32px;">
+                <div style="width: 48px; height: 48px; border-radius: 14px; display: flex; align-items: center; justify-content: center; margin-bottom: 20px; background: linear-gradient(135deg, rgba(139,92,246,0.15), rgba(139,92,246,0.05));">
+                    <i class="bi bi-megaphone" style="font-size: 24px; color: #8B5CF6;"></i>
+                </div>
+                <h3 style="font-size: 20px; font-weight: 700; margin-bottom: 8px;" data-lang-zh="AI 本地化营销" data-lang-ko="AI 로컬라이즈 마케팅" data-lang-en="AI Localization Marketing">AI 本地化营销</h3>
+                <p style="font-size: 14px; line-height: 1.7; margin-bottom: 16px;" class="dark:text-slate-500 light:text-slate-400"
+                   data-lang-zh="一键生成小红书、公众号、抖音等平台的中文营销素材，适配中国消费者偏好。"
+                   data-lang-ko="샤오홍슈, 위챗 공식계정, 틱톡 등 플랫폼에 맞는 중국 마케팅 콘텐츠를 원클릭 생성, 중국 소비자 선호도에 최적화합니다."
+                   data-lang-en="One-click generate Chinese marketing content for Xiaohongshu, WeChat, Douyin and more, tailored to Chinese consumer preferences.">
+                    一键生成小红书、公众号、抖音等平台的中文营销素材，适配中国消费者偏好。
+                </p>
+                <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                    <span class="tag-badge" style="background: rgba(139,92,246,0.06); border: 1px solid rgba(139,92,246,0.1); color: #7C3AED;" data-lang-zh="内容矩阵" data-lang-ko="콘텐츠 매트릭스" data-lang-en="Content Matrix">内容矩阵</span>
+                    <span class="tag-badge" style="background: rgba(139,92,246,0.06); border: 1px solid rgba(139,92,246,0.1); color: #7C3AED;" data-lang-zh="品牌本地化" data-lang-ko="브랜드 로컬라이즈" data-lang-en="Brand Localization">品牌本地化</span>
+                    <span class="tag-badge" style="background: rgba(139,92,246,0.06); border: 1px solid rgba(139,92,246,0.1); color: #7C3AED;" data-lang-zh="SEO/GEO" data-lang-ko="SEO/GEO" data-lang-en="SEO/GEO">SEO/GEO</span>
+                </div>
+                <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid rgba(255,255,255,0.04);">
+                    <span style="font-size: 24px; font-weight: 800; color: #8B5CF6;">30</span>
+                    <span style="font-size: 13px;" class="dark:text-slate-500 light:text-slate-400" data-lang-zh="人营销分队" data-lang-ko="명 마케팅 분대" data-lang-en="Member Squad">人营销分队</span>
+                </div>
+            </div>
+
+            <!-- Card 3: 匹配 -->
+            <div class="glass-card" style="padding: 32px;">
+                <div style="width: 48px; height: 48px; border-radius: 14px; display: flex; align-items: center; justify-content: center; margin-bottom: 20px; background: linear-gradient(135deg, rgba(245,158,11,0.15), rgba(139,92,246,0.05));">
+                    <i class="bi bi-graph-up-arrow" style="font-size: 24px; color: #F59E0B;"></i>
+                </div>
+                <h3 style="font-size: 20px; font-weight: 700; margin-bottom: 8px;" data-lang-zh="AI 精准匹配" data-lang-ko="AI 정밀 매칭" data-lang-en="AI Precision Matching">AI 精准匹配</h3>
+                <p style="font-size: 14px; line-height: 1.7; margin-bottom: 16px;" class="dark:text-slate-500 light:text-slate-400"
+                   data-lang-zh="六维评分算法，从 20 个渠道类型中自动推荐最优中国合作伙伴。"
+                   data-lang-ko="6차원 평가 알고리즘으로 20개 채널 유형 중 최적의 중국 파트너를 자동 추천합니다."
+                   data-lang-en="6-dimension scoring algorithm auto-recommends the best Chinese partners from 20 channel types.">
+                    六维评分算法，从 20 个渠道类型中自动推荐最优中国合作伙伴。
+                </p>
+                <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                    <span class="tag-badge" style="background: rgba(245,158,11,0.06); border: 1px solid rgba(245,158,11,0.1); color: #D97706;" data-lang-zh="品类匹配" data-lang-ko="카테고리 매칭" data-lang-en="Category Match">品类匹配</span>
+                    <span class="tag-badge" style="background: rgba(245,158,11,0.06); border: 1px solid rgba(245,158,11,0.1); color: #D97706;" data-lang-zh="价格带分析" data-lang-ko="가격대 분석" data-lang-en="Price Band Analysis">价格带分析</span>
+                    <span class="tag-badge" style="background: rgba(245,158,11,0.06); border: 1px solid rgba(245,158,11,0.1); color: #D97706;" data-lang-zh="MOQ适配" data-lang-ko="MOQ 최적화" data-lang-en="MOQ Optimization">MOQ适配</span>
+                </div>
+                <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid rgba(255,255,255,0.04);">
+                    <span style="font-size: 24px; font-weight: 800; color: #F59E0B;">20</span>
+                    <span style="font-size: 13px;" class="dark:text-slate-500 light:text-slate-400" data-lang-zh="个中国渠道类型" data-lang-ko="개 중국 채널 유형" data-lang-en="Chinese Channel Types">个中国渠道类型</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ===== PROCESS ===== -->
+<section id="process" style="padding: 100px 24px;">
+    <div style="max-width: 800px; margin: 0 auto;">
+        <div style="text-align: center; margin-bottom: 60px;">
+            <h2 class="gold-purple-text" style="font-size: 40px; font-weight: 800; margin-bottom: 16px;" data-lang-zh="合作流程" data-lang-ko="협업 프로세스" data-lang-en="How It Works">合作流程</h2>
+            <p style="font-size: 18px;" class="dark:text-slate-500 light:text-slate-400" data-lang-zh="从选品到成交，全链路 AI 加速" data-lang-ko="상품 선정부터 성사까지, 전 과정 AI 가속" data-lang-en="From selection to deal, AI accelerates every step.">从选品到成交，全链路 AI 加速</p>
+        </div>
+
+        <div style="position: relative;">
+            <div class="step-line"></div>
+
+            <div style="display: flex; gap: 24px; margin-bottom: 40px; position: relative; animation: slideUp 0.5s ease-out forwards;">
+                <div class="step-number">1</div>
+                <div style="flex: 1; padding-bottom: 24px;">
+                    <h4 style="font-size: 18px; font-weight: 700; margin-bottom: 6px;" data-lang-zh="选品浏览" data-lang-ko="상품 선정" data-lang-en="Product Selection">选品浏览</h4>
+                    <p style="font-size: 14px; line-height: 1.7;" class="dark:text-slate-500 light:text-slate-400"
+                       data-lang-zh="浏览 AI 精选的韩国潜力产品，查看完整品牌故事、规格参数和市场分析报告。"
+                       data-lang-ko="AI가 선별한 한국 유망 상품을 둘러보고, 브랜드 스토리, 스펙, 시장 분석 보고서를 확인하세요."
+                       data-lang-en="Browse AI-curated Korean products with complete brand stories, specs, and market analysis reports.">
+                        浏览 AI 精选的韩国潜力产品，查看完整品牌故事、规格参数和市场分析报告。
+                    </p>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 24px; margin-bottom: 40px; position: relative; animation: slideUp 0.6s ease-out forwards;">
+                <div class="step-number">2</div>
+                <div style="flex: 1; padding-bottom: 24px;">
+                    <h4 style="font-size: 18px; font-weight: 700; margin-bottom: 6px;" data-lang-zh="AI 匹配" data-lang-ko="AI 매칭" data-lang-en="AI Matching">AI 匹配</h4>
+                    <p style="font-size: 14px; line-height: 1.7;" class="dark:text-slate-500 light:text-slate-400"
+                       data-lang-zh="出海时光机 CFC 引擎分析市场匹配度，AI 数字员工自动推荐 Top 10 中国渠道并生成合作建议书。"
+                       data-lang-ko="CFC 엔진이 시장 매칭도를 분석하고, AI 디지털 직원이 Top 10 중국 채널을 추천하며 협업 제안서를 생성합니다."
+                       data-lang-en="The CFC Engine analyzes market fit, AI employees recommend Top 10 Chinese channels and generate partnership proposals.">
+                        出海时光机 CFC 引擎分析市场匹配度，AI 数字员工自动推荐 Top 10 中国渠道并生成合作建议书。
+                    </p>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 24px; margin-bottom: 40px; position: relative; animation: slideUp 0.7s ease-out forwards;">
+                <div class="step-number">3</div>
+                <div style="flex: 1; padding-bottom: 24px;">
+                    <h4 style="font-size: 18px; font-weight: 700; margin-bottom: 6px;" data-lang-zh="对接洽谈" data-lang-ko="미팅 협상" data-lang-en="Meeting & Negotiation">对接洽谈</h4>
+                    <p style="font-size: 14px; line-height: 1.7;" class="dark:text-slate-500 light:text-slate-400"
+                       data-lang-zh="AI 生成中韩双语营销素材，推动首场对接会。韩方合伙人浩然 + 你 + 中国渠道三方线上洽谈。"
+                       data-lang-ko="AI가 중한 이중 언어 마케팅 자료를 생성하고 첫 미팅을 준비합니다. 한국 파트너 하오란 + 귀하 + 중국 채널 3자 온라인 미팅."
+                       data-lang-en="AI generates bilingual (CN/KR) marketing materials for the first meeting. Korean partner Haoran + you + Chinese channel, three-way online.">
+                        AI 生成中韩双语营销素材，推动首场对接会。韩方合伙人浩然 + 你 + 中国渠道三方线上洽谈。
+                    </p>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 24px; position: relative; animation: slideUp 0.8s ease-out forwards;">
+                <div class="step-number">4</div>
+                <div style="flex: 1;">
+                    <h4 style="font-size: 18px; font-weight: 700; margin-bottom: 6px;" data-lang-zh="成交落地" data-lang-ko="계약 성사" data-lang-en="Deal Closure">成交落地</h4>
+                    <p style="font-size: 14px; line-height: 1.7;" class="dark:text-slate-500 light:text-slate-400"
+                       data-lang-zh="贸易公司走货、报关清关、物流配送全链路跟进。AI 追踪交易状态，自动生成复盘报告。"
+                       data-lang-ko="무역 회사 배송, 통관, 물류 전 과정을 추적합니다. AI가 거래 상태를 모니터링하고 리뷰 보고서를 자동 생성합니다."
+                       data-lang-en="Full-chain tracking: shipping, customs clearance, logistics. AI monitors deal status and auto-generates review reports.">
+                        贸易公司走货、报关清关、物流配送全链路跟进。AI 追踪交易状态，自动生成复盘报告。
+                    </p>
+                    <div style="margin-top: 12px; display: flex; gap: 8px;">
+                        <span style="background: linear-gradient(135deg, rgba(245,158,11,0.15), rgba(139,92,246,0.1)); color: #F59E0B; padding: 4px 12px; border-radius: 8px; font-size: 12px; font-weight: 700;" data-lang-zh="30 天目标" data-lang-ko="30일 목표" data-lang-en="30-Day Target">30 天目标</span>
+                        <span style="font-size: 13px; line-height: 24px;" class="dark:text-slate-500 light:text-slate-400" data-lang-zh="抹茶拿铁首单成交" data-lang-ko="말차 라떼 첫 주문 성사" data-lang-en="Matcha Latte first order closed">抹茶拿铁首单成交</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ===== INSIGHTS / DATA ===== -->
+<section id="insights" style="padding: 100px 24px;">
+    <div style="max-width: 1280px; margin: 0 auto;">
+        <div style="text-align: center; margin-bottom: 60px;">
+            <h2 class="gold-purple-text" style="font-size: 40px; font-weight: 800; margin-bottom: 16px;" data-lang-zh="数据洞察" data-lang-ko="데이터 인사이트" data-lang-en="Data Insights">数据洞察</h2>
+            <p style="font-size: 18px;" class="dark:text-slate-500 light:text-slate-400" data-lang-zh="出海时光机引擎实时分析的中韩贸易数据" data-lang-ko="CFC 엔진이 실시간 분석하는 중한 무역 데이터" data-lang-en="Real-time Korea-China trade data analyzed by the CFC Engine">出海时光机引擎实时分析的中韩贸易数据</p>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;">
+            <div class="glass-card" style="padding: 28px; text-align: center;">
+                <i class="bi bi-globe2" style="font-size: 28px; color: #F59E0B; margin-bottom: 12px;"></i>
+                <div style="font-size: 32px; font-weight: 800; color: #F59E0B;">20</div>
+                <div style="font-size: 13px;" class="dark:text-slate-500 light:text-slate-400" data-lang-zh="国市场数据" data-lang-ko="개국 시장 데이터" data-lang-en="Country Markets">国市场数据</div>
+            </div>
+            <div class="glass-card" style="padding: 28px; text-align: center;">
+                <i class="bi bi-robot" style="font-size: 28px; color: #8B5CF6; margin-bottom: 12px;"></i>
+                <div style="font-size: 32px; font-weight: 800; color: #8B5CF6;">110</div>
+                <div style="font-size: 13px;" class="dark:text-slate-500 light:text-slate-400" data-lang-zh="AI 数字员工" data-lang-ko="AI 디지털 직원" data-lang-en="AI Employees">AI 数字员工</div>
+            </div>
+            <div class="glass-card" style="padding: 28px; text-align: center;">
+                <i class="bi bi-diagram-3" style="font-size: 28px; color: #F59E0B; margin-bottom: 12px;"></i>
+                <div style="font-size: 32px; font-weight: 800; color: #F59E0B;">20</div>
+                <div style="font-size: 13px;" class="dark:text-slate-500 light:text-slate-400" data-lang-zh="渠道类型覆盖" data-lang-ko="채널 유형 커버리지" data-lang-en="Channel Types">渠道类型覆盖</div>
+            </div>
+            <div class="glass-card" style="padding: 28px; text-align: center;">
+                <i class="bi bi-check2-circle" style="font-size: 28px; color: #8B5CF6; margin-bottom: 12px;"></i>
+                <div style="font-size: 32px; font-weight: 800; color: #8B5CF6;">85<span style="font-size: 18px;">%</span></div>
+                <div style="font-size: 13px;" class="dark:text-slate-500 light:text-slate-400" data-lang-zh="匹配精准度" data-lang-ko="매칭 정확도" data-lang-en="Match Accuracy">匹配精准度</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ===== CTA ===== -->
+<section style="padding: 100px 24px; position: relative; overflow: hidden;">
+    <div style="position: absolute; inset: 0; background: linear-gradient(135deg, rgba(245,158,11,0.04), rgba(139,92,246,0.04));"></div>
+    <div style="max-width: 640px; margin: 0 auto; text-align: center; position: relative; z-index: 10;">
+        <h2 class="gold-purple-text" style="font-size: 36px; font-weight: 800; margin-bottom: 16px;" data-lang-zh="准备把韩国好产品带到中国？" data-lang-ko="한국 좋은 제품을 중국에 가져올 준비가 되셨나요?" data-lang-en="Ready to bring Korean products to China?">准备把韩国好产品带到中国？</h2>
+        <p style="font-size: 16px; margin-bottom: 32px;" class="dark:text-slate-500 light:text-slate-400"
+           data-lang-zh="AI 数字员工军团 7×24h 待命，从选品到成交全链路赋能。"
+           data-lang-ko="AI 디지털 직원 군단이 7×24시간 대기하며, 상품 선정부터 성사까지 전 과정을 지원합니다."
+           data-lang-en="The AI Digital Employee Legion is on standby 24/7, empowering every step from selection to deal.">
+            AI 数字员工军团 7×24h 待命，从选品到成交全链路赋能。
+        </p>
+        <div style="display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;">
+            <a href="#products" class="btn-primary"><i class="bi bi-bag-check"></i> <span data-lang-zh="浏览精选韩品" data-lang-ko="한국 상품 보기" data-lang-en="Browse K-Products">浏览精选韩品</span></a>
+            <a href="#" class="btn-secondary" onclick="alert('联系人: 浩然 (WeChat: haoran_kr)'); return false;"><i class="bi bi-telegram"></i> <span data-lang-zh="联系合伙人" data-lang-ko="파트너 연락" data-lang-en="Contact Partner">联系合伙人</span></a>
+        </div>
+    </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer style="padding: 60px 24px 40px; border-top: 1px solid rgba(255,255,255,0.03);">
+    <div style="max-width: 1280px; margin: 0 auto;">
+        <div style="display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 40px;">
+            <div>
+                <div style="display: flex; align-items: center; gap: 10px; font-size: 20px; font-weight: 700; margin-bottom: 12px;">
+                    <span style="background: linear-gradient(135deg, #F59E0B, #8B5CF6); width: 28px; height: 28px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 16px; color: white;">G</span>
+                    <span class="gold-text">go</span>-aiport
+                </div>
+                <p style="font-size: 14px; line-height: 1.7; max-width: 300px;" class="dark:text-slate-600 light:text-slate-400"
+                   data-lang-zh="go-aiport.com 是中韩出海数智港旗下的韩品优选平台。专注韩国优质产品引入中国，通过 AI 技术实现精准匹配，助力中韩跨境贸易。"
+                   data-lang-ko="go-aiport.com은 중한 해외진출 디지털 포트의 한국 상품 플랫폼입니다. 한국 우수 제품의 중국 진출을 지원하며, AI 기술로 정밀 매칭을 실현합니다."
+                   data-lang-en="go-aiport.com is the K-Brand Select platform under the China-Korea Digital Port. We focus on bringing quality Korean products to China with AI-powered precision matching.">
+                    go-aiport.com 是中韩出海数智港旗下的韩品优选平台。专注韩国优质产品引入中国，通过 AI 技术实现精准匹配，助力中韩跨境贸易。
+                </p>
+            </div>
+            <div>
+                <h4 style="font-size: 14px; font-weight: 700; margin-bottom: 16px;" data-lang-zh="平台" data-lang-ko="플랫폼" data-lang-en="Platform">平台</h4>
+                <div style="display: flex; flex-direction: column; gap: 4px;">
+                    <a href="#products" class="footer-link" data-lang-zh="精选韩品" data-lang-ko="한국 상품" data-lang-en="K-Products">精选韩品</a>
+                    <a href="#capabilities" class="footer-link" data-lang-zh="AI 能力" data-lang-ko="AI 역량" data-lang-en="AI Capabilities">AI 能力</a>
+                    <a href="#process" class="footer-link" data-lang-zh="合作流程" data-lang-ko="협업 프로세스" data-lang-en="Process">合作流程</a>
+                    <a href="product_matcha_latte.html" class="footer-link" data-lang-zh="抹茶拿铁产品页" data-lang-ko="말차 라떼 제품 페이지" data-lang-en="Matcha Latte Product">抹茶拿铁产品页</a>
+                </div>
+            </div>
+            <div>
+                <h4 style="font-size: 14px; font-weight: 700; margin-bottom: 16px;" data-lang-zh="技术底座" data-lang-ko="기술 기반" data-lang-en="Tech Stack">技术底座</h4>
+                <div style="display: flex; flex-direction: column; gap: 4px;">
+                    <span style="font-size: 14px;" class="dark:text-slate-600 light:text-slate-400" data-lang-zh="出海时光机 CFC 引擎" data-lang-ko="CFC 엔진" data-lang-en="CFC Engine">出海时光机 CFC 引擎</span>
+                    <span style="font-size: 14px;" class="dark:text-slate-600 light:text-slate-400" data-lang-zh="AI 数字员工军团 110 人" data-lang-ko="AI 디지털 직원 군단 110명" data-lang-en="110 AI Digital Employees">AI 数字员工军团 110 人</span>
+                    <span style="font-size: 14px;" class="dark:text-slate-600 light:text-slate-400" data-lang-zh="20 国市场数据库" data-lang-ko="20개국 시장 DB" data-lang-en="20-Country Market DB">20 国市场数据库</span>
+                    <span style="font-size: 14px;" class="dark:text-slate-600 light:text-slate-400" data-lang-zh="蜂巢决策系统" data-lang-ko="허브 의사결정 시스템" data-lang-en="Hive Decision System">蜂巢决策系统</span>
+                </div>
+            </div>
+            <div>
+                <h4 style="font-size: 14px; font-weight: 700; margin-bottom: 16px;" data-lang-zh="联系我们" data-lang-ko="연락처" data-lang-en="Contact">联系我们</h4>
+                <div style="display: flex; flex-direction: column; gap: 4px;">
+                    <div style="display: flex; align-items: center; gap: 8px; font-size: 14px;" class="dark:text-slate-600 light:text-slate-400"><i class="bi bi-wechat" style="color: #F59E0B;"></i> haoran_kr</div>
+                    <span style="font-size: 14px;" class="dark:text-slate-600 light:text-slate-400" data-lang-zh="韩方合伙人: 浩然" data-lang-ko="한국 파트너: 하오란" data-lang-en="Korean Partner: Haoran">韩方合伙人: 浩然</span>
+                    <span style="font-size: 14px;" class="dark:text-slate-600 light:text-slate-400">沪ICP备2026007459号-1</span>
+                </div>
+            </div>
+        </div>
+        <div style="margin-top: 40px; padding-top: 24px; border-top: 1px solid rgba(255,255,255,0.03); text-align: center; font-size: 13px;" class="dark:text-slate-700 light:text-slate-400">
+            <i class="bi bi-cpu"></i> <span data-lang-zh="Powered by 出海时光机 &amp; AI 数字员工军团 · 白泽·中国软银" data-lang-ko="Powered by CFC 엔진 &amp; AI 디지털 직원 군단 · 백택·중국 소프트뱅크" data-lang-en="Powered by CFC Engine &amp; AI Digital Employee Legion · Baize·China SoftBank">Powered by 出海时光机 &amp; AI 数字员工军团 · 白泽·中国软银</span>
+        </div>
+    </div>
+</footer>
+
+<!-- AI Chat Widget indicator -->
+<div id="aiChatStatus" class="ai-offline-banner" style="position: fixed; bottom: 24px; right: 24px; z-index: 1000; flex-direction: column; gap: 8px; align-items: flex-end;"></div>
+
+<script src="tools/ai_chat_widget.js"></script>
+
+<script>
+// ===== LANGUAGE SWITCHING =====
+const langData = {};
+
+function initLangData() {
+    document.querySelectorAll('[data-lang-zh]').forEach(el => {
+        langData[getUniqueKey(el)] = {
+            zh: el.getAttribute('data-lang-zh'),
+            ko: el.getAttribute('data-lang-ko') || el.getAttribute('data-lang-zh'),
+            en: el.getAttribute('data-lang-en') || el.getAttribute('data-lang-zh')
+        };
+    });
+}
+
+function getUniqueKey(el) {
+    // Generate a unique key based on tag + content + position
+    let key = el.tagName + '|';
+    if (el.id) key += '#' + el.id;
+    else if (el.getAttribute('data-lang-zh')) key += el.getAttribute('data-lang-zh').substring(0, 20);
+    else key += el.textContent.substring(0, 20);
+    return key;
+}
+
+function applyLang(lang) {
+    if (!lang || !['zh','ko','en'].includes(lang)) lang = 'zh';
+    
+    document.querySelectorAll('[data-lang-' + lang + ']').forEach(el => {
+        const text = el.getAttribute('data-lang-' + lang);
+        if (text) {
+            // Check if the element has innerHTML (contains <strong> etc.)
+            if (text.includes('<')) {
+                el.innerHTML = text;
+            } else {
+                el.textContent = text;
+            }
+        }
+    });
+
+    // Update lang buttons
+    document.querySelectorAll('.lang-btn').forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.getAttribute('data-lang-code') === lang) {
+            btn.classList.add('active');
+        }
+    });
+
+    localStorage.setItem('preferredLang', lang);
+}
+
+function switchLang(lang) {
+    applyLang(lang);
+}
+
+// ===== THEME SWITCHING =====
+function applyTheme(theme) {
+    const body = document.body;
+    const icon = document.getElementById('themeIcon');
+    
+    if (theme === 'light') {
+        body.classList.remove('dark');
+        body.classList.add('light');
+        if (icon) icon.className = 'bi bi-sun-fill';
+    } else {
+        body.classList.remove('light');
+        body.classList.add('dark');
+        if (icon) icon.className = 'bi bi-moon-fill';
+    }
+    
+    // Update navbar bg
+    const nav = document.querySelector('#navbar > div');
+    if (nav) {
+        if (theme === 'light') {
+            nav.style.background = 'rgba(248,249,250,0.85)';
+            nav.style.borderBottomColor = 'rgba(0,0,0,0.04)';
+        } else {
+            nav.style.background = 'rgba(11,17,32,0.85)';
+            nav.style.borderBottomColor = 'rgba(255,255,255,0.04)';
+        }
+    }
+
+    localStorage.setItem('preferredTheme', theme);
+}
+
+function toggleTheme() {
+    const isDark = document.body.classList.contains('dark') || (!document.body.classList.contains('light') && !document.body.classList.contains('dark'));
+    applyTheme(isDark ? 'light' : 'dark');
+}
+
+// ===== MOBILE MENU =====
+function toggleMobileMenu() {
+    const menu = document.getElementById('mobileMenu');
+    if (menu) {
+        menu.classList.toggle('open');
+        menu.style.display = menu.classList.contains('open') ? 'flex' : 'none';
+    }
+}
+
+// Close mobile menu on nav click
+document.addEventListener('click', function(e) {
+    const menu = document.getElementById('mobileMenu');
+    if (menu && menu.classList.contains('open')) {
+        if (!e.target.closest('#navbar') || e.target.closest('.nav-link')) {
+            menu.classList.remove('open');
+            menu.style.display = 'none';
+        }
+    }
+});
+
+// ===== AI CHAT WIDGET HEALTH CHECK =====
+async function checkAIChatHealth() {
+    const statusEl = document.getElementById('aiChatStatus');
+    if (!statusEl) return;
+
+    try {
+        const resp = await fetch('http://localhost:5198/health', {
+            method: 'GET',
+            signal: AbortSignal.timeout(3000)
+        });
+        if (resp.ok) {
+            statusEl.classList.remove('show');
+            statusEl.style.display = 'none';
+        } else {
+            showOffline(statusEl);
+        }
+    } catch (err) {
+        showOffline(statusEl);
+    }
+}
+
+function showOffline(el) {
+    el.classList.add('show');
+    el.style.display = 'flex';
+    el.innerHTML = `
+        <div style="background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.2); border-radius: 12px; padding: 10px 16px; display: flex; align-items: center; gap: 8px; font-size: 13px; color: #EF4444; backdrop-filter: blur(12px);">
+            <i class="bi bi-exclamation-circle"></i>
+            <span data-lang-zh="AI 客服离线" data-lang-ko="AI 상담사 오프라인" data-lang-en="AI Chat Offline">AI 客服离线</span>
+            <span style="font-size: 11px; opacity: 0.7; cursor: pointer;" onclick="checkAIChatHealth()">⟳</span>
+        </div>
+    `;
+    const currentLang = localStorage.getItem('preferredLang') || 'zh';
+    applyLang(currentLang);
+}
+
+// ===== INIT =====
+document.addEventListener('DOMContentLoaded', function() {
+    // Init lang data
+    initLangData();
+
+    // Restore language preference
+    const savedLang = localStorage.getItem('preferredLang') || 'zh';
+    applyLang(savedLang);
+
+    // Restore theme preference
+    const savedTheme = localStorage.getItem('preferredTheme') || 'dark';
+    applyTheme(savedTheme);
+
+    // Check AI chat health
+    checkAIChatHealth();
+    // Recheck every 30 seconds
+    setInterval(checkAIChatHealth, 30000);
+});
+</script>
+
+</body>
+</html>

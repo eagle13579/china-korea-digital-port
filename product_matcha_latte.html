@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-lang-zh="CAFE MORI 抹茶拿铁（6口味）韩国原装进口 — go-aiport 韩品优选"
+           data-lang-ko="CAFE MORI 말차 라떼 (6종) 한국 직수입 — go-aiport 한품우선"
+           data-lang-en="CAFE MORI Matcha Latte (6 Flavors) Made in Korea — go-aiport K-Brand Select">
+           CAFE MORI 抹茶拿铁（6口味）韩国原装进口 — go-aiport 韩品优选
+    </title>
+    <meta name="description"
+          data-lang-zh="CAFE MORI JARDIN 系列抹茶拿铁，韩国原装进口，济州岛有机抹茶，6种口味可选。FOB报价，MOQ灵活，诚征中国代理。"
+          data-lang-ko="CAFE MORI JARDIN 시리즈 말차 라떼, 한국 직수입, 제주도 유기농 말차, 6가지 맛. FOB 가격, MOQ 유연, 중국 대리점 모집."
+          data-lang-en="CAFE MORI JARDIN Series Matcha Latte, imported from Korea, Jeju organic matcha, 6 flavors available. FOB pricing, flexible MOQ, seeking Chinese distributors."
+          content="CAFE MORI JARDIN 系列抹茶拿铁，韩国原装进口，济州岛有机抹茶，6种口味可选。FOB报价，MOQ灵活，诚征中国代理。">
+    <meta name="keywords" content="抹茶拿铁,韩国抹茶,CAFE MORI,JARDIN,韩国咖啡,韩国进口饮料,韩品代理,韩国食品进口">
+
+    <!-- ===== CSS ===== -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="icon" href="favicon.ico">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        navy: { 900: '#0B1120', 800: '#0F172A', 700: '#1E293B' },
+                        gold: { 400: '#F59E0B', 500: '#D97706' },
+                        purple: { 500: '#7C3AED', 400: '#8B5CF6' },
+                        lightbg: '#F8F9FA'
+                    },
+                    fontFamily: {
+                        sans: ['-apple-system', 'BlinkMacSystemFont', '"PingFang SC"', '"Microsoft YaHei"', 'sans-serif']
+                    },
+                    animation: {
+                        'fade-up': 'fadeUp 0.6s ease-out forwards',
+                        'fade-in': 'fadeIn 0.8s ease-out forwards',
+                        'slide-up': 'slideUp 0.5s ease-out forwards',
+                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'float': 'float 6s ease-in-out infinite'
+                    },
+                    keyframes: {
+                        fadeUp: { '0%': { opacity: '0', transform: 'translateY(30px)' }, '100%': { opacity: '1', transform: 'translateY(0)' } },
+                        fadeIn: { '0%': { opacity: '0' }, '100%': { opacity: '1' } },
+                        slideUp: { '0%': { opacity: '0', transform: 'translateY(20px)' }, '100%': { opacity: '1', transform: 'translateY(0)' } },
+                        float: { '0%, 100%': { transform: 'translateY(0)' }, '50%': { transform: 'translateY(-20px)' } }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+            overflow-x: hidden;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+        body.dark { background: #0B1120; color: #F1F5F9; }
+        body.light { background: #F8F9FA; color: #1E293B; }
+
+        /* Glass card */
+        .glass-card {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 16px;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            transition: all 0.4s cubic-bezier(0.4,0,0.2,1);
+        }
+        .glass-card:hover { transform: translateY(-4px); border-color: rgba(255,255,255,0.12); box-shadow: 0 20px 60px rgba(0,0,0,0.15); }
+        .light .glass-card { background: rgba(255,255,255,0.8); border-color: rgba(0,0,0,0.06); }
+        .light .glass-card:hover { border-color: rgba(217,119,6,0.2); box-shadow: 0 20px 60px rgba(217,119,6,0.08); }
+
+        /* Buttons - gold to purple gradient (matching index_v2) */
+        .btn-primary {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 14px 32px; border-radius: 12px;
+            font-weight: 700; font-size: 16px;
+            background: linear-gradient(135deg, #F59E0B, #8B5CF6);
+            color: white; border: none; cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 12px 40px rgba(245,158,11,0.25); }
+        .btn-primary i { font-size: 18px; }
+
+        .btn-secondary {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 14px 32px; border-radius: 12px;
+            font-weight: 600; font-size: 16px;
+            transition: all 0.3s ease; cursor: pointer;
+            text-decoration: none;
+        }
+        .dark .btn-secondary { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); color: #CBD5E1; }
+        .dark .btn-secondary:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.2); color: white; }
+        .light .btn-secondary { background: rgba(0,0,0,0.03); border: 1px solid rgba(0,0,0,0.08); color: #475569; }
+        .light .btn-secondary:hover { background: rgba(0,0,0,0.05); border-color: rgba(0,0,0,0.15); color: #1E293B; }
+
+        /* Gradient text */
+        .gold-text { background: linear-gradient(135deg, #F59E0B, #D97706); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .purple-text { background: linear-gradient(135deg, #8B5CF6, #7C3AED); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .gold-purple-text { background: linear-gradient(135deg, #F59E0B, #8B5CF6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+
+        /* Nav link */
+        .nav-link { text-decoration: none; font-size: 15px; font-weight: 500; padding: 8px 16px; border-radius: 8px; transition: all 0.2s ease; }
+        .dark .nav-link { color: #94A3B8; }
+        .dark .nav-link:hover { color: white; background: rgba(255,255,255,0.04); }
+        .light .nav-link { color: #64748B; }
+        .light .nav-link:hover { color: #0B1120; background: rgba(0,0,0,0.03); }
+
+        /* Language switches */
+        .lang-btn { padding: 6px 14px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; border: none; transition: all 0.2s ease; background: transparent; }
+        .dark .lang-btn { color: #64748B; }
+        .light .lang-btn { color: #94A3B8; }
+        .lang-btn.active { background: linear-gradient(135deg, rgba(245,158,11,0.2), rgba(139,92,246,0.15)); }
+        .dark .lang-btn.active { color: #F59E0B; }
+        .light .lang-btn.active { color: #7C3AED; }
+
+        /* Theme toggle */
+        .theme-btn { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; cursor: pointer; border: none; font-size: 18px; transition: all 0.2s ease; }
+        .dark .theme-btn { background: rgba(255,255,255,0.04); color: #F59E0B; }
+        .dark .theme-btn:hover { background: rgba(255,255,255,0.08); color: #F59E0B; }
+        .light .theme-btn { background: rgba(0,0,0,0.03); color: #7C3AED; }
+        .light .theme-btn:hover { background: rgba(0,0,0,0.06); color: #7C3AED; }
+
+        /* Product placeholder */
+        .product-placeholder {
+            width: 100%; border-radius: 16px; min-height: 320px;
+            display: flex; align-items: center; justify-content: center;
+            border: 1px dashed rgba(139,92,246,0.3);
+            transition: all 0.3s ease;
+        }
+        .dark .product-placeholder { background: linear-gradient(135deg, #1e1b4b, #0f172a); }
+        .light .product-placeholder { background: linear-gradient(135deg, #e0e7ff, #f1f5f9); border-color: rgba(217,119,6,0.2); }
+
+        /* Flavor tag */
+        .flavor-tag {
+            padding: 10px 18px; border-radius: 12px; font-size: 14px; font-weight: 500;
+            transition: all 0.2s ease; cursor: default;
+        }
+        .dark .flavor-tag { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06); color: #CBD5E1; }
+        .dark .flavor-tag:hover { background: rgba(139,92,246,0.1); border-color: rgba(139,92,246,0.3); }
+        .light .flavor-tag { background: rgba(0,0,0,0.02); border: 1px solid rgba(0,0,0,0.06); color: #475569; }
+        .light .flavor-tag:hover { background: rgba(217,119,6,0.06); border-color: rgba(217,119,6,0.2); }
+
+        /* Form elements */
+        .form-input {
+            width: 100%; padding: 12px 16px; border-radius: 12px;
+            font-size: 15px; transition: all 0.2s ease;
+            outline: none;
+        }
+        .dark .form-input { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); color: #F1F5F9; }
+        .dark .form-input:focus { border-color: rgba(139,92,246,0.4); box-shadow: 0 0 0 3px rgba(139,92,246,0.1); }
+        .dark .form-input::placeholder { color: #64748B; }
+        .light .form-input { background: rgba(0,0,0,0.02); border: 1px solid rgba(0,0,0,0.08); color: #1E293B; }
+        .light .form-input:focus { border-color: rgba(217,119,6,0.3); box-shadow: 0 0 0 3px rgba(217,119,6,0.06); }
+        .light .form-input::placeholder { color: #94A3B8; }
+
+        .form-label {
+            display: block; font-size: 14px; font-weight: 500; margin-bottom: 6px;
+        }
+        .dark .form-label { color: #CBD5E1; }
+        .light .form-label { color: #475569; }
+
+        /* Spec table */
+        .spec-table td { padding: 12px 16px; font-size: 14px; }
+        .dark .spec-table td { border-bottom: 1px solid rgba(255,255,255,0.04); }
+        .light .spec-table td { border-bottom: 1px solid rgba(0,0,0,0.04); }
+        .dark .spec-table tr:last-child td { border-bottom: none; }
+        .light .spec-table tr:last-child td { border-bottom: none; }
+        .spec-label { font-weight: 500; width: 30%; }
+        .dark .spec-label { color: #94A3B8; }
+        .light .spec-label { color: #64748B; }
+
+        /* Hero glow */
+        .hero-bg { position: relative; overflow: hidden; }
+        .dark .hero-bg { background: radial-gradient(ellipse at 30% 0%, rgba(139,92,246,0.06) 0%, transparent 60%), radial-gradient(ellipse at 70% 20%, rgba(245,158,11,0.04) 0%, transparent 50%); }
+        .light .hero-bg { background: radial-gradient(ellipse at 30% 0%, rgba(139,92,246,0.04) 0%, transparent 60%), radial-gradient(ellipse at 70% 20%, rgba(245,158,11,0.03) 0%, transparent 50%); }
+
+        /* Tag badges */
+        .tag-badge { font-size: 12px; padding: 4px 12px; border-radius: 12px; font-weight: 500; display: inline-block; }
+
+        /* Stat card */
+        .stat-card { border-radius: 12px; padding: 20px; transition: all 0.3s ease; }
+        .dark .stat-card { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); }
+        .light .stat-card { background: rgba(255,255,255,0.9); border: 1px solid rgba(0,0,0,0.04); box-shadow: 0 2px 8px rgba(0,0,0,0.02); }
+
+        /* AI Chat widget offline banner */
+        .ai-offline-banner { display: none; }
+        .ai-offline-banner.show { display: flex; }
+
+        /* Mobile menu */
+        .mobile-menu { display: none; }
+        .mobile-menu.open { display: flex; }
+
+        /* Footer links */
+        .footer-link { font-size: 14px; text-decoration: none; transition: color 0.2s ease; display: block; padding: 4px 0; }
+        .dark .footer-link { color: #475569; }
+        .dark .footer-link:hover { color: #F59E0B; }
+        .light .footer-link { color: #64748B; }
+        .light .footer-link:hover { color: #7C3AED; }
+
+        @media (max-width: 768px) {
+            .desktop-nav { display: none !important; }
+            .mobile-menu-toggle { display: flex !important; }
+        }
+        @media (min-width: 769px) {
+            .mobile-menu-toggle { display: none !important; }
+        }
+    </style>
+</head>
+<body class="dark">
+
+<!-- ===== NAV ===== -->
+<nav id="navbar" style="position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    transition: background 0.3s ease, border-bottom 0.3s ease;">
+    <div class="dark:bg-navy-900/85 light:bg-white/85" style="backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255,255,255,0.04);">
+        <div style="max-width: 1280px; margin: 0 auto; padding: 0 24px; display: flex; align-items: center; justify-content: space-between; height: 68px;">
+            <div style="display: flex; align-items: center; gap: 40px;">
+                <a href="/" style="display: flex; align-items: center; gap: 10px; text-decoration: none;">
+                    <span style="background: linear-gradient(135deg, #F59E0B, #8B5CF6); width: 34px; height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 700; color: white;">G</span>
+                    <span style="font-size: 20px; font-weight: 800; letter-spacing: -0.5px;">
+                        <span class="gold-text">go</span><span style="">-aiport</span>
+                    </span>
+                </a>
+                <div class="desktop-nav" style="display: flex; gap: 4px;">
+                    <a href="index_v2.html" class="nav-link" data-lang-zh="首页" data-lang-ko="홈" data-lang-en="Home">首页</a>
+                    <a href="index_v2.html#products" class="nav-link" data-lang-zh="精选韩品" data-lang-ko="한국 상품" data-lang-en="K-Products">精选韩品</a>
+                    <a href="index_v2.html#contact" class="nav-link" data-lang-zh="联系我们" data-lang-ko="연락하기" data-lang-en="Contact">联系我们</a>
+                </div>
+            </div>
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <!-- Lang switches -->
+                <div style="display: flex; background: transparent; border-radius: 8px; padding: 2px; gap: 2px;">
+                    <button class="lang-btn active" onclick="switchLang('zh')" data-lang-code="zh">中文</button>
+                    <button class="lang-btn" onclick="switchLang('ko')" data-lang-code="ko">한국어</button>
+                    <button class="lang-btn" onclick="switchLang('en')" data-lang-code="en">English</button>
+                </div>
+                <!-- Theme toggle -->
+                <button class="theme-btn" onclick="toggleTheme()" id="themeToggle" aria-label="切换主题">
+                    <i class="bi bi-moon-fill" id="themeIcon"></i>
+                </button>
+                <!-- Mobile menu toggle -->
+                <button class="mobile-menu-toggle" onclick="toggleMobileMenu()" style="background: transparent; border: none; font-size: 24px; cursor: pointer; padding: 8px;">
+                    <i class="bi bi-list" style="color: #94A3B8;"></i>
+                </button>
+            </div>
+        </div>
+        <!-- Mobile nav -->
+        <div class="mobile-menu" id="mobileMenu" style="flex-direction: column; padding: 16px 24px; gap: 8px; border-top: 1px solid rgba(255,255,255,0.04);">
+            <a href="index_v2.html" class="nav-link" data-lang-zh="首页" data-lang-ko="홈" data-lang-en="Home">首页</a>
+            <a href="index_v2.html#products" class="nav-link" data-lang-zh="精选韩品" data-lang-ko="한국 상품" data-lang-en="K-Products">精选韩品</a>
+            <a href="index_v2.html#contact" class="nav-link" data-lang-zh="联系我们" data-lang-ko="연락하기" data-lang-en="Contact">联系我们</a>
+        </div>
+    </div>
+</nav>
+
+<!-- ============================================================ -->
+<!-- HERO / 产品主视觉 -->
+<!-- ============================================================ -->
+<section class="hero-bg" style="padding-top: 120px; padding-bottom: 80px;">
+    <div style="max-width: 1280px; margin: 0 auto; padding: 0 24px;">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center;">
+            <!-- 产品图占位 -->
+            <div>
+                <div class="product-placeholder" style="min-height: 380px; position: relative;">
+                    <div style="text-align: center;">
+                        <i class="bi bi-cup-hot" style="font-size: 64px; color: #F59E0B; opacity: 0.5;"></i>
+                        <p style="color: #64748B; margin-top: 12px; font-size: 14px;" data-lang-zh="📸 产品主图 · CAFE MORI 抹茶拿铁" data-lang-ko="📸 제품 이미지 · CAFE MORI 말차 라떼" data-lang-en="📸 Product Image · CAFE MORI Matcha Latte">📸 产品主图 · CAFE MORI 抹茶拿铁</p>
+                        <p style="color: #475569; font-size: 12px; margin-top: 8px;" data-lang-zh="（建议尺寸：800x600px · 白底产品图）" data-lang-ko="（권장 크기：800x600px · 흰색 배경）" data-lang-en="（Recommended: 800x600px · White background）">（建议尺寸：800x600px · 白底产品图）</p>
+                    </div>
+                    <!-- 标签 -->
+                    <div style="position: absolute; top: 16px; left: 16px; display: flex; gap: 8px;">
+                        <span style="background: linear-gradient(135deg, rgba(245,158,11,0.3), rgba(139,92,246,0.2)); color: white; font-size: 12px; font-weight: 700; padding: 4px 14px; border-radius: 20px; backdrop-filter: blur(4px);" data-lang-zh="韩国原装" data-lang-ko="한국 직수입" data-lang-en="Made in Korea">韩国原装</span>
+                    </div>
+                    <div style="position: absolute; top: 16px; right: 16px;">
+                        <span style="background: #F59E0B; color: white; font-size: 12px; font-weight: 700; padding: 4px 14px; border-radius: 20px;">NEW</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 产品简介 -->
+            <div>
+                <!-- 品牌标签 -->
+                <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px;">
+                    <span class="tag-badge" style="background: rgba(139,92,246,0.1); color: #8B5CF6; border: 1px solid rgba(139,92,246,0.2);">CAFE MORI</span>
+                    <span class="tag-badge" style="background: rgba(245,158,11,0.1); color: #F59E0B; border: 1px solid rgba(245,158,11,0.2);">JARDIN</span>
+                    <span class="tag-badge" style="background: rgba(245,158,11,0.06); color: #D97706; border: 1px solid rgba(245,158,11,0.15);" data-lang-zh="🌿 6口味" data-lang-ko="🌿 6가지 맛" data-lang-en="🌿 6 Flavors">🌿 6口味</span>
+                </div>
+
+                <h1 style="font-size: 36px; font-weight: 800; line-height: 1.2; margin-bottom: 12px; letter-spacing: -0.5px;">
+                    <span class="gold-purple-text" data-lang-zh="CAFE MORI · JARDIN 抹茶拿铁" data-lang-ko="CAFE MORI · JARDIN 말차 라떼" data-lang-en="CAFE MORI · JARDIN Matcha Latte">CAFE MORI · JARDIN 抹茶拿铁</span>
+                </h1>
+                <p style="font-size: 18px; line-height: 1.6; margin-bottom: 8px;" class="dark:text-slate-400 light:text-slate-500"
+                   data-lang-zh="韩国原装进口 · 济州岛有机抹茶 · 6种口味"
+                   data-lang-ko="한국 직수입 · 제주도 유기농 말차 · 6가지 맛"
+                   data-lang-en="Imported from Korea · Jeju Organic Matcha · 6 Flavors">
+                    韩国原装进口 · 济州岛有机抹茶 · 6种口味
+                </p>
+
+                <div style="display: flex; align-items: center; gap: 24px; margin-top: 24px; margin-bottom: 24px;">
+                    <div>
+                        <p style="font-size: 12px;" class="dark:text-slate-500 light:text-slate-400" data-lang-zh="FOB 参考报价" data-lang-ko="FOB 참고 가격" data-lang-en="FOB Reference Price">FOB 参考报价</p>
+                        <p style="font-size: 28px; font-weight: 800; color: #F59E0B;">$3.5 <span style="font-size: 16px; font-weight: 400; color: #94A3B8;" data-lang-zh="/盒" data-lang-ko="/박스" data-lang-en="/box">/盒</span></p>
+                    </div>
+                    <div style="width: 1px; height: 48px; background: rgba(255,255,255,0.08);" class="dark:bg-white/8 light:bg-black/8"></div>
+                    <div>
+                        <p style="font-size: 12px;" class="dark:text-slate-500 light:text-slate-400" data-lang-zh="最小起订量 (MOQ)" data-lang-ko="최소 주문 수량 (MOQ)" data-lang-en="Minimum Order Quantity (MOQ)">最小起订量 (MOQ)</p>
+                        <p style="font-size: 24px; font-weight: 800; color: #8B5CF6;">500 <span style="font-size: 16px; font-weight: 400; color: #94A3B8;" data-lang-zh="盒" data-lang-ko="박스" data-lang-en="boxes">盒</span></p>
+                    </div>
+                </div>
+
+                <div style="display: flex; flex-wrap: wrap; gap: 12px;">
+                    <a href="#inquiry" class="btn-primary" style="font-size: 16px;">
+                        <i class="bi bi-chat-dots"></i>
+                        <span data-lang-zh="我想代理此产品" data-lang-ko="이 제품의 대리점이 되고 싶습니다" data-lang-en="I want to distribute this product">我想代理此产品</span>
+                    </a>
+                    <a href="index_v2.html" class="btn-secondary" style="font-size: 16px;">
+                        <i class="bi bi-arrow-left"></i>
+                        <span data-lang-zh="返回首页" data-lang-ko="홈으로" data-lang-en="Back to Home">返回首页</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- 品牌故事 -->
+<!-- ============================================================ -->
+<section style="padding: 80px 24px;">
+    <div style="max-width: 1280px; margin: 0 auto;">
+        <div style="display: grid; grid-template-columns: 2fr 3fr; gap: 60px; align-items: center;">
+            <!-- 品牌故事左边：图片占位 -->
+            <div>
+                <div class="product-placeholder" style="min-height: 280px;">
+                    <div style="text-align: center;">
+                        <i class="bi bi-image" style="font-size: 48px; color: #64748B;"></i>
+                        <p style="color: #475569; font-size: 14px; margin-top: 12px;" data-lang-zh="品牌故事配图占位" data-lang-ko="브랜드 스토리 이미지" data-lang-en="Brand Story Image">品牌故事配图占位</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 品牌故事右边 -->
+            <div>
+                <h2 style="font-size: 28px; font-weight: 700; margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
+                    <i class="bi bi-bookmark-heart-fill" style="color: #F59E0B;"></i>
+                    <span class="gold-purple-text" data-lang-zh="品牌故事" data-lang-ko="브랜드 스토리" data-lang-en="Brand Story">品牌故事</span>
+                </h2>
+
+                <div style="display: flex; flex-direction: column; gap: 16px; line-height: 1.8;" class="dark:text-slate-300 light:text-slate-600">
+                    <p data-lang-zh="<strong>CAFE MORI</strong> 是源自韩国首尔的精品咖啡品牌，以「每一杯都是匠心」为理念，将韩式咖啡文化融入现代生活。"
+                       data-lang-ko="<strong>CAFE MORI</strong>는 서울에서 탄생한 프리미엄 커피 브랜드로, '모든 잔은 장인의 정성'이라는 철학으로 한국 커피 문화를 현대 생활에 접목시켰습니다."
+                       data-lang-en="<strong>CAFE MORI</strong> is a premium coffee brand from Seoul, South Korea. With the philosophy 'Every cup is craftsmanship,' it brings Korean coffee culture into modern life.">
+                        <strong>CAFE MORI</strong> 是源自韩国首尔的精品咖啡品牌，以「每一杯都是匠心」为理念，将韩式咖啡文化融入现代生活。
+                    </p>
+
+                    <p data-lang-zh="<strong>JARDIN 系列抹茶拿铁</strong> 是 CAFE MORI 的明星产品线。精选韩国济州岛有机抹茶粉，搭配韩国优质乳粉，经过数百次口感调配，最终推出6种口味。每一盒都是韩国原装生产，从首尔工厂直达中国。"
+                       data-lang-ko="<strong>JARDIN 시리즈 말차 라떼</strong>는 CAFE MORI의 대표 제품 라인입니다. 제주도 유기농 말차 가루와 한국산 고품질 분유를 엄선하여 수백 번의 맛 테스트를 거쳐 6가지 맛을 출시했습니다. 모든 박스는 한국에서 생산되어 서울 공장에서 중국으로 직배송됩니다."
+                       data-lang-en="<strong>JARDIN Series Matcha Latte</strong> is CAFE MORI's flagship product line. Using premium organic matcha from Jeju Island and high-quality Korean milk powder, after hundreds of taste tests, 6 flavors were launched. Every box is made in Korea and shipped directly from Seoul to China.">
+                        <strong>JARDIN 系列抹茶拿铁</strong> 是 CAFE MORI 的明星产品线。精选韩国济州岛有机抹茶粉，搭配韩国优质乳粉，经过数百次口感调配，最终推出6种口味。每一盒都是韩国原装生产，从首尔工厂直达中国。
+                    </p>
+
+                    <p data-lang-zh="在韩国本土，JARDIN 抹茶拿铁已入驻 3,000+ 便利店和咖啡店，月销量突破 50,000 盒。现面向中国市场诚征代理。"
+                       data-lang-ko="한국에서는 JARDIN 말차 라떼가 3,000+ 편의점과 커피숍에 입점해 있으며, 월 판매량 50,000박스를 돌파했습니다. 이제 중국 시장에서 대리점을 모집합니다."
+                       data-lang-en="In Korea, JARDIN Matcha Latte is available in 3,000+ convenience stores and cafes, with monthly sales exceeding 50,000 boxes. Now seeking distributors in the Chinese market.">
+                        在韩国本土，JARDIN 抹茶拿铁已入驻 3,000+ 便利店和咖啡店，月销量突破 50,000 盒。现面向中国市场诚征代理。
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- 6种口味展示 -->
+<!-- ============================================================ -->
+<section style="padding: 80px 24px;">
+    <div style="max-width: 1280px; margin: 0 auto;">
+        <h2 style="text-align: center; font-size: 32px; font-weight: 800; margin-bottom: 12px;">
+            <span class="gold-purple-text" data-lang-zh="🎨 6种口味 · 满足不同味蕾" data-lang-ko="🎨 6가지 맛 · 다양한 입맛을 만족시키다" data-lang-en="🎨 6 Flavors · Satisfy Every Palate">🎨 6种口味 · 满足不同味蕾</span>
+        </h2>
+        <p style="text-align: center; font-size: 16px; margin-bottom: 48px;" class="dark:text-slate-500 light:text-slate-400"
+           data-lang-zh="原味 · 燕麦 · 榛果 · 香草 · 焦糖 · 巧克力"
+           data-lang-ko="오리지널 · 오트 · 헤이즐넛 · 바닐라 · 카라멜 · 초콜릿"
+           data-lang-en="Original · Oat · Hazelnut · Vanilla · Caramel · Chocolate">
+            原味 · 燕麦 · 榛果 · 香草 · 焦糖 · 巧克力
+        </p>
+
+        <div style="display: grid; grid-template-columns: repeat(6, 1fr); gap: 16px;">
+            <!-- 原味 -->
+            <div class="glass-card" style="padding: 24px; text-align: center;">
+                <div style="width: 56px; height: 56px; border-radius: 50%; background: linear-gradient(135deg, rgba(245,158,11,0.15), rgba(139,92,246,0.1)); display: flex; align-items: center; justify-content: center; margin: 0 auto 12px;">
+                    <i class="bi bi-cup-straw" style="font-size: 24px; color: #F59E0B;"></i>
+                </div>
+                <p style="font-weight: 700; font-size: 15px;" data-lang-zh="原味" data-lang-ko="오리지널" data-lang-en="Original">原味</p>
+                <p style="font-size: 12px; margin-top: 4px;" class="dark:text-slate-500 light:text-slate-400" data-lang-zh="经典抹茶" data-lang-ko="클래식 말차" data-lang-en="Classic Matcha">经典抹茶</p>
+            </div>
+            <!-- 燕麦 -->
+            <div class="glass-card" style="padding: 24px; text-align: center;">
+                <div style="width: 56px; height: 56px; border-radius: 50%; background: linear-gradient(135deg, rgba(245,158,11,0.15), rgba(139,92,246,0.1)); display: flex; align-items: center; justify-content: center; margin: 0 auto 12px;">
+                    <i class="bi bi-cup-straw" style="font-size: 24px; color: #D97706;"></i>
+                </div>
+                <p style="font-weight: 700; font-size: 15px;" data-lang-zh="燕麦" data-lang-ko="오트" data-lang-en="Oat">燕麦</p>
+                <p style="font-size: 12px; margin-top: 4px;" class="dark:text-slate-500 light:text-slate-400" data-lang-zh="健康谷物" data-lang-ko="건강 곡물" data-lang-en="Healthy Grains">健康谷物</p>
+            </div>
+            <!-- 榛果 -->
+            <div class="glass-card" style="padding: 24px; text-align: center;">
+                <div style="width: 56px; height: 56px; border-radius: 50%; background: linear-gradient(135deg, rgba(245,158,11,0.15), rgba(139,92,246,0.1)); display: flex; align-items: center; justify-content: center; margin: 0 auto 12px;">
+                    <i class="bi bi-cup-straw" style="font-size: 24px; color: #F59E0B;"></i>
+                </div>
+                <p style="font-weight: 700; font-size: 15px;" data-lang-zh="榛果" data-lang-ko="헤이즐넛" data-lang-en="Hazelnut">榛果</p>
+                <p style="font-size: 12px; margin-top: 4px;" class="dark:text-slate-500 light:text-slate-400" data-lang-zh="坚果香气" data-lang-ko="고소한 견과류" data-lang-en="Nutty Aroma">坚果香气</p>
+            </div>
+            <!-- 香草 -->
+            <div class="glass-card" style="padding: 24px; text-align: center;">
+                <div style="width: 56px; height: 56px; border-radius: 50%; background: linear-gradient(135deg, rgba(245,158,11,0.15), rgba(139,92,246,0.1)); display: flex; align-items: center; justify-content: center; margin: 0 auto 12px;">
+                    <i class="bi bi-cup-straw" style="font-size: 24px; color: #8B5CF6;"></i>
+                </div>
+                <p style="font-weight: 700; font-size: 15px;" data-lang-zh="香草" data-lang-ko="바닐라" data-lang-en="Vanilla">香草</p>
+                <p style="font-size: 12px; margin-top: 4px;" class="dark:text-slate-500 light:text-slate-400" data-lang-zh="香甜柔和" data-lang-ko="달콤 부드러움" data-lang-en="Sweet & Smooth">香甜柔和</p>
+            </div>
+            <!-- 焦糖 -->
+            <div class="glass-card" style="padding: 24px; text-align: center;">
+                <div style="width: 56px; height: 56px; border-radius: 50%; background: linear-gradient(135deg, rgba(245,158,11,0.15), rgba(139,92,246,0.1)); display: flex; align-items: center; justify-content: center; margin: 0 auto 12px;">
+                    <i class="bi bi-cup-straw" style="font-size: 24px; color: #D97706;"></i>
+                </div>
+                <p style="font-weight: 700; font-size: 15px;" data-lang-zh="焦糖" data-lang-ko="카라멜" data-lang-en="Caramel">焦糖</p>
+                <p style="font-size: 12px; margin-top: 4px;" class="dark:text-slate-500 light:text-slate-400" data-lang-zh="浓郁醇厚" data-lang-ko="진한 풍미" data-lang-en="Rich & Bold">浓郁醇厚</p>
+            </div>
+            <!-- 巧克力 -->
+            <div class="glass-card" style="padding: 24px; text-align: center;">
+                <div style="width: 56px; height: 56px; border-radius: 50%; background: linear-gradient(135deg, rgba(245,158,11,0.15), rgba(139,92,246,0.1)); display: flex; align-items: center; justify-content: center; margin: 0 auto 12px;">
+                    <i class="bi bi-cup-straw" style="font-size: 24px; color: #8B5CF6;"></i>
+                </div>
+                <p style="font-weight: 700; font-size: 15px;" data-lang-zh="巧克力" data-lang-ko="초콜릿" data-lang-en="Chocolate">巧克力</p>
+                <p style="font-size: 12px; margin-top: 4px;" class="dark:text-slate-500 light:text-slate-400" data-lang-zh="丝滑可可" data-lang-ko="부드러운 코코아" data-lang-en="Silky Cocoa">丝滑可可</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- 规格参数 -->
+<!-- ============================================================ -->
+<section style="padding: 80px 24px;" class="dark:bg-white/[.01] light:bg-black/[.01]">
+    <div style="max-width: 1280px; margin: 0 auto;">
+        <h2 style="text-align: center; font-size: 32px; font-weight: 800; margin-bottom: 48px;">
+            <span class="gold-purple-text" data-lang-zh="📋 产品规格" data-lang-ko="📋 제품 사양" data-lang-en="📋 Product Specifications">📋 产品规格</span>
+        </h2>
+
+        <div style="max-width: 720px; margin: 0 auto;">
+            <div class="glass-card" style="overflow: hidden;">
+                <table style="width: 100%; border-collapse: collapse;">
+                    <tbody>
+                        <tr><td class="spec-label" data-lang-zh="产品名称" data-lang-ko="제품명" data-lang-en="Product Name">产品名称</td><td style="font-weight: 600;" data-lang-zh="CAFE MORI JARDIN 抹茶拿铁" data-lang-ko="CAFE MORI JARDIN 말차 라떼" data-lang-en="CAFE MORI JARDIN Matcha Latte">CAFE MORI JARDIN 抹茶拿铁</td></tr>
+                        <tr><td class="spec-label" data-lang-zh="品牌" data-lang-ko="브랜드" data-lang-en="Brand">品牌</td><td style="font-weight: 600;">CAFE MORI</td></tr>
+                        <tr><td class="spec-label" data-lang-zh="系列" data-lang-ko="시리즈" data-lang-en="Series">系列</td><td style="font-weight: 600;">JARDIN</td></tr>
+                        <tr><td class="spec-label" data-lang-zh="原产地" data-lang-ko="원산지" data-lang-en="Origin">原产地</td><td style="font-weight: 600;" data-lang-zh="韩国（首尔）" data-lang-ko="한국 (서울)" data-lang-en="South Korea (Seoul)">韩国（首尔）</td></tr>
+                        <tr><td class="spec-label" data-lang-zh="口味" data-lang-ko="맛" data-lang-en="Flavors">口味</td><td style="font-weight: 600;" data-lang-zh="原味、燕麦、榛果、香草、焦糖、巧克力（6种）" data-lang-ko="오리지널, 오트, 헤이즐넛, 바닐라, 카라멜, 초콜릿 (6가지)" data-lang-en="Original, Oat, Hazelnut, Vanilla, Caramel, Chocolate (6 flavors)">原味、燕麦、榛果、香草、焦糖、巧克力（6种）</td></tr>
+                        <tr><td class="spec-label" data-lang-zh="净含量" data-lang-ko="순 함량" data-lang-en="Net Weight">净含量</td><td style="font-weight: 600;" data-lang-zh="30g / 盒（含独立小包装 6条 × 5g）" data-lang-ko="30g / 박스 (개별 포장 6조각 × 5g)" data-lang-en="30g / box (6 sticks × 5g each)">30g / 盒（含独立小包装 6条 × 5g）</td></tr>
+                        <tr><td class="spec-label" data-lang-zh="包装规格" data-lang-ko="포장 규격" data-lang-en="Packing">包装规格</td><td style="font-weight: 600;" data-lang-zh="20 盒 / 箱" data-lang-ko="20박스 / 박스" data-lang-en="20 boxes / carton">20 盒 / 箱</td></tr>
+                        <tr><td class="spec-label" data-lang-zh="保质期" data-lang-ko="유통기한" data-lang-en="Shelf Life">保质期</td><td style="font-weight: 600;" data-lang-zh="18 个月" data-lang-ko="18개월" data-lang-en="18 months">18 个月</td></tr>
+                        <tr><td class="spec-label" data-lang-zh="主要成分" data-lang-ko="주요 성분" data-lang-en="Main Ingredients">主要成分</td><td style="font-weight: 600;" data-lang-zh="抹茶粉（济州岛）、乳粉、白砂糖、食用香精" data-lang-ko="말차 가루(제주도), 분유, 백설탕, 식용 향료" data-lang-en="Matcha powder (Jeju), milk powder, sugar, flavoring">抹茶粉（济州岛）、乳粉、白砂糖、食用香精</td></tr>
+                        <tr><td class="spec-label" data-lang-zh="储存方式" data-lang-ko="보관 방법" data-lang-en="Storage">储存方式</td><td style="font-weight: 600;" data-lang-zh="阴凉干燥处，避免阳光直射" data-lang-ko="서늘하고 건조한 곳, 직사광선 차단" data-lang-en="Cool dry place, avoid direct sunlight">阴凉干燥处，避免阳光直射</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- 报价信息 -->
+<!-- ============================================================ -->
+<section style="padding: 80px 24px;">
+    <div style="max-width: 1280px; margin: 0 auto;">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; max-width: 800px; margin: 0 auto;">
+            <!-- FOB报价 -->
+            <div class="glass-card" style="padding: 36px; text-align: center;">
+                <i class="bi bi-currency-dollar" style="font-size: 40px; color: #F59E0B; margin-bottom: 16px; display: block;"></i>
+                <h3 style="font-size: 20px; font-weight: 700; margin-bottom: 12px;" class="gold-purple-text" data-lang-zh="FOB 报价" data-lang-ko="FOB 가격" data-lang-en="FOB Price">FOB 报价</h3>
+                <div style="font-size: 40px; font-weight: 800; color: #F59E0B; margin-bottom: 8px;">$3.50<span style="font-size: 18px; font-weight: 400; color: #94A3B8;" data-lang-zh=" USD/盒" data-lang-ko=" USD/박스" data-lang-en=" USD/box"> USD/盒</span></div>
+                <p style="font-size: 14px;" class="dark:text-slate-500 light:text-slate-400" data-lang-zh="FOB 韩国主要港口（釜山/仁川）" data-lang-ko="FOB 한국 주요 항구 (부산/인천)" data-lang-en="FOB Korea main ports (Busan/Incheon)">FOB 韩国主要港口（釜山/仁川）</p>
+                <p style="font-size: 12px; margin-top: 8px;" class="dark:text-slate-600 light:text-slate-400" data-lang-zh="* 实际价格根据订单量和汇率浮动" data-lang-ko="* 실제 가격은 주문량과 환율에 따라 변동됩니다" data-lang-en="* Actual price varies by order volume and exchange rate">* 实际价格根据订单量和汇率浮动</p>
+            </div>
+
+            <!-- MOQ -->
+            <div class="glass-card" style="padding: 36px; text-align: center;">
+                <i class="bi bi-boxes" style="font-size: 40px; color: #8B5CF6; margin-bottom: 16px; display: block;"></i>
+                <h3 style="font-size: 20px; font-weight: 700; margin-bottom: 12px;" class="gold-purple-text" data-lang-zh="最小起订量 (MOQ)" data-lang-ko="최소 주문 수량 (MOQ)" data-lang-en="Minimum Order Quantity (MOQ)">最小起订量 (MOQ)</h3>
+                <div style="font-size: 40px; font-weight: 800; color: #8B5CF6; margin-bottom: 8px;">500<span style="font-size: 18px; font-weight: 400; color: #94A3B8;" data-lang-zh=" 盒" data-lang-ko=" 박스" data-lang-en=" boxes"> 盒</span></div>
+                <p style="font-size: 14px;" class="dark:text-slate-500 light:text-slate-400" data-lang-zh="首单最低 500 盒（即 25 箱）" data-lang-ko="첫 주문 최소 500박스 (25박스)" data-lang-en="First order minimum 500 boxes (25 cartons)">首单最低 500 盒（即 25 箱）</p>
+                <p style="font-size: 12px; margin-top: 8px;" class="dark:text-slate-600 light:text-slate-400" data-lang-zh="* 复购可降低 MOQ 至 200 盒" data-lang-ko="* 재주문 시 MOQ 200박스로 인하 가능" data-lang-en="* Reorder MOQ can be reduced to 200 boxes">* 复购可降低 MOQ 至 200 盒</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- 进口合规提示 -->
+<!-- ============================================================ -->
+<section style="padding: 80px 24px;" class="dark:bg-white/[.01] light:bg-black/[.01]">
+    <div style="max-width: 1280px; margin: 0 auto;">
+        <div style="max-width: 800px; margin: 0 auto;">
+            <div class="glass-card" style="padding: 36px;">
+                <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 24px;">
+                    <i class="bi bi-shield-check" style="font-size: 28px; color: #F59E0B;"></i>
+                    <h3 style="font-size: 20px; font-weight: 700;" class="gold-purple-text" data-lang-zh="📜 进口合规提示" data-lang-ko="📜 수입 컴플라이언스 안내" data-lang-en="📜 Import Compliance Info">📜 进口合规提示</h3>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+                    <div>
+                        <p style="font-size: 13px; font-weight: 600; margin-bottom: 8px;" class="dark:text-slate-400 light:text-slate-500" data-lang-zh="HS 编码（参考）" data-lang-ko="HS 코드 (참고)" data-lang-en="HS Code (Reference)">HS 编码（参考）</p>
+                        <div style="padding: 16px; border-radius: 12px;" class="dark:bg-white/3 light:bg-black/2">
+                            <p style="font-family: monospace; font-size: 20px; font-weight: 700; color: #F59E0B;">2101.20</p>
+                            <p style="font-size: 12px; margin-top: 4px;" class="dark:text-slate-500 light:text-slate-400" data-lang-zh="茶或马黛茶提取物、精汁及制品" data-lang-ko="차 또는 마테차 추출물, 정액 및 제품" data-lang-en="Extracts, essences and preparations of tea or mate">茶或马黛茶提取物、精汁及制品</p>
+                        </div>
+                    </div>
+                    <div>
+                        <p style="font-size: 13px; font-weight: 600; margin-bottom: 8px;" class="dark:text-slate-400 light:text-slate-500" data-lang-zh="进口税率（参考）" data-lang-ko="수입 관세 (참고)" data-lang-en="Import Tax Rate (Reference)">进口税率（参考）</p>
+                        <div style="padding: 16px; border-radius: 12px; display: flex; flex-direction: column; gap: 8px;" class="dark:bg-white/3 light:bg-black/2">
+                            <div style="display: flex; justify-content: space-between;">
+                                <span class="dark:text-slate-400 light:text-slate-500" data-lang-zh="普通关税" data-lang-ko="기본 관세" data-lang-en="Basic Tariff">普通关税</span>
+                                <span style="font-weight: 600;">15%</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between;">
+                                <span class="dark:text-slate-400 light:text-slate-500" data-lang-zh="增值税" data-lang-ko="부가가치세" data-lang-en="VAT">增值税</span>
+                                <span style="font-weight: 600;">13%</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.04);">
+                                <span class="dark:text-slate-400 light:text-slate-500" data-lang-zh="综合税率（约）" data-lang-ko="종합 세율 (약)" data-lang-en="Combined Rate (approx.)">综合税率（约）</span>
+                                <span style="font-weight: 700; color: #F59E0B;">~29.95%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="margin-top: 20px; padding: 16px; border-radius: 12px; background: rgba(245,158,11,0.04); border: 1px solid rgba(245,158,11,0.12);">
+                    <p style="font-size: 14px; display: flex; align-items: flex-start; gap: 8px; color: #D97706;">
+                        <i class="bi bi-info-circle-fill" style="margin-top: 2px;"></i>
+                        <span data-lang-zh="<strong>温馨提示：</strong>以上信息仅供参考。中韩自贸协定（FTA）项下，符合原产地规则的该产品可享受优惠关税待遇。具体税率以海关实际核定为准。建议联系专业清关代理办理进口手续。"
+                              data-lang-ko="<strong>안내사항：</strong>위 정보는 참고용입니다. 한중 FTA에 따라 원산지 규정을 충족하는 경우 혜택 관세를 적용받을 수 있습니다. 실제 세율은 세관 확인을 기준으로 합니다. 전문 통관 대행업체를 통해 수입 절차를 진행하시기 바랍니다."
+                              data-lang-en="<strong>Note:</strong> The above information is for reference only. Under the China-Korea FTA, products meeting the rules of origin may enjoy preferential tariff treatment. Actual tax rates are subject to customs verification. It is recommended to engage a professional customs broker.">
+                            <strong>温馨提示：</strong>以上信息仅供参考。中韩自贸协定（FTA）项下，符合原产地规则的该产品可享受优惠关税待遇。具体税率以海关实际核定为准。建议联系专业清关代理办理进口手续。
+                        </span>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- 询盘表单 -->
+<!-- ============================================================ -->
+<section id="inquiry" style="padding: 80px 24px;">
+    <div style="max-width: 1280px; margin: 0 auto;">
+        <div style="max-width: 560px; margin: 0 auto;">
+            <h2 style="text-align: center; font-size: 28px; font-weight: 800; margin-bottom: 8px;">
+                <span class="gold-purple-text" data-lang-zh="📩 我想代理此产品" data-lang-ko="📩 이 제품의 대리점이 되고 싶습니다" data-lang-en="📩 I Want to Distribute This Product">📩 我想代理此产品</span>
+            </h2>
+            <p style="text-align: center; font-size: 15px; margin-bottom: 40px;" class="dark:text-slate-500 light:text-slate-400"
+               data-lang-zh="填写以下信息，合伙人浩然将在24小时内联系您"
+               data-lang-ko="아래 정보를 입력하시면, 파트너 하오란이 24시간 내에 연락드립니다"
+               data-lang-en="Fill in the form below, partner Haoran will contact you within 24 hours">
+                填写以下信息，合伙人浩然将在24小时内联系您
+            </p>
+
+            <div class="glass-card" style="padding: 36px;">
+                <form id="inquiryForm" onsubmit="handleSubmit(event)" style="display: flex; flex-direction: column; gap: 20px;">
+                    <!-- 姓名 -->
+                    <div>
+                        <label class="form-label">
+                            <span data-lang-zh="姓名" data-lang-ko="이름" data-lang-en="Name">姓名</span>
+                            <span style="color: #EF4444;">*</span>
+                        </label>
+                        <input type="text" name="name" required class="form-input"
+                               data-lang-zh="placeholder" data-lang-zh-val="您的姓名 / Your Name"
+                               data-lang-ko-val="이름 / Your Name"
+                               data-lang-en-val="Your Name / Your Name"
+                               placeholder="您的姓名 / Your Name">
+                    </div>
+
+                    <!-- 公司 -->
+                    <div>
+                        <label class="form-label">
+                            <span data-lang-zh="公司名称" data-lang-ko="회사명" data-lang-en="Company Name">公司名称</span>
+                            <span style="color: #EF4444;">*</span>
+                        </label>
+                        <input type="text" name="company" required class="form-input"
+                               data-lang-zh="placeholder" data-lang-zh-val="您的公司名称 / Company Name"
+                               data-lang-ko-val="회사명 / Company Name"
+                               data-lang-en-val="Company Name / Company Name"
+                               placeholder="您的公司名称 / Company Name">
+                    </div>
+
+                    <!-- 电话 -->
+                    <div>
+                        <label class="form-label">
+                            <span data-lang-zh="联系电话" data-lang-ko="연락처" data-lang-en="Phone">联系电话</span>
+                            <span style="color: #EF4444;">*</span>
+                        </label>
+                        <input type="tel" name="phone" required class="form-input"
+                               data-lang-zh="placeholder" data-lang-zh-val="手机或座机 / Phone Number"
+                               data-lang-ko-val="휴대폰 또는 유선전화 / Phone Number"
+                               data-lang-en-val="Mobile or Landline / Phone Number"
+                               placeholder="手机或座机 / Phone Number">
+                    </div>
+
+                    <!-- 预计月销量 -->
+                    <div>
+                        <label class="form-label">
+                            <span data-lang-zh="预计月销量（盒）" data-lang-ko="예상 월 판매량 (박스)" data-lang-en="Est. Monthly Sales (boxes)">预计月销量（盒）</span>
+                        </label>
+                        <select name="volume" class="form-input">
+                            <option value="" disabled selected class="dark:text-slate-500 light:text-slate-400"
+                                    data-lang-zh="请选择预计月销量" data-lang-ko="예상 월 판매량을 선택하세요" data-lang-en="Select estimated monthly volume">请选择预计月销量</option>
+                            <option value="500-1000" data-lang-zh="500 - 1,000 盒" data-lang-ko="500 - 1,000 박스" data-lang-en="500 - 1,000 boxes">500 - 1,000 盒</option>
+                            <option value="1000-5000" data-lang-zh="1,000 - 5,000 盒" data-lang-ko="1,000 - 5,000 박스" data-lang-en="1,000 - 5,000 boxes">1,000 - 5,000 盒</option>
+                            <option value="5000-10000" data-lang-zh="5,000 - 10,000 盒" data-lang-ko="5,000 - 10,000 박스" data-lang-en="5,000 - 10,000 boxes">5,000 - 10,000 盒</option>
+                            <option value="10000+" data-lang-zh="10,000+ 盒" data-lang-ko="10,000+ 박스" data-lang-en="10,000+ boxes">10,000+ 盒</option>
+                        </select>
+                    </div>
+
+                    <!-- 备注 -->
+                    <div>
+                        <label class="form-label">
+                            <span data-lang-zh="备注（可选）" data-lang-ko="비고 (선택)" data-lang-en="Notes (Optional)">备注（可选）</span>
+                        </label>
+                        <textarea name="note" rows="3" class="form-input"
+                                  data-lang-zh="placeholder" data-lang-zh-val="其他想了解的信息 / Additional Information"
+                                  data-lang-ko-val="추가 문의사항 / Additional Information"
+                                  data-lang-en-val="Additional Information / Additional Information"
+                                  placeholder="其他想了解的信息 / Additional Information"></textarea>
+                    </div>
+
+                    <button type="submit" class="btn-primary" style="width: 100%; justify-content: center; font-size: 16px; padding: 16px 32px;">
+                        <i class="bi bi-send"></i>
+                        <span data-lang-zh="提交询盘" data-lang-ko="문의 제출" data-lang-en="Submit Inquiry">提交询盘</span>
+                    </button>
+
+                    <p style="font-size: 12px; text-align: center; margin-top: 8px;" class="dark:text-slate-600 light:text-slate-400">
+                        <span data-lang-zh="提交即表示同意" data-lang-ko="제출 시" data-lang-en="By submitting, you agree to">提交即表示同意</span>
+                        <a href="privacy.html" style="color: #8B5CF6; text-decoration: underline;" data-lang-zh="隐私政策" data-lang-ko="개인정보 처리방침" data-lang-en="Privacy Policy">隐私政策</a>
+                    </p>
+                </form>
+
+                <!-- 提交成功提示 -->
+                <div id="successMessage" style="display: none; text-align: center; padding: 32px 0;">
+                    <i class="bi bi-check-circle-fill" style="font-size: 48px; color: #10B981; margin-bottom: 16px; display: block;"></i>
+                    <h3 style="font-size: 22px; font-weight: 700; margin-bottom: 8px;" class="gold-purple-text"
+                        data-lang-zh="提交成功！" data-lang-ko="제출 완료!" data-lang-en="Submitted Successfully!">提交成功！</h3>
+                    <p class="dark:text-slate-400 light:text-slate-500"
+                       data-lang-zh="感谢您的信任，合伙人浩然将尽快与您联系。"
+                       data-lang-ko="귀하의 신뢰에 감사드립니다. 파트너 하오란이 곧 연락드리겠습니다."
+                       data-lang-en="Thank you for your trust. Partner Haoran will contact you soon.">
+                        感谢您的信任，合伙人浩然将尽快与您联系。
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- FOOTER -->
+<!-- ============================================================ -->
+<footer style="padding: 60px 24px 40px; border-top: 1px solid rgba(255,255,255,0.03);">
+    <div style="max-width: 1280px; margin: 0 auto;">
+        <div style="display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 40px;">
+            <div>
+                <div style="display: flex; align-items: center; gap: 10px; font-size: 20px; font-weight: 700; margin-bottom: 12px;">
+                    <span style="background: linear-gradient(135deg, #F59E0B, #8B5CF6); width: 28px; height: 28px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 16px; color: white;">G</span>
+                    <span class="gold-text">go</span>-aiport <span style="font-size: 13px; font-weight: 400; opacity: 0.6;" data-lang-zh="· 韩品优选" data-lang-ko="· 한품우선" data-lang-en="· K-Brand Select">· 韩品优选</span>
+                </div>
+                <p style="font-size: 14px; line-height: 1.7; max-width: 320px;" class="dark:text-slate-600 light:text-slate-400"
+                   data-lang-zh="中韩出海数智港旗下韩品优选平台，专注韩国优质产品引入中国，通过 AI 技术实现精准匹配，助力中韩跨境贸易。"
+                   data-lang-ko="중한 해외진출 디지털 포트의 한국 상품 플랫폼으로, 한국 우수 제품의 중국 진출을 지원하며 AI 기술로 정밀 매칭을 실현합니다."
+                   data-lang-en="The K-Brand Select platform under the China-Korea Digital Port, focused on bringing quality Korean products to China with AI-powered precision matching.">
+                    中韩出海数智港旗下韩品优选平台，专注韩国优质产品引入中国，通过 AI 技术实现精准匹配，助力中韩跨境贸易。
+                </p>
+            </div>
+            <div>
+                <h4 style="font-size: 14px; font-weight: 700; margin-bottom: 16px;" data-lang-zh="链接" data-lang-ko="링크" data-lang-en="Links">链接</h4>
+                <div style="display: flex; flex-direction: column; gap: 4px;">
+                    <a href="index_v2.html" class="footer-link" data-lang-zh="首页" data-lang-ko="홈" data-lang-en="Home">首页</a>
+                    <a href="index_v2.html#products" class="footer-link" data-lang-zh="精选韩品" data-lang-ko="한국 상품" data-lang-en="K-Products">精选韩品</a>
+                    <a href="index_v2.html#process" class="footer-link" data-lang-zh="合作流程" data-lang-ko="협업 프로세스" data-lang-en="Process">合作流程</a>
+                </div>
+            </div>
+            <div>
+                <h4 style="font-size: 14px; font-weight: 700; margin-bottom: 16px;" data-lang-zh="联系方式" data-lang-ko="연락처" data-lang-en="Contact">联系方式</h4>
+                <div style="display: flex; flex-direction: column; gap: 4px;">
+                    <div style="display: flex; align-items: center; gap: 8px; font-size: 14px;" class="dark:text-slate-600 light:text-slate-400"><i class="bi bi-envelope" style="color: #F59E0B;"></i> haoran@go-aiport.com</div>
+                    <div style="display: flex; align-items: center; gap: 8px; font-size: 14px;" class="dark:text-slate-600 light:text-slate-400"><i class="bi bi-wechat" style="color: #8B5CF6;"></i> haoran_kr</div>
+                    <span style="font-size: 13px;" class="dark:text-slate-600 light:text-slate-400" data-lang-zh="工作日 9:00-18:00 · 中韩双语服务" data-lang-ko="업무 시간 9:00-18:00 · 한중 이중 언어 서비스" data-lang-en="Weekdays 9:00-18:00 · Bilingual CN/KR">工作日 9:00-18:00 · 中韩双语服务</span>
+                </div>
+            </div>
+        </div>
+        <div style="margin-top: 40px; padding-top: 24px; border-top: 1px solid rgba(255,255,255,0.03); text-align: center; font-size: 13px;" class="dark:text-slate-700 light:text-slate-400">
+            <span data-lang-zh="© 2026 go-aiport.com · 中韩出海数智港 · All Rights Reserved"
+                  data-lang-ko="© 2026 go-aiport.com · 중한 해외진출 디지털 포트 · All Rights Reserved"
+                  data-lang-en="© 2026 go-aiport.com · China-Korea Digital Port · All Rights Reserved">
+                © 2026 go-aiport.com · 中韩出海数智港 · All Rights Reserved
+            </span>
+        </div>
+    </div>
+</footer>
+
+<!-- AI Chat Widget indicator -->
+<div id="aiChatStatus" class="ai-offline-banner" style="position: fixed; bottom: 24px; right: 24px; z-index: 1000; flex-direction: column; gap: 8px; align-items: flex-end;"></div>
+
+<script src="tools/ai_chat_widget.js"></script>
+
+<script>
+// ===== LANGUAGE SWITCHING =====
+const langData = {};
+
+function initLangData() {
+    document.querySelectorAll('[data-lang-zh]').forEach(el => {
+        langData[getUniqueKey(el)] = {
+            zh: el.getAttribute('data-lang-zh'),
+            ko: el.getAttribute('data-lang-ko') || el.getAttribute('data-lang-zh'),
+            en: el.getAttribute('data-lang-en') || el.getAttribute('data-lang-zh')
+        };
+    });
+}
+
+function getUniqueKey(el) {
+    let key = el.tagName + '|';
+    if (el.id) key += '#' + el.id;
+    else if (el.getAttribute('data-lang-zh')) key += el.getAttribute('data-lang-zh').substring(0, 20);
+    else key += el.textContent.substring(0, 20);
+    return key;
+}
+
+function applyLang(lang) {
+    if (!lang || !['zh','ko','en'].includes(lang)) lang = 'zh';
+
+    // Update data-lang attributes (standard elements)
+    document.querySelectorAll('[data-lang-' + lang + ']').forEach(el => {
+        const text = el.getAttribute('data-lang-' + lang);
+        if (text) {
+            if (text.includes('<')) {
+                el.innerHTML = text;
+            } else {
+                el.textContent = text;
+            }
+        }
+    });
+
+    // Handle input placeholders with data-lang-*-val attributes
+    document.querySelectorAll('input[data-lang-zh-val], textarea[data-lang-zh-val]').forEach(el => {
+        const val = el.getAttribute('data-lang-' + lang + '-val');
+        if (val) {
+            el.setAttribute('placeholder', val);
+        }
+    });
+
+    // Update lang buttons
+    document.querySelectorAll('.lang-btn').forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.getAttribute('data-lang-code') === lang) {
+            btn.classList.add('active');
+        }
+    });
+
+    localStorage.setItem('preferredLang', lang);
+}
+
+function switchLang(lang) {
+    applyLang(lang);
+}
+
+// ===== THEME SWITCHING =====
+function applyTheme(theme) {
+    const body = document.body;
+    const icon = document.getElementById('themeIcon');
+
+    if (theme === 'light') {
+        body.classList.remove('dark');
+        body.classList.add('light');
+        if (icon) icon.className = 'bi bi-sun-fill';
+    } else {
+        body.classList.remove('light');
+        body.classList.add('dark');
+        if (icon) icon.className = 'bi bi-moon-fill';
+    }
+
+    // Update navbar bg
+    const nav = document.querySelector('#navbar > div');
+    if (nav) {
+        if (theme === 'light') {
+            nav.style.background = 'rgba(248,249,250,0.85)';
+            nav.style.borderBottomColor = 'rgba(0,0,0,0.04)';
+        } else {
+            nav.style.background = 'rgba(11,17,32,0.85)';
+            nav.style.borderBottomColor = 'rgba(255,255,255,0.04)';
+        }
+    }
+
+    localStorage.setItem('preferredTheme', theme);
+}
+
+function toggleTheme() {
+    const isDark = document.body.classList.contains('dark') || (!document.body.classList.contains('light') && !document.body.classList.contains('dark'));
+    applyTheme(isDark ? 'light' : 'dark');
+}
+
+// ===== MOBILE MENU =====
+function toggleMobileMenu() {
+    const menu = document.getElementById('mobileMenu');
+    if (menu) {
+        menu.classList.toggle('open');
+        menu.style.display = menu.classList.contains('open') ? 'flex' : 'none';
+    }
+}
+
+// Close mobile menu on nav click
+document.addEventListener('click', function(e) {
+    const menu = document.getElementById('mobileMenu');
+    if (menu && menu.classList.contains('open')) {
+        if (!e.target.closest('#navbar') || e.target.closest('.nav-link')) {
+            menu.classList.remove('open');
+            menu.style.display = 'none';
+        }
+    }
+});
+
+// ===== AI CHAT WIDGET HEALTH CHECK =====
+async function checkAIChatHealth() {
+    const statusEl = document.getElementById('aiChatStatus');
+    if (!statusEl) return;
+
+    try {
+        const resp = await fetch('http://localhost:5198/health', {
+            method: 'GET',
+            signal: AbortSignal.timeout(3000)
+        });
+        if (resp.ok) {
+            statusEl.classList.remove('show');
+            statusEl.style.display = 'none';
+        } else {
+            showOffline(statusEl);
+        }
+    } catch (err) {
+        showOffline(statusEl);
+    }
+}
+
+function showOffline(el) {
+    el.classList.add('show');
+    el.style.display = 'flex';
+    el.innerHTML = `
+        <div style="background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.2); border-radius: 12px; padding: 10px 16px; display: flex; align-items: center; gap: 8px; font-size: 13px; color: #EF4444; backdrop-filter: blur(12px);">
+            <i class="bi bi-exclamation-circle"></i>
+            <span data-lang-zh="AI 客服离线" data-lang-ko="AI 상담사 오프라인" data-lang-en="AI Chat Offline">AI 客服离线</span>
+            <span style="font-size: 11px; opacity: 0.7; cursor: pointer;" onclick="checkAIChatHealth()">⟳</span>
+        </div>
+    `;
+    const currentLang = localStorage.getItem('preferredLang') || 'zh';
+    applyLang(currentLang);
+}
+
+// ===== FORM SUBMIT =====
+function handleSubmit(e) {
+    e.preventDefault();
+    const form = e.target;
+    const data = new FormData(form);
+    const payload = {
+        product: 'CAFE MORI 抹茶拿铁（6口味）',
+        name: data.get('name'),
+        company: data.get('company'),
+        phone: data.get('phone'),
+        volume: data.get('volume'),
+        note: data.get('note'),
+        source: 'product_matcha_latte'
+    };
+    console.log('Inquiry payload:', payload);
+
+    // Simulate submit (replace with real API)
+    // fetch('/api/v1/inquiry', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(payload) })
+
+    // Show success
+    form.style.display = 'none';
+    document.getElementById('successMessage').style.display = 'block';
+
+    // Reset after 5s
+    setTimeout(() => {
+        form.style.display = 'flex';
+        form.style.flexDirection = 'column';
+        form.style.gap = '20px';
+        document.getElementById('successMessage').style.display = 'none';
+        form.reset();
+    }, 5000);
+    return false;
+}
+
+// ===== INIT =====
+document.addEventListener('DOMContentLoaded', function() {
+    // Init lang data
+    initLangData();
+
+    // Restore language preference
+    const savedLang = localStorage.getItem('preferredLang') || 'zh';
+    applyLang(savedLang);
+
+    // Restore theme preference
+    const savedTheme = localStorage.getItem('preferredTheme') || 'dark';
+    applyTheme(savedTheme);
+
+    // Check AI chat health
+    checkAIChatHealth();
+    // Recheck every 30 seconds
+    setInterval(checkAIChatHealth, 30000);
+});
+</script>
+
+</body>
+</html>

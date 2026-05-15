@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>渠道/KOI追踪看板 - 中韩出海数智港</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* ── 渠道看板特有样式 ─────────────────────────── */
+        .dashboard {
+            padding: 140px 0 60px;
+            min-height: 100vh;
+        }
+        .dashboard__header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+        .dashboard__title {
+            font-size: 28px;
+            font-weight: 700;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .dashboard__actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        /* ── 概览卡片 ─────────────────────────────────── */
+        .stats__grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 16px;
+            margin-bottom: 40px;
+        }
+        .stat-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 24px;
+            text-align: center;
+            transition: var(--transition-normal);
+        }
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--glass-shadow);
+        }
+        .stat-card__number {
+            font-size: 32px;
+            font-weight: 700;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .stat-card__label {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-top: 8px;
+        }
+
+        /* ── 表格 ─────────────────────────────────────── */
+        .table-wrapper {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            overflow-x: auto;
+            box-shadow: var(--glass-shadow);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+        thead {
+            background: rgba(139, 92, 246, 0.08);
+        }
+        th {
+            padding: 14px 16px;
+            text-align: left;
+            font-weight: 600;
+            color: var(--text-secondary);
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid var(--glass-border);
+        }
+        td {
+            padding: 14px 16px;
+            border-bottom: 1px solid rgba(255,255,255,0.04);
+            color: var(--text-primary);
+            vertical-align: middle;
+        }
+        tr:last-child td {
+            border-bottom: none;
+        }
+        tr:hover td {
+            background: rgba(139, 92, 246, 0.04);
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .badge--koi {
+            background: rgba(139, 92, 246, 0.2);
+            color: #8B5CF6;
+        }
+        .badge--channel {
+            background: rgba(6, 182, 212, 0.2);
+            color: #06B6D4;
+        }
+        .badge--partner {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10B981;
+        }
+        .badge--active {
+            background: rgba(16, 185, 129, 0.15);
+            color: #10B981;
+        }
+        .badge--inactive {
+            background: rgba(239, 68, 68, 0.15);
+            color: #EF4444;
+        }
+
+        .ref-code {
+            font-family: 'Courier New', monospace;
+            background: rgba(255,255,255,0.06);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 13px;
+            letter-spacing: 0.5px;
+            color: var(--accent-secondary);
+        }
+
+        /* ── 模态框 ───────────────────────────────────── */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.6);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(4px);
+        }
+        .modal-overlay.active {
+            display: flex;
+        }
+        .modal {
+            background: var(--bg-secondary);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 32px;
+            width: 100%;
+            max-width: 520px;
+            box-shadow: 0 24px 64px rgba(0,0,0,0.5);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        .modal__title {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 24px;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .modal__close {
+            float: right;
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 24px;
+            cursor: pointer;
+            padding: 4px;
+            line-height: 1;
+        }
+        .modal__close:hover {
+            color: var(--text-primary);
+        }
+
+        .form__group {
+            margin-bottom: 20px;
+        }
+        .form__label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+        .form__input, .form__select {
+            width: 100%;
+            padding: 10px 14px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--glass-border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 14px;
+            font-family: inherit;
+            transition: var(--transition-fast);
+        }
+        .form__input:focus, .form__select:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 0 3px rgba(139,92,246,0.15);
+        }
+        .form__input::placeholder {
+            color: var(--text-muted);
+        }
+        .form__select {
+            appearance: none;
+            cursor: pointer;
+        }
+        .form__hint {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        .btn--danger {
+            background: linear-gradient(135deg, #EF4444, #DC2626);
+            color: white;
+        }
+        .btn--danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(239,68,68,0.3);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-muted);
+        }
+        .empty-state i {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+        .empty-state p {
+            font-size: 16px;
+        }
+
+        /* ── Toast ────────────────────────────────────── */
+        .toast-container {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            z-index: 3000;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .toast {
+            background: var(--bg-secondary);
+            border: 1px solid var(--glass-border);
+            border-radius: 10px;
+            padding: 14px 20px;
+            box-shadow: var(--glass-shadow);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 280px;
+            animation: toastIn 0.3s ease;
+        }
+        .toast--success { border-left: 4px solid #10B981; }
+        .toast--error { border-left: 4px solid #EF4444; }
+        .toast--info { border-left: 4px solid #06B6D4; }
+        .toast i { font-size: 18px; }
+        .toast--success i { color: #10B981; }
+        .toast--error i { color: #EF4444; }
+        .toast--info i { color: #06B6D4; }
+        @keyframes toastIn {
+            from { opacity: 0; transform: translateX(40px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        /* ── 加载状态 ─────────────────────────────────── */
+        .loading {
+            text-align: center;
+            padding: 60px;
+        }
+        .loading .spinner {
+            width: 36px;
+            height: 36px;
+            border: 3px solid var(--glass-border);
+            border-top: 3px solid var(--accent-primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 12px;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <header class="header">
+        <div class="container">
+            <div class="header__content">
+                <div class="header__logo">
+                    <a href="/" style="text-decoration:none;"><h1 class="logo__text">中韩出海数智港</h1></a>
+                </div>
+                <nav class="header__nav">
+                    <ul class="nav__list">
+                        <li class="nav__item"><a href="/" class="nav__link">首页</a></li>
+                        <li class="nav__item"><a href="/pricing.html" class="nav__link">定价/购买</a></li>
+                        <li class="nav__item"><a href="/channel-dashboard.html" class="nav__link" style="color:var(--accent-primary);">渠道看板</a></li>
+                    </ul>
+                </nav>
+                <div class="header__theme">
+                    <button class="theme-btn" id="themeToggle" aria-label="切换主题">
+                        <i class="bi bi-moon"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- 看板主体 -->
+    <section class="dashboard">
+        <div class="container">
+            <div class="dashboard__header">
+                <h2 class="dashboard__title">
+                    <i class="bi bi-megaphone"></i> 渠道/KOI追踪看板
+                </h2>
+                <div class="dashboard__actions">
+                    <button class="btn btn--primary" onclick="openRegisterModal()">
+                        <i class="bi bi-plus-lg"></i> 注册新渠道
+                    </button>
+                    <button class="btn btn--secondary" onclick="refreshData()">
+                        <i class="bi bi-arrow-clockwise"></i> 刷新
+                    </button>
+                </div>
+            </div>
+
+            <!-- 概览统计 -->
+            <div class="stats__grid" id="statsGrid">
+                <div class="stat-card">
+                    <div class="stat-card__number" id="totalChannels">-</div>
+                    <div class="stat-card__label">总渠道数</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card__number" id="activeChannels">-</div>
+                    <div class="stat-card__label">活跃渠道</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card__number" id="totalTraffic">-</div>
+                    <div class="stat-card__label">总引流数</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card__number" id="totalConversions">-</div>
+                    <div class="stat-card__label">总转化数</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card__number" id="conversionRate">-</div>
+                    <div class="stat-card__label">转化率</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card__number" id="totalCommission">-</div>
+                    <div class="stat-card__label">总佣金(元)</div>
+                </div>
+            </div>
+
+            <!-- 渠道列表表格 -->
+            <div class="table-wrapper">
+                <div id="loadingState" class="loading">
+                    <div class="spinner"></div>
+                    <p style="color:var(--text-secondary);">加载渠道数据中...</p>
+                </div>
+                <div id="tableContent" style="display:none;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>渠道名称</th>
+                                <th>Ref Code</th>
+                                <th>类型</th>
+                                <th>状态</th>
+                                <th>佣金比例</th>
+                                <th>引流数</th>
+                                <th>转化数</th>
+                                <th>订单总额</th>
+                                <th>佣金(元)</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="channelTableBody"></tbody>
+                    </table>
+                    <div id="emptyState" class="empty-state" style="display:none;">
+                        <i class="bi bi-megaphone"></i>
+                        <p>暂无渠道数据，点击"注册新渠道"开始</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 注册模态框 -->
+    <div class="modal-overlay" id="registerModal">
+        <div class="modal">
+            <button class="modal__close" onclick="closeRegisterModal()">&times;</button>
+            <h3 class="modal__title"><i class="bi bi-plus-circle"></i> 注册新渠道/KOI</h3>
+            <form id="registerForm" onsubmit="registerChannel(event)">
+                <div class="form__group">
+                    <label class="form__label">渠道名称 *</label>
+                    <input type="text" class="form__input" name="name" required placeholder="请输入渠道名称或KOI昵称">
+                </div>
+                <div class="form__group">
+                    <label class="form__label">联系方式</label>
+                    <input type="text" class="form__input" name="contact" placeholder="微信号/电话/邮箱">
+                </div>
+                <div class="form__group">
+                    <label class="form__label">类型 *</label>
+                    <select class="form__select" name="type" required>
+                        <option value="">请选择渠道类型</option>
+                        <option value="KOI">KOI (Key Opinion Influencer)</option>
+                        <option value="渠道">渠道 (推广渠道)</option>
+                        <option value="合作方">合作方 (合作伙伴)</option>
+                    </select>
+                </div>
+                <div class="form__group">
+                    <label class="form__label">佣金比例</label>
+                    <input type="number" class="form__input" name="commission_rate" step="0.01" min="0" max="1" value="0.1" placeholder="0~1（如0.1=10%）">
+                    <div class="form__hint">佣金比例（0~1），例如 0.1 表示 10%</div>
+                </div>
+                <div style="display:flex;gap:12px;margin-top:24px;">
+                    <button type="submit" class="btn btn--primary" style="flex:1;">
+                        <i class="bi bi-check-lg"></i> 确认注册
+                    </button>
+                    <button type="button" class="btn btn--secondary" onclick="closeRegisterModal()" style="flex:1;">
+                        取消
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 佣金计算模态框 -->
+    <div class="modal-overlay" id="commissionModal">
+        <div class="modal">
+            <button class="modal__close" onclick="closeCommissionModal()">&times;</button>
+            <h3 class="modal__title"><i class="bi bi-calculator"></i> 计算佣金</h3>
+            <form id="commissionForm" onsubmit="calculateCommission(event)">
+                <div class="form__group">
+                    <label class="form__label">渠道 Ref Code *</label>
+                    <input type="text" class="form__input" name="ref_code" id="commissionRefCode" required placeholder="CH-XXXX" pattern="CH-[A-Z0-9]{4}">
+                </div>
+                <div class="form__group">
+                    <label class="form__label">订单ID *</label>
+                    <input type="number" class="form__input" name="order_id" required placeholder="请输入订单ID">
+                </div>
+                <div class="form__group">
+                    <label class="form__label">订单金额 *</label>
+                    <input type="number" class="form__input" name="order_amount" step="0.01" min="0" required placeholder="请输入订单金额">
+                </div>
+                <div style="display:flex;gap:12px;margin-top:24px;">
+                    <button type="submit" class="btn btn--primary" style="flex:1;">
+                        <i class="bi bi-calculator"></i> 计算
+                    </button>
+                    <button type="button" class="btn btn--secondary" onclick="closeCommissionModal()" style="flex:1;">
+                        关闭
+                    </button>
+                </div>
+            </form>
+            <div id="commissionResult" style="display:none;margin-top:20px;padding:16px;background:var(--bg-tertiary);border-radius:10px;border:1px solid var(--glass-border);">
+                <h4 style="color:var(--accent-secondary);margin-bottom:12px;">计算结果</h4>
+                <div id="commissionResultContent"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast容器 -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script>
+        // ── 主题切换 ─────────────────────────────────────
+        document.addEventListener('DOMContentLoaded', function() {
+            const themeToggle = document.getElementById('themeToggle');
+            const body = document.body;
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'light') body.classList.add('light-mode');
+            if (themeToggle) {
+                themeToggle.addEventListener('click', function() {
+                    body.classList.toggle('light-mode');
+                    localStorage.setItem('theme', body.classList.contains('light-mode') ? 'light' : 'dark');
+                });
+            }
+            loadData();
+        });
+
+        // ── Toast ────────────────────────────────────────
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toastContainer');
+            const icons = { success: 'bi-check-circle-fill', error: 'bi-x-circle-fill', info: 'bi-info-circle-fill' };
+            const toast = document.createElement('div');
+            toast.className = `toast toast--${type}`;
+            toast.innerHTML = `<i class="bi ${icons[type] || icons.info}"></i><span>${message}</span>`;
+            container.appendChild(toast);
+            setTimeout(() => { toast.style.opacity = '0'; toast.style.transition = 'opacity 0.3s'; setTimeout(() => toast.remove(), 300); }, 3000);
+        }
+
+        // ── 加载数据 ─────────────────────────────────────
+        async function loadData() {
+            document.getElementById('loadingState').style.display = 'block';
+            document.getElementById('tableContent').style.display = 'none';
+            try {
+                await Promise.all([loadStats(), loadChannelList()]);
+            } catch (e) {
+                showToast('加载数据失败: ' + e.message, 'error');
+            } finally {
+                document.getElementById('loadingState').style.display = 'none';
+                document.getElementById('tableContent').style.display = 'block';
+            }
+        }
+
+        async function loadStats() {
+            const resp = await fetch('/api/channel/stats');
+            const json = await resp.json();
+            if (!json.success) return;
+            const d = json.data;
+            document.getElementById('totalChannels').textContent = d.total_channels;
+            document.getElementById('activeChannels').textContent = d.active_channels;
+            document.getElementById('totalTraffic').textContent = d.total_traffic;
+            document.getElementById('totalConversions').textContent = d.total_conversions;
+            document.getElementById('conversionRate').textContent = d.conversion_rate + '%';
+            document.getElementById('totalCommission').textContent = d.total_commission.toFixed(2);
+        }
+
+        async function loadChannelList() {
+            const resp = await fetch('/api/channel/list');
+            const json = await resp.json();
+            if (!json.success) return;
+            const tbody = document.getElementById('channelTableBody');
+            const empty = document.getElementById('emptyState');
+            tbody.innerHTML = '';
+
+            if (json.data.length === 0) {
+                empty.style.display = 'block';
+                return;
+            }
+            empty.style.display = 'none';
+
+            const typeLabels = { KOI: 'KOI', '渠道': '渠道', '合作方': '合作方' };
+            const typeBadges = { KOI: 'badge--koi', '渠道': 'badge--channel', '合作方': 'badge--partner' };
+
+            json.data.forEach(ch => {
+                const tr = document.createElement('tr');
+                const statusBadge = ch.status === 'active'
+                    ? '<span class="badge badge--active">活跃</span>'
+                    : '<span class="badge badge--inactive">停用</span>';
+                tr.innerHTML = `
+                    <td><strong>${ch.name}</strong></td>
+                    <td><span class="ref-code">${ch.ref_code}</span></td>
+                    <td><span class="badge ${typeBadges[ch.type] || 'badge--koi'}">${typeLabels[ch.type] || ch.type}</span></td>
+                    <td>${statusBadge}</td>
+                    <td>${(ch.commission_rate * 100).toFixed(1)}%</td>
+                    <td>${ch.traffic_count}</td>
+                    <td>${ch.conversion_count}</td>
+                    <td>${ch.total_order_amount.toFixed(2)}</td>
+                    <td><strong style="color:var(--accent-secondary);">${ch.total_commission.toFixed(2)}</strong></td>
+                    <td>
+                        <button class="btn btn--secondary" style="padding:6px 12px;font-size:12px;" onclick="openCommissionModal('${ch.ref_code}')">
+                            <i class="bi bi-calculator"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function refreshData() { loadData(); }
+
+        // ── 注册模态框 ───────────────────────────────────
+        function openRegisterModal() {
+            document.getElementById('registerModal').classList.add('active');
+            document.getElementById('registerForm').reset();
+        }
+        function closeRegisterModal() {
+            document.getElementById('registerModal').classList.remove('active');
+        }
+
+        async function registerChannel(e) {
+            e.preventDefault();
+            const form = document.getElementById('registerForm');
+            const data = {
+                name: form.name.value.trim(),
+                contact: form.contact.value.trim() || null,
+                type: form.type.value,
+                commission_rate: parseFloat(form.commission_rate.value) || 0,
+            };
+            try {
+                const resp = await fetch('/api/channel/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data),
+                });
+                const json = await resp.json();
+                if (!json.success) throw new Error(json.detail || '注册失败');
+                showToast(`渠道 "${json.data.name}" 注册成功！Ref Code: ${json.data.ref_code}`, 'success');
+                closeRegisterModal();
+                loadData();
+            } catch (e) {
+                showToast('注册失败: ' + e.message, 'error');
+            }
+        }
+
+        // ── 佣金计算模态框 ───────────────────────────────
+        function openCommissionModal(refCode) {
+            if (refCode) {
+                document.getElementById('commissionRefCode').value = refCode;
+            }
+            document.getElementById('commissionModal').classList.add('active');
+            document.getElementById('commissionForm').reset();
+            document.getElementById('commissionResult').style.display = 'none';
+            if (refCode) {
+                document.getElementById('commissionRefCode').value = refCode;
+            }
+        }
+        function closeCommissionModal() {
+            document.getElementById('commissionModal').classList.remove('active');
+        }
+
+        async function calculateCommission(e) {
+            e.preventDefault();
+            const form = document.getElementById('commissionForm');
+            const data = {
+                ref_code: form.ref_code.value.trim().toUpperCase(),
+                order_id: parseInt(form.order_id.value),
+                order_amount: parseFloat(form.order_amount.value),
+            };
+            if (!data.ref_code || !data.order_id || !data.order_amount) {
+                showToast('请完整填写所有字段', 'error');
+                return;
+            }
+            try {
+                const resp = await fetch('/api/channel/commission/calculate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data),
+                });
+                const json = await resp.json();
+                if (!json.success) throw new Error(json.detail || '计算失败');
+                const result = document.getElementById('commissionResult');
+                result.style.display = 'block';
+                const content = document.getElementById('commissionResultContent');
+                const d = json.data;
+                content.innerHTML = `
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                        <div><small style="color:var(--text-muted);">渠道名称</small><br><strong>${d.channel_name}</strong></div>
+                        <div><small style="color:var(--text-muted);">Ref Code</small><br><span class="ref-code">${d.ref_code}</span></div>
+                        <div><small style="color:var(--text-muted);">订单金额</small><br><strong>¥${d.order_amount.toFixed(2)}</strong></div>
+                        <div><small style="color:var(--text-muted);">佣金比例</small><br><strong>${(d.commission_rate * 100).toFixed(1)}%</strong></div>
+                        <div style="grid-column:1/-1;text-align:center;padding-top:12px;border-top:1px solid var(--glass-border);">
+                            <small style="color:var(--text-muted);">佣金金额</small><br>
+                            <span style="font-size:28px;font-weight:700;color:var(--accent-primary);">¥${d.commission_amount.toFixed(2)}</span>
+                        </div>
+                    </div>
+                    ${d.already_recorded ? '<p style="margin-top:12px;color:var(--accent-secondary);"><i class="bi bi-info-circle"></i> 该订单已关联此渠道</p>' : ''}
+                `;
+                showToast('佣金计算完成！', 'success');
+                loadData();
+            } catch (e) {
+                showToast('计算失败: ' + e.message, 'error');
+            }
+        }
+
+        // 点击遮罩关闭模态框
+        document.querySelectorAll('.modal-overlay').forEach(el => {
+            el.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    this.classList.remove('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
