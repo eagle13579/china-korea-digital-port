@@ -9,14 +9,21 @@ from dotenv import load_dotenv
 load_dotenv()
 
 import sys
-sys.path.insert(0, os.path.join("/mnt/d", "向海容的知识库", "wiki", "wiki", "记忆宫殿"))
+# 将项目根目录加入 path（无论 main.py 在何处执行）
+_script_dir = os.path.dirname(os.path.abspath(__file__))
+_project_root = os.path.dirname(_script_dir)
+if _project_root not in sys.path:
+    sys.path.insert(0, _project_root)
 
 from backend.database import init_db
 from backend.analytics.event_tracker import init_analytics_db, track_event
-from backend.routers import contact, demo, pricing, admin, employees, service_inquiry, payment, auth, members, compliance, cortex_api, ai_dialogue
-from backend.routers.payment_v2 import router as payment_v2_router
-from backend.routers.invoice import router as invoice_router
-from backend.channel_tracker import router as channel_router, channel_tracking_middleware
+from backend.knowledge_graph import router as knowledge_graph_router
+from backend.routers.compliance_feedback import router as compliance_feedback_router
+from backend.routers.compliance_diagnosis import router as compliance_diagnosis_router
+from backend.routers.compliance_scoring import router as compliance_scoring_router
+from backend.routers import contact, demo, pricing, admin, employees, service_inquiry, payment, members, compliance, cortex_api, ai_dialogue
+from backend.routers import products
+import backend.channel_tracker as channel_tracker
 
 # 项目根目录
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -55,20 +62,20 @@ app.include_router(admin.router)
 app.include_router(employees.router)
 app.include_router(service_inquiry.router)
 app.include_router(payment.router)
-app.include_router(auth.router)
 app.include_router(members.router)
 app.include_router(compliance.router)
 app.include_router(cortex_api.router)
 app.include_router(ai_dialogue.router)
-app.include_router(payment_v2_router)
-app.include_router(invoice_router)
-app.include_router(channel_router)
+app.include_router(knowledge_graph_router)
+app.include_router(compliance_feedback_router)
+app.include_router(compliance_diagnosis_router)
+app.include_router(compliance_scoring_router)
+app.include_router(products.router)
 
 # ── 渠道/KOI追踪中间件 ────────────────────────────────
-@app.middleware("http")
-async def channel_middleware(request: Request, call_next):
-    """自动检测 ?ref=CH-XXXX 并记录追踪"""
-    return await channel_tracking_middleware(request, call_next)
+# @app.middleware("http")
+# async def channel_middleware(request: Request, call_next):
+#     return await channel_tracker.channel_tracking_middleware(request, call_next)
 
 # ── 用户行为追踪中间件 ─────────────────────────────────
 @app.middleware("http")
@@ -184,6 +191,14 @@ async def order_html():
 async def payment_html():
     return FileResponse(os.path.join(ROOT_DIR, "payment.html"))
 
+@app.get("/checkout.html")
+async def checkout_html():
+    return FileResponse(os.path.join(ROOT_DIR, "checkout.html"))
+
+@app.get("/payment-success.html")
+async def payment_success_html():
+    return FileResponse(os.path.join(ROOT_DIR, "payment-success.html"))
+
 @app.get("/team.html")
 async def team_html():
     return FileResponse(os.path.join(ROOT_DIR, "team.html"))
@@ -247,3 +262,7 @@ async def startup():
     """启动时初始化数据库"""
     init_db()
     init_analytics_db()
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=5031)

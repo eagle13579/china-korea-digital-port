@@ -19,3 +19,4 @@ python-dotenv==1.0.1
 
 # --- AI对话（DeepSeek API）---
 openai>=1.0.0
+reportlab==4.2
