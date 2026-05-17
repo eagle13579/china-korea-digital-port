@@ -24,6 +24,7 @@ from backend.routers.compliance_scoring import router as compliance_scoring_rout
 from backend.routers.compliance_report import router as compliance_report_router
 from backend.routers import contact, demo, pricing, admin, employees, service_inquiry, payment, members, compliance, cortex_api, ai_dialogue
 from backend.routers import products
+from backend.routers import compliance_kr
 import backend.channel_tracker as channel_tracker
 
 # 项目根目录
@@ -72,6 +73,7 @@ app.include_router(compliance_feedback_router)
 app.include_router(compliance_diagnosis_router)
 app.include_router(compliance_scoring_router)
 app.include_router(compliance_report_router)
+app.include_router(compliance_kr.router)
 app.include_router(products.router)
 
 # ── 渠道/KOI追踪中间件 ────────────────────────────────
@@ -253,6 +255,12 @@ async def admin_files(path: str):
     if not os.path.exists(file_path) or not os.path.isfile(file_path):
         file_path = os.path.join(ROOT_DIR, "admin", "index.html")
     return FileResponse(file_path)
+
+# ── 韩文合规页面 ─────────────────────────────────────
+from fastapi.responses import FileResponse as FR
+@app.get("/compliance/kr")
+async def compliance_kr_page():
+    return FileResponse(os.path.join(ROOT_DIR, "templates", "compliance_ko.html"))
 
 @app.get("/health")
 async def health():

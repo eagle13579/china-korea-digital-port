@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>한국 기업 중국 진입 규정 준수 체크리스트 | 중한 디지털 포트</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+KR:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Noto Sans KR', 'Inter', system-ui, sans-serif; background: #0f172a; color: #e2e8f0; min-height: 100vh; }
+    .glass-card { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); backdrop-filter: blur(20px); border-radius: 20px; }
+    .glass-card-sm { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 16px; }
+    .gradient-text { background: linear-gradient(135deg, #818cf8, #34d399, #f59e0b); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .gradient-accent { background: linear-gradient(135deg, #818cf8, #6366f1); }
+    .tab-btn { transition: all 0.3s; cursor: pointer; }
+    .tab-btn:hover { border-color: rgba(129,140,248,0.4); }
+    .tab-btn.active { border-color: #818cf8; background: rgba(129,140,248,0.12); }
+    .check-item { transition: all 0.3s; cursor: pointer; }
+    .check-item:hover { border-color: rgba(129,140,248,0.3); transform: translateX(4px); }
+    .check-item.expanded { border-color: rgba(129,140,248,0.4); background: rgba(129,140,248,0.06); }
+    .risk-badge { font-size: 11px; padding: 2px 10px; border-radius: 20px; font-weight: 500; }
+    .risk-critical { background: rgba(239,68,68,0.15); color: #fca5a5; border: 1px solid rgba(239,68,68,0.25); }
+    .risk-high { background: rgba(249,115,22,0.15); color: #fdba74; border: 1px solid rgba(249,115,22,0.25); }
+    .risk-medium { background: rgba(234,179,8,0.15); color: #fde047; border: 1px solid rgba(234,179,8,0.25); }
+    .risk-low { background: rgba(34,197,94,0.15); color: #86efac; border: 1px solid rgba(34,197,94,0.25); }
+    .loading-spinner { width: 40px; height: 40px; border: 3px solid rgba(255,255,255,0.08); border-top: 3px solid #818cf8; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .fade-in { animation: fadeIn 0.4s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    .slide-down { animation: slideDown 0.3s ease; }
+    @keyframes slideDown { from { opacity: 0; max-height: 0; } to { opacity: 1; max-height: 1000px; } }
+    .stat-circle { width: 80px; height: 80px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-direction: column; }
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.2); }
+    @media (max-width: 640px) {
+        .stat-circle { width: 60px; height: 60px; }
+        .stat-circle .text-2xl { font-size: 18px; }
+    }
+</style>
+</head>
+<body>
+<div x-data="complianceApp()" x-init="init()" class="min-h-screen">
+
+    <!-- 헤더 -->
+    <header class="relative overflow-hidden border-b border-white/5">
+        <div class="absolute inset-0 bg-gradient-to-br from-indigo-900/20 via-transparent to-emerald-900/10 pointer-events-none"></div>
+        <div class="max-w-6xl mx-auto px-4 py-8 md:py-12 relative">
+            <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center gap-2">
+                    <span class="text-2xl">🏯</span>
+                    <span class="text-xs text-gray-500 font-mono">중한 디지털 포트</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <a href="/" class="text-xs text-gray-500 hover:text-gray-300 transition px-3 py-1.5 rounded-lg border border-white/5 hover:border-white/20">← 메인</a>
+                    <a href="/compliance-check.html" class="text-xs text-gray-500 hover:text-gray-300 transition px-3 py-1.5 rounded-lg border border-white/5 hover:border-white/20">🇨🇳 中文</a>
+                </div>
+            </div>
+            <div class="text-center">
+                <h1 class="text-3xl md:text-5xl font-extrabold mb-3">
+                    <span class="gradient-text">한국 기업 중국 진입</span>
+                    <br>
+                    <span class="text-white">규정 준수 체크리스트</span>
+                </h1>
+                <p class="text-gray-400 text-sm md:text-base max-w-2xl mx-auto leading-relaxed">
+                    화장품 · 식품 · 건강기능식품 3대 업종별 중국 수입 규정 준수 사항을 한눈에 확인하세요.
+                    각 항목의 위험도, 소요 시간, 필요 서류를 상세히 제공합니다.
+                </p>
+                <div class="flex gap-2 justify-center mt-4">
+                    <span class="px-3 py-1 text-xs rounded-full bg-indigo-500/10 text-indigo-300 border border-indigo-500/20">🛡️ P0 규정 준수</span>
+                    <span class="px-3 py-1 text-xs rounded-full bg-emerald-500/10 text-emerald-300 border border-emerald-500/20">📋 체크리스트</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- 메인 콘텐츠 -->
+    <main class="max-w-6xl mx-auto px-4 py-8">
+
+        <!-- 업종 탭 -->
+        <div class="glass-card p-2 mb-6 inline-flex flex-wrap gap-1" x-show="industries.length > 0">
+            <template x-for="ind in industries" :key="ind.id">
+                <button class="tab-btn px-5 py-2.5 rounded-xl text-sm font-medium"
+                        :class="activeIndustry === ind.id ? 'active text-indigo-200' : 'text-gray-400 hover:text-gray-300'"
+                        @click="selectIndustry(ind.id)">
+                    <span x-text="ind.icon"></span>
+                    <span x-text="ind.name_ko"></span>
+                </button>
+            </template>
+        </div>
+
+        <!-- 로딩 -->
+        <div x-show="loading" class="flex flex-col items-center justify-center py-20">
+            <div class="loading-spinner"></div>
+            <p class="text-gray-500 text-sm mt-4">규정 준수 데이터를 불러오는 중...</p>
+        </div>
+
+        <!-- 업종 개요 -->
+        <div x-show="!loading && activeData" class="fade-in">
+            <!-- 개요 카드 -->
+            <div class="glass-card p-6 md:p-8 mb-6">
+                <div class="flex items-start gap-4">
+                    <span class="text-4xl" x-text="activeData.industry_info?.icon || '📋'"></span>
+                    <div class="flex-1">
+                        <h2 class="text-xl md:text-2xl font-bold text-white mb-2" x-text="activeData.industry_info?.name_ko + ' 수입 규정 준수'"></h2>
+                        <p class="text-gray-400 text-sm leading-relaxed" x-text="activeData.overview_ko"></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 통계 요약 -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6" x-show="summary">
+                <div class="glass-card-sm p-4 text-center">
+                    <div class="text-2xl font-bold text-white" x-text="summary.total_items"></div>
+                    <div class="text-xs text-gray-500 mt-1">전체 체크 항목</div>
+                </div>
+                <div class="glass-card-sm p-4 text-center">
+                    <div class="text-2xl font-bold text-orange-400" x-text="summary.critical_and_high_risk_items"></div>
+                    <div class="text-xs text-gray-500 mt-1">고위험 항목</div>
+                </div>
+                <div class="glass-card-sm p-4 text-center">
+                    <div class="text-2xl font-bold text-yellow-400" x-text="summary.medium_risk_items"></div>
+                    <div class="text-xs text-gray-500 mt-1">중위험 항목</div>
+                </div>
+                <div class="glass-card-sm p-4 text-center">
+                    <div class="text-2xl font-bold text-emerald-400" x-text="summary.estimated_min_months + '개월'"></div>
+                    <div class="text-xs text-gray-500 mt-1">최소 소요 기간</div>
+                </div>
+            </div>
+
+            <!-- 체크리스트 카테고리별 -->
+            <template x-for="(cat, ci) in activeData.checklist" :key="cat.id">
+                <div class="mb-6">
+                    <h3 class="text-lg font-bold text-white mb-3 flex items-center gap-2">
+                        <span class="w-8 h-8 rounded-lg bg-indigo-500/15 flex items-center justify-center text-sm">📋</span>
+                        <span x-text="cat.category_ko"></span>
+                        <span class="text-xs text-gray-500 font-normal" x-text="'(' + cat.items.length + '항목)'"></span>
+                    </h3>
+                    <div class="space-y-3">
+                        <template x-for="(item, ii) in cat.items" :key="item.id">
+                            <div class="check-item glass-card-sm p-4 md:p-5"
+                                 @click="toggleExpand(cat.id + '-' + ii)"
+                                 :class="expandedItem === cat.id + '-' + ii ? 'expanded' : ''">
+                                <div class="flex items-start gap-3">
+                                    <div class="flex-1 min-w-0">
+                                        <div class="flex items-center gap-2 mb-1.5 flex-wrap">
+                                            <span class="risk-badge" :class="riskClass(item.risk_level)" x-text="riskLabel(item.risk_level)"></span>
+                                            <span class="text-xs text-gray-500">⏱ <span x-text="item.estimated_time_ko"></span></span>
+                                        </div>
+                                        <h4 class="text-sm md:text-base font-semibold text-white leading-snug" x-text="item.title_ko"></h4>
+                                        <p class="text-xs text-gray-400 mt-1.5 leading-relaxed line-clamp-2" x-text="item.description_ko" x-show="expandedItem !== cat.id + '-' + ii"></p>
+                                    </div>
+                                    <span class="text-gray-500 text-lg flex-shrink-0 mt-1" x-text="expandedItem === cat.id + '-' + ii ? '▾' : '▸'"></span>
+                                </div>
+                                <!-- 확장 상세 -->
+                                <div x-show="expandedItem === cat.id + '-' + ii" class="slide-down mt-4 pt-4 border-t border-white/5">
+                                    <p class="text-sm text-gray-300 leading-relaxed mb-4" x-text="item.description_ko"></p>
+
+                                    <div x-show="item.required_docs_ko && item.required_docs_ko.length">
+                                        <h5 class="text-xs font-semibold text-indigo-300 uppercase tracking-wider mb-2">📄 필요 서류</h5>
+                                        <div class="flex flex-wrap gap-2 mb-4">
+                                            <template x-for="doc in item.required_docs_ko" :key="doc">
+                                                <span class="text-xs px-3 py-1 rounded-full bg-indigo-500/8 text-indigo-300 border border-indigo-500/15" x-text="doc"></span>
+                                            </template>
+                                        </div>
+                                    </div>
+
+                                    <div class="text-xs text-gray-500">
+                                        <span class="text-indigo-400">ID:</span> <span x-text="item.id"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+            </template>
+
+            <!-- 관련 법규 -->
+            <div class="glass-card p-6 mb-6" x-show="activeData.key_regulations_ko">
+                <h3 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                    <span class="w-8 h-8 rounded-lg bg-emerald-500/15 flex items-center justify-center text-sm">📜</span>
+                    관련 법규
+                </h3>
+                <div class="space-y-2">
+                    <template x-for="reg in activeData.key_regulations_ko" :key="reg">
+                        <div class="flex items-start gap-2 text-sm text-gray-300">
+                            <span class="text-emerald-400 mt-0.5">•</span>
+                            <span x-text="reg"></span>
+                        </div>
+                    </template>
+                </div>
+            </div>
+
+            <!-- 리스크 주의사항 -->
+            <div class="glass-card p-6 mb-6 border-amber-500/10" x-show="activeData.risk_tips_ko">
+                <h3 class="text-lg font-bold text-amber-300 mb-4 flex items-center gap-2">
+                    <span class="w-8 h-8 rounded-lg bg-amber-500/15 flex items-center justify-center text-sm">⚠️</span>
+                    주의사항
+                </h3>
+                <div class="space-y-2">
+                    <template x-for="tip in activeData.risk_tips_ko" :key="tip">
+                        <div class="flex items-start gap-2 text-sm text-amber-200/80">
+                            <span class="mt-0.5 flex-shrink-0" x-text="tip"></span>
+                        </div>
+                    </template>
+                </div>
+            </div>
+
+            <!-- FAQ 섹션 -->
+            <div class="glass-card p-6 mb-6" x-show="faq.length > 0">
+                <h3 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                    <span class="w-8 h-8 rounded-lg bg-purple-500/15 flex items-center justify-center text-sm">❓</span>
+                    자주 묻는 질문 (FAQ)
+                </h3>
+                <div class="space-y-3">
+                    <template x-for="(fq, fi) in faq" :key="fi">
+                        <div class="glass-card-sm p-4 cursor-pointer" @click="toggleFaq(fi)">
+                            <div class="flex items-start justify-between gap-3">
+                                <h4 class="text-sm font-medium text-gray-200 leading-relaxed flex-1" x-text="fq.question"></h4>
+                                <span class="text-gray-500 text-lg flex-shrink-0" x-text="openFaq === fi ? '▾' : '▸'"></span>
+                            </div>
+                            <div x-show="openFaq === fi" class="slide-down mt-3 pt-3 border-t border-white/5">
+                                <p class="text-sm text-gray-400 leading-relaxed" x-text="fq.answer"></p>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+            </div>
+        </div>
+
+        <!-- 에러 상태 -->
+        <div x-show="error" class="glass-card p-8 text-center">
+            <div class="text-4xl mb-3">⚠️</div>
+            <h3 class="text-lg font-semibold text-red-300 mb-2">데이터를 불러올 수 없습니다</h3>
+            <p class="text-sm text-gray-400 mb-4" x-text="error"></p>
+            <button @click="init()" class="px-5 py-2 bg-indigo-600 text-white rounded-xl text-sm hover:bg-indigo-500 transition">다시 시도</button>
+        </div>
+
+        <!-- API 정보 -->
+        <div class="text-center py-8 border-t border-white/5 mt-8">
+            <p class="text-xs text-gray-600">
+                API: <code class="text-indigo-400 bg-indigo-500/8 px-2 py-0.5 rounded">POST /api/compliance/kr/check</code>
+                &nbsp;·&nbsp; 문의: <a href="#" class="text-indigo-400 hover:text-indigo-300">compliance@china-korea-port.com</a>
+            </p>
+            <p class="text-xs text-gray-700 mt-2">© 2026 중한 디지털 포트 · China-Korea Digital Trade Gateway</p>
+        </div>
+    </main>
+</div>
+
+<script>
+function complianceApp() {
+    return {
+        industries: [],
+        activeIndustry: 'cosmetics',
+        activeData: null,
+        summary: null,
+        loading: true,
+        error: null,
+        faq: [],
+        expandedItem: null,
+        openFaq: null,
+
+        async init() {
+            this.loading = true;
+            this.error = null;
+            try {
+                const res = await fetch('/api/compliance/kr/check', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ industry: 'all', language: 'ko' })
+                });
+                if (!res.ok) throw new Error('API 응답 오류: ' + res.status);
+                const data = await res.json();
+                if (data.error) throw new Error(data.error);
+
+                this.industries = Object.values(data.industries || {});
+                this.faq = data.faq || [];
+                this.activeData = data.data?.cosmetics ? {
+                    ...data.data.cosmetics,
+                    industry_info: data.industries?.cosmetics
+                } : null;
+                this.summary = data.summaries?.cosmetics || null;
+
+                // 기본 업종 선택
+                if (this.industries.length > 0) {
+                    this.activeIndustry = this.industries[0].id;
+                }
+            } catch (e) {
+                this.error = e.message || '알 수 없는 오류가 발생했습니다';
+            } finally {
+                this.loading = false;
+            }
+        },
+
+        async selectIndustry(industryId) {
+            this.activeIndustry = industryId;
+            this.loading = true;
+            this.expandedItem = null;
+            try {
+                const res = await fetch('/api/compliance/kr/check', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ industry: industryId, language: 'ko' })
+                });
+                if (!res.ok) throw new Error('API 응답 오류: ' + res.status);
+                const data = await res.json();
+                if (data.error) throw new Error(data.error);
+
+                this.activeData = data.data ? {
+                    ...data.data,
+                    industry_info: data.industry_info
+                } : null;
+                this.summary = data.summary || null;
+            } catch (e) {
+                this.error = e.message || '알 수 없는 오류가 발생했습니다';
+            } finally {
+                this.loading = false;
+            }
+        },
+
+        toggleExpand(key) {
+            this.expandedItem = this.expandedItem === key ? null : key;
+        },
+
+        toggleFaq(idx) {
+            this.openFaq = this.openFaq === idx ? null : idx;
+        },
+
+        riskClass(level) {
+            return {
+                'critical': 'risk-critical',
+                'high': 'risk-high',
+                'medium': 'risk-medium',
+                'low': 'risk-low'
+            }[level] || 'risk-medium';
+        },
+
+        riskLabel(level) {
+            return {
+                'critical': '🔴 치명적',
+                'high': '🟠 높음',
+                'medium': '🟡 중간',
+                'low': '🟢 낮음'
+            }[level] || level;
+        }
+    };
+}
+</script>
+</body>
+</html>

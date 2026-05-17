@@ -16,6 +16,7 @@ from urllib.parse import urlparse, parse_qs, unquote
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from compliance_mcp_server import ComplianceMCPServer, handle_mcp_request
+from backend.compliance_kr_data import get_compliance_data, get_checklist_summary, get_faq, INDUSTRIES
 
 SERVER = ComplianceMCPServer()
 PORT = 5126
@@ -120,6 +121,13 @@ class ComplianceAPIHandler(BaseHTTPRequestHandler):
         elif path == "/api/stats":
             self._send_json(PLATFORM_STATS)
 
+        elif path == "/api/compliance/kr/check":
+            params = parse_qs(parsed.query)
+            industry = params.get("industry", ["all"])[0]
+            lang = params.get("language", ["ko"])[0]
+            result = self._get_kr_compliance(industry, lang)
+            self._send_json(result)
+
         elif path == "/api/health":
             params = parse_qs(parsed.query)
             client = params.get("client", [""])[0]
@@ -186,6 +194,12 @@ class ComplianceAPIHandler(BaseHTTPRequestHandler):
             result = json.loads(mcp_resp["result"]["content"][0]["text"])
             self._send_json(result)
 
+        elif path == "/api/compliance/kr/check":
+            industry = data.get("industry", "all")
+            lang = data.get("language", "ko")
+            result = self._get_kr_compliance(industry, lang)
+            self._send_json(result)
+
         elif path == "/search":
             keyword = data.get("keyword", "")
             category = data.get("category", "")
@@ -199,6 +213,39 @@ class ComplianceAPIHandler(BaseHTTPRequestHandler):
 
     def log_message(self, format, *args):
         print(f"[{self.log_date_time_string()}] {args[0]}", file=sys.stderr)
+
+    def _get_kr_compliance(self, industry="all", language="ko"):
+        """Get Korean compliance data"""
+        lang = language if language in ("ko", "zh") else "ko"
+
+        try:
+            if industry and industry != "all" and industry in ("cosmetics", "food", "health_supplements"):
+                data = get_compliance_data(industry)
+                summary = get_checklist_summary(industry, lang)
+                industry_info = INDUSTRIES.get(industry)
+                return {
+                    "success": True,
+                    "data": data,
+                    "summary": summary,
+                    "industry_info": industry_info,
+                    "faq": get_faq(lang),
+                }
+
+            # All industries
+            all_data = get_compliance_data(None)
+            summaries = {}
+            for ind_id in ("cosmetics", "food", "health_supplements"):
+                summaries[ind_id] = get_checklist_summary(ind_id, lang)
+
+            return {
+                "success": True,
+                "industries": INDUSTRIES,
+                "data": all_data.get("data", all_data),
+                "summaries": summaries,
+                "faq": get_faq(lang),
+            }
+        except Exception as e:
+            return {"success": False, "error": str(e)}
 
 
 def main():
