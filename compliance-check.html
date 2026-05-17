@@ -104,7 +104,7 @@
 <a href="team.html" data-lang-key="nav_team">团队</a>
 <a href="pricing-v2.html" data-lang-key="nav_pricing">定价</a>
 <a href="compliance-check.html" class="active" data-lang-key="nav_compliance_check">合规自检</a>
-<a href="compliance-demo.html" data-lang-key="nav_ai_consult">AI咨询</a>
+<a href="chat.html" data-lang-key="nav_ai_consult">AI咨询</a>
 <a href="demo.html" data-lang-key="nav_demo">预约演示</a>
 </nav>
 </div>
@@ -152,6 +152,18 @@
 <div class="score-num" id="scoreNum">0%</div>
 <div class="score-label" data-lang-key="cc_health">健康度</div>
 </div>
+
+<!-- 免费→付费引导文案 -->
+<div id="upgradeBanner" style="display:none; background: linear-gradient(135deg, rgba(139,92,246,0.12), rgba(99,102,241,0.08)); border: 1px solid rgba(139,92,246,0.3); border-radius: 16px; padding: 20px 24px; margin-bottom: 24px; text-align:center;">
+<p style="font-size:14px; line-height:1.7; color:var(--text-primary); margin:0 0 4px 0; white-space:pre-line;" data-lang-key="cc_upgrade_banner">您的免费诊断已生成。升级到深度方案可获得：
+✅ 完整27项合规评分（覆盖4大维度）
+✅ 中韩双语法务意见书
+✅ 行业对标分析
+✅ 合规改进路线图
+
+点击下方按钮立即升级</p>
+</div>
+
 <div id="dimensionsContainer" class="cc-dimensions"></div>
 
 <!-- 推荐方案 -->
@@ -173,7 +185,16 @@
 </div>
 
 <div style="text-align:center;margin-top:16px;">
-<a href="compliance-demo.html" class="cc-btn" style="text-decoration:none;display:inline-block;" data-lang-key="cc_try_ai">试试徐准AI合规咨询</a>
+<a href="chat.html" class="cc-btn" style="text-decoration:none;display:inline-block;" data-lang-key="cc_try_ai">试试徐准AI合规咨询</a>
+</div>
+
+<!-- 付费转化CTA -->
+<div id="upgradeCta" style="display:none; margin-top:24px; padding-top:20px; border-top:1px solid var(--glass-border); text-align:center;">
+<p style="font-size:13px; color:var(--text-muted); margin-bottom:16px;" data-lang-key="cc_upgrade_unlock">解锁完整合规能力</p>
+<div style="display:flex; gap:12px; justify-content:center; flex-wrap:wrap;">
+<a href="checkout.html" class="cc-btn primary" style="text-decoration:none; padding:14px 28px; font-size:15px; font-weight:600;" data-lang-key="cc_upgrade_depth">升级深度方案 ¥999</a>
+<a href="checkout.html?plan=annual" class="cc-btn" style="text-decoration:none; padding:14px 28px; font-size:15px; font-weight:600; background:rgba(139,92,246,0.15); border-color:var(--accent-primary); color:var(--accent-primary);" data-lang-key="cc_upgrade_annual">订阅年卡 ¥9,999/年</a>
+</div>
 </div>
 </div>
 </div>
@@ -200,7 +221,11 @@ dim_财税: '财税', dim_用工: '用工', dim_签证: '签证',
 risk_low: '低风险', risk_med: '中风险', risk_high: '高风险',
 rec_title: '推荐方案', rec_free: '免费初评', rec_depth: '深度方案', rec_year: '年订阅',
 rec_free_desc: '适合合规状况良好的企业', rec_depth_desc: '适合需要针对性合规方案的企业', rec_year_desc: '适合需要持续合规支持的企业',
-cc_score_desc: '得分越低合规越完善', cc_no_data: '暂无数据'
+cc_score_desc: '得分越低合规越完善', cc_no_data: '暂无数据',
+cc_upgrade_banner: '您的免费诊断已生成。升级到深度方案可获得：\n✅ 完整27项合规评分（覆盖4大维度）\n✅ 中韩双语法务意见书\n✅ 行业对标分析\n✅ 合规改进路线图\n\n点击下方按钮立即升级',
+cc_upgrade_depth: '升级深度方案 ¥999',
+cc_upgrade_annual: '订阅年卡 ¥9,999/年',
+cc_upgrade_unlock: '解锁完整合规能力'
 },
 'ko-KR': {
 cc_title: '컴플라이언스 건강도 자가진단', cc_desc: '8가지 질문으로 귀사의 중국 시장 진출 규정 준비 상태를 빠르게 평가하고 맞춤형 보고서를 받아보세요',
@@ -219,7 +244,11 @@ dim_财税: '재무세무', dim_用工: '고용', dim_签证: '비자',
 risk_low: '저위험', risk_med: '중위험', risk_high: '고위험',
 rec_title: '추천方案', rec_free: '무료 초기 평가', rec_depth: '심층方案', rec_year: '연간 구독',
 rec_free_desc: '컴플라이언스 상태가 양호한 기업에 적합', rec_depth_desc: '맞춤형 규정 준수方案이 필요한 기업에 적합', rec_year_desc: '지속적인 규정 준수 지원이 필요한 기업에 적합',
-cc_score_desc: '점수가 낮을수록 규정 준수가 완벽함', cc_no_data: '데이터 없음'
+cc_score_desc: '점수가 낮을수록 규정 준수가 완벽함', cc_no_data: '데이터 없음',
+cc_upgrade_banner: '무료 진단이 생성되었습니다. 심층方案으로 업그레이드하면:\n✅ 완전한 27개 항목 규정 준수 평가 (4대 차원)\n✅ 한중 이중 언어 법률 의견서\n✅ 업종 벤치마킹 분석\n✅ 규정 준수 개선 로드맵\n\n아래 버튼을 클릭하여 즉시 업그레이드',
+cc_upgrade_depth: '심층方案 업그레이드 ¥999',
+cc_upgrade_annual: '연간 구독 ¥9,999/년',
+cc_upgrade_unlock: '전체 규정 준수 기능 잠금 해제'
 },
 'en': {
 cc_title: 'Compliance Health Check', cc_desc: 'Quickly assess your company\'s compliance readiness for entering the Chinese market with 8 questions and get a personalized report',
@@ -238,7 +267,11 @@ dim_财税: 'Tax & Finance', dim_用工: 'Employment', dim_签证: 'Visa',
 risk_low: 'Low Risk', risk_med: 'Medium Risk', risk_high: 'High Risk',
 rec_title: 'Recommended Plans', rec_free: 'Free Assessment', rec_depth: 'Depth Plan', rec_year: 'Annual Subscription',
 rec_free_desc: 'Suitable for enterprises with good compliance status', rec_depth_desc: 'Suitable for enterprises needing targeted compliance solutions', rec_year_desc: 'Suitable for enterprises needing ongoing compliance support',
-cc_score_desc: 'Lower score means better compliance readiness', cc_no_data: 'No data'
+cc_score_desc: 'Lower score means better compliance readiness', cc_no_data: 'No data',
+cc_upgrade_banner: 'Your free diagnosis is ready. Upgrade to the Depth Plan to get:\n✅ Full 27-item compliance score (covering 4 dimensions)\n✅ Bilingual (CN/KR) legal opinion letter\n✅ Industry benchmarking analysis\n✅ Compliance improvement roadmap\n\nClick below to upgrade now',
+cc_upgrade_depth: 'Upgrade to Depth Plan ¥999',
+cc_upgrade_annual: 'Annual Subscription ¥9,999/yr',
+cc_upgrade_unlock: 'Unlock Full Compliance Capabilities'
 }
 };
 
@@ -402,6 +435,10 @@ return { score: totalScore, dimensions: dimResults, token: 'local-' + Date.now()
 function renderResult(data) {
 const score = data.score || 0;
 document.getElementById('resultCard').style.display = 'block';
+
+// 显示免费→付费引导及转化入口
+document.getElementById('upgradeBanner').style.display = 'block';
+document.getElementById('upgradeCta').style.display = 'block';
 
 const circle = document.getElementById('scoreCircle');
 circle.className = 'cc-score-circle ' + (score >= 80 ? 'green' : score >= 50 ? 'yellow' : 'red');
