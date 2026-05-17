@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>결제 — 중한 해외진출 디지털 포트</title>
+    <meta name="description" content="주문 확인 및 결제 — 중한 해외진출 디지털 포트">
+    <link rel="icon" href="favicon.ico">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        :root {
+            --bg-primary: #0A0A0F;
+            --bg-secondary: #12121A;
+            --bg-tertiary: #1A1A25;
+            --accent: #6366f1;
+            --accent2: #06b6d4;
+            --text-primary: #F1F5F9;
+            --text-secondary: #94A3B8;
+            --text-muted: #64748B;
+            --border-color: rgba(255,255,255,0.08);
+            --glass-bg: rgba(255,255,255,0.03);
+            --glass-border: rgba(255,255,255,0.06);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        .container { max-width: 1140px; margin: 0 auto; padding: 0 24px; }
+        .header {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+            background: rgba(10,10,15,0.85); backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border-color);
+        }
+        .header__content { display: flex; align-items: center; justify-content: space-between; height: 68px; }
+        .header__logo { display: flex; align-items: center; gap: 10px; }
+        .logo__text { font-size: 18px; font-weight: 800; background: linear-gradient(135deg, #6366f1, #06b6d4); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .header__nav .nav__list { display: flex; list-style: none; gap: 4px; }
+        .nav__link { text-decoration: none; font-size: 14px; font-weight: 500; padding: 8px 16px; border-radius: 8px; color: var(--text-secondary); transition: all 0.2s; }
+        .nav__link:hover { color: var(--text-primary); background: rgba(255,255,255,0.04); }
+
+        .checkout-page { padding-top: 120px; padding-bottom: 80px; }
+        .checkout-container { max-width: 600px; margin: 0 auto; }
+        .checkout-card { background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 20px; padding: 36px; margin-bottom: 24px; }
+        .checkout-card h2 { font-size: 22px; font-weight: 700; margin-bottom: 8px; }
+        .checkout-card .subtitle { color: var(--text-secondary); font-size: 14px; margin-bottom: 24px; }
+        .plan-summary { background: var(--bg-tertiary); border-radius: 16px; padding: 20px; margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center; }
+        .plan-summary .plan-info { flex: 1; }
+        .plan-summary .plan-name { font-size: 18px; font-weight: 600; }
+        .plan-summary .plan-desc { font-size: 13px; color: var(--text-secondary); margin-top: 4px; }
+        .plan-summary .plan-price { font-size: 32px; font-weight: 700; color: var(--accent); }
+        .plan-summary .plan-price .currency { font-size: 18px; }
+        .form__group { margin-bottom: 16px; }
+        .form__label { display: block; margin-bottom: 6px; font-size: 14px; font-weight: 500; }
+        .form__input { width: 100%; padding: 12px 16px; border-radius: 10px; border: 1px solid var(--border-color); background: var(--bg-primary); color: var(--text-primary); font-size: 15px; outline: none; transition: border-color .2s; }
+        .form__input:focus { border-color: var(--accent); }
+        .form__input::placeholder { color: var(--text-muted); }
+        .btn-pay { width: 100%; padding: 16px; border: none; border-radius: 12px; font-size: 17px; font-weight: 600; cursor: pointer; transition: all .2s; margin-top: 8px; background: linear-gradient(135deg, #6366f1, #06b6d4); color: #fff; }
+        .btn-pay:hover { opacity: .9; }
+        .btn-pay:disabled { opacity: .5; cursor: not-allowed; }
+        .btn-pay .spinner { display: inline-block; width: 18px; height: 18px; border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: spin .6s linear infinite; vertical-align: middle; margin-right: 8px; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .qr-section { display: none; text-align: center; padding: 20px 0; }
+        .qr-section.active { display: block; }
+        .qr-section .qr-img { width: 220px; height: 220px; margin: 16px auto; border-radius: 12px; background: var(--bg-tertiary); display: flex; align-items: center; justify-content: center; border: 2px dashed var(--border-color); }
+        .qr-section .qr-img img { width: 200px; height: 200px; border-radius: 8px; }
+        .qr-section .qr-img .placeholder { color: var(--text-secondary); font-size: 14px; text-align: center; padding: 20px; }
+        .qr-section .qr-img .placeholder i { font-size: 48px; display: block; margin-bottom: 8px; }
+        .qr-section .amount { font-size: 28px; font-weight: 700; color: var(--accent); margin-bottom: 8px; }
+        .qr-section .hint { color: var(--text-secondary); font-size: 14px; margin-bottom: 4px; }
+        .countdown { display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 16px; font-size: 14px; color: var(--text-secondary); }
+        .countdown .timer { font-weight: 600; color: var(--accent); font-family: monospace; font-size: 16px; }
+        .status-indicator { display: none; text-align: center; padding: 40px 20px; }
+        .status-indicator.active { display: block; }
+        .status-indicator i { font-size: 56px; margin-bottom: 16px; }
+        .status-indicator .status-icon.success { color: #22c55e; }
+        .status-indicator .status-icon.fail { color: #ef4444; }
+        .status-indicator .status-icon.pending { color: var(--accent); }
+        .status-indicator h3 { font-size: 22px; font-weight: 700; margin-bottom: 8px; }
+        .status-indicator p { color: var(--text-secondary); margin-bottom: 20px; }
+        .status-indicator .spinner { width: 40px; height: 40px; border: 4px solid var(--border-color); border-top-color: var(--accent); border-radius: 50%; animation: spin .6s linear infinite; margin: 0 auto 16px; }
+        .paid-banner { display: none; text-align: center; padding: 40px 20px; }
+        .paid-banner.active { display: block; }
+        .paid-banner i { font-size: 64px; color: #22c55e; margin-bottom: 16px; }
+        .paid-banner h3 { font-size: 24px; font-weight: 700; margin-bottom: 8px; }
+        .paid-banner p { color: var(--text-secondary); margin-bottom: 8px; }
+        .paid-banner .license-box { margin-top: 20px; padding: 16px; background: var(--bg-tertiary); border-radius: 12px; display: inline-block; }
+        .paid-banner .license-box .label { font-size: 13px; color: var(--text-secondary); margin-bottom: 8px; }
+        .paid-banner .license-box .key { font-size: 18px; font-weight: 700; font-family: monospace; color: var(--accent); letter-spacing: 2px; }
+        .paid-banner .btn-home { display: inline-block; margin-top: 24px; padding: 12px 32px; background: linear-gradient(135deg, #6366f1, #06b6d4); color: #fff; border-radius: 12px; text-decoration: none; font-weight: 600; }
+        .simulate-pay { display: none; margin-top: 16px; }
+        .simulate-pay.active { display: block; }
+        .simulate-pay .btn-simulate { width: 100%; padding: 14px; border: 2px dashed var(--accent); border-radius: 12px; background: transparent; color: var(--accent); font-size: 15px; font-weight: 600; cursor: pointer; transition: all .2s; }
+        .simulate-pay .btn-simulate:hover { background: var(--accent); color: #fff; }
+        .simulate-pay .simulate-note { text-align: center; font-size: 12px; color: var(--text-muted); margin-top: 8px; }
+        .order-error { text-align: center; padding: 80px 20px; }
+        .order-error i { font-size: 48px; color: #ef4444; margin-bottom: 16px; }
+        .order-error h3 { font-size: 20px; margin-bottom: 8px; }
+        .order-error p { color: var(--text-secondary); margin-bottom: 24px; }
+        .order-loading { text-align: center; padding: 80px 20px; }
+        .order-loading .spinner { width: 40px; height: 40px; border: 4px solid var(--border-color); border-top-color: var(--accent); border-radius: 50%; animation: spin .6s linear infinite; margin: 0 auto 16px; }
+        .footer { padding: 40px 0; margin-top: 40px; border-top: 1px solid var(--border-color); }
+        .footer__bottom { text-align: center; }
+        .footer__copyright { font-size: 14px; color: var(--text-muted); }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="header__content">
+                <div class="header__logo">
+                    <h1 class="logo__text">중한 해외진출 디지털 포트</h1>
+                </div>
+                <nav class="header__nav">
+                    <ul class="nav__list">
+                        <li class="nav__item"><a href="index_ko.html" class="nav__link">홈</a></li>
+                        <li class="nav__item"><a href="pricing_ko.html" class="nav__link">서비스</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <section class="checkout-page">
+        <div class="container">
+            <div class="checkout-container" id="checkoutApp">
+                <div class="order-loading" id="loadingView">
+                    <div class="spinner"></div>
+                    <p>로딩 중...</p>
+                </div>
+                <div class="order-error" id="errorView" style="display:none">
+                    <i class="bi bi-exclamation-circle"></i>
+                    <h3>로딩 실패</h3>
+                    <p id="errorMsg">유효하지 않은 플랜</p>
+                    <a href="pricing_ko.html" class="btn btn--primary" style="display:inline-block;margin-top:16px;padding:12px 32px;background:linear-gradient(135deg,#6366f1,#06b6d4);color:#fff;border-radius:12px;text-decoration:none;font-weight:600;">가격 페이지로</a>
+                </div>
+                <div id="checkoutForm" style="display:none">
+                    <div class="checkout-card">
+                        <h2>주문 확인</h2>
+                        <p class="subtitle">정보를 입력하여 결제를 완료하세요</p>
+                        <div class="plan-summary">
+                            <div class="plan-info">
+                                <div class="plan-name" id="planName">심층 컨설팅 패키지</div>
+                                <div class="plan-desc" id="planType">depth</div>
+                            </div>
+                            <div class="plan-price">
+                                <span class="currency">¥</span><span id="planPrice">9,800</span>
+                            </div>
+                        </div>
+                        <form id="checkoutOrderForm">
+                            <input type="hidden" name="plan_type" id="formPlanType" value="">
+                            <div class="form__group">
+                                <label class="form__label">기업명</label>
+                                <input type="text" class="form__input" name="customer_company" required placeholder="기업명을 입력하세요">
+                            </div>
+                            <div class="form__group">
+                                <label class="form__label">담당자</label>
+                                <input type="text" class="form__input" name="customer_name" required placeholder="담당자 이름">
+                            </div>
+                            <div class="form__group">
+                                <label class="form__label">전화번호</label>
+                                <input type="tel" class="form__input" name="customer_phone" placeholder="연락 가능한 전화번호">
+                            </div>
+                            <div class="form__group">
+                                <label class="form__label">이메일</label>
+                                <input type="email" class="form__input" name="customer_email" required placeholder="이메일 주소">
+                            </div>
+                            <button type="submit" class="btn-pay" id="submitBtn">확인 및 결제 ¥9,800</button>
+                        </form>
+                    </div>
+                    <div class="checkout-card qr-section" id="qrSection">
+                        <div class="amount" id="qrAmount">¥9,800.00</div>
+                        <div class="hint">알리페이를 열어 스캔하여 결제하세요</div>
+                        <div class="qr-img" id="qrContainer">
+                            <div class="placeholder" id="qrPlaceholder">
+                                <i class="bi bi-alipay"></i>
+                                <span>QR 코드 생성 중...</span>
+                            </div>
+                            <img id="qrImage" style="display:none" alt="알리페이 QR 코드">
+                        </div>
+                        <div class="countdown">
+                            <i class="bi bi-clock"></i>
+                            <span>결제 남은 시간</span>
+                            <span class="timer" id="countdownTimer">30:00</span>
+                        </div>
+                        <div class="simulate-pay" id="simulatePaySection">
+                            <button class="btn-simulate" onclick="simulatePayment()">시뮬레이션 결제 (개발 모드)</button>
+                            <div class="simulate-note">테스트 전용, 실제 배포 시 숨겨짐</div>
+                        </div>
+                    </div>
+                    <div class="checkout-card status-indicator" id="waitingPayment">
+                        <div class="spinner"></div>
+                        <h3>QR 코드 스캔 대기 중...</h3>
+                        <p>알리페이로 QR 코드를 스캔하여 결제하세요</p>
+                    </div>
+                </div>
+                <div class="checkout-card paid-banner" id="paidView">
+                    <i class="bi bi-check-circle-fill"></i>
+                    <h3>결제 성공!</h3>
+                    <p>구매해 주셔서 감사합니다. 플랜이 활성화되었습니다.</p>
+                    <div class="license-box" id="licenseBox" style="display:none">
+                        <div class="label">라이선스 키:</div>
+                        <div class="key" id="licenseKeyDisplay"></div>
+                    </div>
+                    <a href="index_ko.html" class="btn-home">홈으로</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer__bottom">
+                <p class="footer__copyright">© 2026 중한 해외진출 디지털 포트. All Rights Reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/toast.js"></script>
+    <script src="js/main.js"></script>
+    <script>
+    var PLAN_DATA = {
+        'free':  { name: '무료 초기 평가', name_ko: '무료 초기 평가', name_en: 'Free Assessment', price: 0, desc: '중국 시장을 처음 알아보는 한국 기업에 적합' },
+        'depth': { name: '심층 컨설팅 패키지', name_ko: '심층 컨설팅 패키지', name_en: 'Depth Plan', price: 9800, desc: '중국 시장 진출을 결정한 한국 기업에 적합' },
+        'annual': { name: '연간 구독', name_ko: '연간 구독', name_en: 'Annual Subscription', price: 58000, desc: '중국에서 지속적으로 비즈니스를 운영하는 한국 기업에 적합' },
+    };
+
+    var urlParams = new URLSearchParams(window.location.search);
+    var planType = urlParams.get('plan') || 'depth';
+    var orderId = null;
+    var orderNo = null;
+    var isFreePlan = false;
+    var pollTimer = null;
+    var countdownTimer = null;
+    var countdownSeconds = 1800;
+
+    document.addEventListener('DOMContentLoaded', function() {
+        initCheckout();
+    });
+
+    function initCheckout() {
+        var plan = PLAN_DATA[planType];
+        if (!plan) {
+            showError('유효하지 않은 플랜: ' + planType);
+            return;
+        }
+        document.getElementById('planName').textContent = plan.name_ko;
+        document.getElementById('planType').textContent = planType;
+        document.getElementById('planPrice').textContent = plan.price === 0 ? '0' : plan.price.toLocaleString();
+        document.getElementById('formPlanType').value = planType;
+        var priceDisplay = plan.price === 0 ? '무료' : '¥' + plan.price.toLocaleString();
+        document.getElementById('submitBtn').textContent = '확인 및 결제 ' + priceDisplay;
+        isFreePlan = (plan.price === 0);
+        document.getElementById('loadingView').style.display = 'none';
+        document.getElementById('checkoutForm').style.display = 'block';
+    }
+
+    function showError(msg) {
+        document.getElementById('loadingView').style.display = 'none';
+        document.getElementById('checkoutForm').style.display = 'none';
+        document.getElementById('errorView').style.display = 'block';
+        document.getElementById('errorMsg').textContent = msg;
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        var form = document.getElementById('checkoutOrderForm');
+        if (form) {
+            form.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                var formData = {};
+                form.querySelectorAll('input').forEach(function(el) { if (el.name) formData[el.name] = el.value; });
+                formData.plan_type = planType;
+                var requiredFields = form.querySelectorAll('[required]');
+                var valid = true;
+                requiredFields.forEach(function(el) { if (!el.value.trim()) { valid = false; el.style.borderColor = '#dc2626'; } else { el.style.borderColor = ''; } });
+                if (!valid) { showToast('필수 항목을 입력해주세요', 'error'); return; }
+                if (formData.customer_email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.customer_email)) { showToast('올바른 이메일을 입력해주세요', 'error'); return; }
+                var btn = document.getElementById('submitBtn');
+                btn.disabled = true;
+                btn.innerHTML = '<span class="spinner"></span>처리 중...';
+                try {
+                    var response = await fetch('/api/v1/payment/create', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(formData)
+                    });
+                    var result = await response.json();
+                    if (response.ok && result.success) {
+                        orderId = result.order_id;
+                        orderNo = result.order_no;
+                        if (result.is_free) { showPaidView(result); }
+                        else if (result.qr_code_url) { showQRCode(result); }
+                        else if (result.simulate_mode) { showQRCode(result); }
+                        else { showToast(result.message || '주문이 생성되었습니다', 'success'); }
+                    } else {
+                        var errMsg = result.detail || result.message || '주문 생성 실패';
+                        showToast(errMsg, 'error');
+                        btn.disabled = false;
+                        var priceDisplay2 = PLAN_DATA[planType].price === 0 ? '무료' : '¥' + PLAN_DATA[planType].price.toLocaleString();
+                        btn.textContent = '확인 및 결제 ' + priceDisplay2;
+                    }
+                } catch (err) {
+                    showToast('네트워크 오류', 'error');
+                    btn.disabled = false;
+                    var priceDisplay3 = PLAN_DATA[planType].price === 0 ? '무료' : '¥' + PLAN_DATA[planType].price.toLocaleString();
+                    btn.textContent = '확인 및 결제 ' + priceDisplay3;
+                }
+            });
+        }
+    });
+
+    function showQRCode(result) {
+        document.getElementById('checkoutForm').style.display = 'none';
+        document.getElementById('qrAmount').textContent = '¥' + (result.price || 0).toLocaleString();
+        var qrSection = document.getElementById('qrSection');
+        var qrImg = document.getElementById('qrImage');
+        var qrPlaceholder = document.getElementById('qrPlaceholder');
+        if (result.qr_code_url) {
+            qrImg.src = result.qr_code_url.startsWith('data:') ? result.qr_code_url : result.qr_code_url;
+            qrImg.style.display = 'block';
+            qrPlaceholder.style.display = 'none';
+        } else {
+            generateSimulatedQR(orderNo);
+            qrImg.style.display = 'none';
+            qrPlaceholder.style.display = 'block';
+            qrPlaceholder.innerHTML = '<i class="bi bi-alipay"></i><span>데모 모드</span><span style="font-size:12px;margin-top:8px;color:var(--text-muted)">' + orderNo + '</span>';
+        }
+        qrSection.classList.add('active');
+        var simulateSection = document.getElementById('simulatePaySection');
+        if (!result.qr_code_url || result.simulate_mode) { simulateSection.classList.add('active'); }
+        else { simulateSection.classList.remove('active'); }
+        startCountdown();
+        startPolling();
+    }
+
+    function generateSimulatedQR(orderNo) {}
+
+    function startCountdown() {
+        countdownSeconds = 1800;
+        if (countdownTimer) clearInterval(countdownTimer);
+        countdownTimer = setInterval(function() {
+            countdownSeconds--;
+            var min = Math.floor(countdownSeconds / 60);
+            var sec = countdownSeconds % 60;
+            document.getElementById('countdownTimer').textContent = String(min).padStart(2, '0') + ':' + String(sec).padStart(2, '0');
+            if (countdownSeconds <= 0) { clearInterval(countdownTimer); }
+        }, 1000);
+    }
+
+    function startPolling() {
+        if (pollTimer) clearInterval(pollTimer);
+        pollTimer = setInterval(async function() {
+            if (!orderId) return;
+            try {
+                var resp = await fetch('/api/v1/payment/status/' + orderId);
+                var data = await resp.json();
+                if (resp.ok && data.success && data.data && data.data.status === 'paid') {
+                    clearInterval(pollTimer);
+                    clearInterval(countdownTimer);
+                    showPaidView(data.data);
+                }
+            } catch(e) {}
+        }, 3000);
+    }
+
+    function showPaidView(data) {
+        document.getElementById('checkoutForm').style.display = 'none';
+        document.getElementById('qrSection').classList.remove('active');
+        document.getElementById('waitingPayment').classList.remove('active');
+        document.getElementById('paidView').classList.add('active');
+        if (data && data.license_key) {
+            document.getElementById('licenseBox').style.display = 'block';
+            document.getElementById('licenseKeyDisplay').textContent = data.license_key;
+        }
+    }
+
+    function simulatePayment() {
+        document.getElementById('loadingView').style.display = 'block';
+        document.getElementById('qrSection').classList.remove('active');
+        fetch('/api/v1/payment/simulate/notify', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ order_no: orderNo })
+        }).then(function(r) { return r.json(); }).then(function(result) {
+            document.getElementById('loadingView').style.display = 'none';
+            if (result.success) { showPaidView(result.data || {}); }
+            else { showToast('시뮬레이션 실패', 'error'); }
+        }).catch(function() {
+            document.getElementById('loadingView').style.display = 'none';
+            showToast('네트워크 오류', 'error');
+        });
+    }
+    </script>
+</body>
+</html>

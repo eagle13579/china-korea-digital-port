@@ -25,6 +25,11 @@ from backend.routers.compliance_report import router as compliance_report_router
 from backend.routers import contact, demo, pricing, admin, employees, service_inquiry, payment, members, compliance, cortex_api, ai_dialogue
 from backend.routers import products
 from backend.routers import compliance_kr
+from backend.routers import data_compliance
+from backend.routers import data_compliance_diagnosis
+from backend.routers import data_compliance_scoring
+from backend.routers import data_compliance_report
+from backend.data_compliance_knowledge import router as data_compliance_knowledge_router
 import backend.channel_tracker as channel_tracker
 
 # 项目根目录
@@ -75,6 +80,11 @@ app.include_router(compliance_scoring_router)
 app.include_router(compliance_report_router)
 app.include_router(compliance_kr.router)
 app.include_router(products.router)
+app.include_router(data_compliance.router)
+app.include_router(data_compliance_diagnosis.router)
+app.include_router(data_compliance_scoring.router)
+app.include_router(data_compliance_report.router)
+app.include_router(data_compliance_knowledge_router)
 
 # ── 渠道/KOI追踪中间件 ────────────────────────────────
 # @app.middleware("http")
@@ -277,6 +287,26 @@ async def order_ko_html():
 @app.get("/pricing_ko.html")
 async def pricing_ko_html():
     return FileResponse(os.path.join(ROOT_DIR, "pricing_ko.html"))
+
+@app.get("/product_matcha_latte_ko.html")
+async def product_matcha_latte_ko_html():
+    return FileResponse(os.path.join(ROOT_DIR, "product_matcha_latte_ko.html"))
+
+@app.get("/product_ginseng_ko.html")
+async def product_ginseng_ko_html():
+    return FileResponse(os.path.join(ROOT_DIR, "product_ginseng_ko.html"))
+
+@app.get("/product_seaweed_ko.html")
+async def product_seaweed_ko_html():
+    return FileResponse(os.path.join(ROOT_DIR, "product_seaweed_ko.html"))
+
+@app.get("/checkout_ko.html")
+async def checkout_ko_html():
+    return FileResponse(os.path.join(ROOT_DIR, "checkout_ko.html"))
+
+@app.get("/payment_success_ko.html")
+async def payment_success_ko_html():
+    return FileResponse(os.path.join(ROOT_DIR, "payment_success_ko.html"))
 
 @app.get("/health")
 async def health():

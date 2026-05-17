@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CAFE MORI 말차 라떼 (6종) 한국 직수입 — go-aiport 한품우선</title>
+    <meta name="description" content="CAFE MORI JARDIN 시리즈 말차 라떼, 한국 직수입, 제주도 유기농 말차, 6가지 맛. FOB 가격, MOQ 유연, 중국 대리점 모집.">
+    <meta name="keywords" content="말차 라떼,한국 말차,CAFE MORI,JARDIN,한국 커피,한국 수입 음료,한국 상품 대리점,한국 식품 수입">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="icon" href="favicon.ico">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: { navy: { 900: '#0B1120', 800: '#0F172A', 700: '#1E293B' }, gold: { 400: '#F59E0B', 500: '#D97706' }, purple: { 500: '#7C3AED', 400: '#8B5CF6' }, lightbg: '#F8F9FA' },
+                    fontFamily: { sans: ['-apple-system', 'BlinkMacSystemFont', '"Apple SD Gothic Neo"', '"Noto Sans KR"', '"Malgun Gothic"', 'sans-serif'] },
+                    animation: { 'fade-up': 'fadeUp 0.6s ease-out forwards', 'fade-in': 'fadeIn 0.8s ease-out forwards', 'float': 'float 6s ease-in-out infinite' },
+                    keyframes: { fadeUp: { '0%': { opacity: '0', transform: 'translateY(30px)' }, '100%': { opacity: '1', transform: 'translateY(0)' } }, fadeIn: { '0%': { opacity: '0' }, '100%': { opacity: '1' } }, float: { '0%, 100%': { transform: 'translateY(0)' }, '50%': { transform: 'translateY(-20px)' } } }
+                }
+            }
+        }
+    </script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", sans-serif; overflow-x: hidden; background: #0B1120; color: #F1F5F9; }
+        .glass-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 16px; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); transition: all 0.4s cubic-bezier(0.4,0,0.2,1); }
+        .glass-card:hover { transform: translateY(-4px); border-color: rgba(255,255,255,0.12); box-shadow: 0 20px 60px rgba(0,0,0,0.15); }
+        .btn-primary { display: inline-flex; align-items: center; gap: 8px; padding: 14px 32px; border-radius: 12px; font-weight: 700; font-size: 16px; background: linear-gradient(135deg, #F59E0B, #8B5CF6); color: white; border: none; cursor: pointer; text-decoration: none; transition: all 0.3s ease; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 12px 40px rgba(245,158,11,0.25); }
+        .btn-secondary { display: inline-flex; align-items: center; gap: 8px; padding: 14px 32px; border-radius: 12px; font-weight: 600; font-size: 16px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); color: #CBD5E1; text-decoration: none; transition: all 0.3s; cursor: pointer; }
+        .btn-secondary:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.2); color: white; }
+        .gold-text { background: linear-gradient(135deg, #F59E0B, #D97706); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .purple-text { background: linear-gradient(135deg, #8B5CF6, #7C3AED); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .gold-purple-text { background: linear-gradient(135deg, #F59E0B, #8B5CF6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .nav-link { text-decoration: none; font-size: 15px; font-weight: 500; padding: 8px 16px; border-radius: 8px; transition: all 0.2s ease; color: #94A3B8; }
+        .nav-link:hover { color: white; background: rgba(255,255,255,0.04); }
+        .product-placeholder { width: 100%; border-radius: 16px; min-height: 320px; display: flex; align-items: center; justify-content: center; border: 1px dashed rgba(139,92,246,0.3); background: linear-gradient(135deg, #1e1b4b, #0f172a); }
+        .tag-badge { font-size: 12px; padding: 4px 12px; border-radius: 12px; font-weight: 500; display: inline-block; }
+        .spec-table td { padding: 12px 16px; font-size: 14px; border-bottom: 1px solid rgba(255,255,255,0.04); }
+        .spec-table tr:last-child td { border-bottom: none; }
+        .spec-label { font-weight: 500; width: 30%; color: #94A3B8; }
+        .hero-bg { position: relative; overflow: hidden; background: radial-gradient(ellipse at 30% 0%, rgba(139,92,246,0.06) 0%, transparent 60%), radial-gradient(ellipse at 70% 20%, rgba(245,158,11,0.04) 0%, transparent 50%); }
+        .form-input { width: 100%; padding: 12px 16px; border-radius: 12px; font-size: 15px; transition: all 0.2s ease; outline: none; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); color: #F1F5F9; }
+        .form-input:focus { border-color: rgba(139,92,246,0.4); box-shadow: 0 0 0 3px rgba(139,92,246,0.1); }
+        .form-input::placeholder { color: #64748B; }
+        .form-label { display: block; font-size: 14px; font-weight: 500; margin-bottom: 6px; color: #CBD5E1; }
+        .stat-card { border-radius: 12px; padding: 20px; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); }
+        .footer-link { font-size: 14px; text-decoration: none; transition: color 0.2s ease; display: block; padding: 4px 0; color: #475569; }
+        .footer-link:hover { color: #F59E0B; }
+    </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav style="position: fixed; top: 0; left: 0; right: 0; z-index: 100;">
+    <div style="background: rgba(11,17,32,0.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255,255,255,0.04);">
+        <div style="max-width: 1280px; margin: 0 auto; padding: 0 24px; display: flex; align-items: center; justify-content: space-between; height: 68px;">
+            <div style="display: flex; align-items: center; gap: 40px;">
+                <a href="/index_ko.html" style="display: flex; align-items: center; gap: 10px; text-decoration: none;">
+                    <span style="background: linear-gradient(135deg, #6366f1, #06b6d4); width: 34px; height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 700; color: white;">G</span>
+                    <span style="font-size: 20px; font-weight: 800; letter-spacing: -0.5px; background: linear-gradient(135deg, #6366f1, #06b6d4); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">go-aiport</span>
+                </a>
+                <div style="display: flex; gap: 4px;">
+                    <a href="/index_ko.html" class="nav-link">홈</a>
+                    <a href="/index_ko.html#products" class="nav-link">한국 상품</a>
+                    <a href="/pricing_ko.html" class="nav-link">서비스</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero-bg" style="padding-top: 120px; padding-bottom: 80px;">
+    <div style="max-width: 1280px; margin: 0 auto; padding: 0 24px;">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center;">
+            <div>
+                <div class="product-placeholder" style="min-height: 380px; position: relative;">
+                    <div style="text-align: center;">
+                        <i class="bi bi-cup-hot" style="font-size: 64px; color: #F59E0B; opacity: 0.5;"></i>
+                        <p style="color: #64748B; margin-top: 12px; font-size: 14px;">📸 제품 이미지 · CAFE MORI 말차 라떼</p>
+                        <p style="color: #475569; font-size: 12px; margin-top: 8px;">(권장 크기: 800x600px · 흰색 배경)</p>
+                    </div>
+                    <div style="position: absolute; top: 16px; left: 16px; display: flex; gap: 8px;">
+                        <span style="background: linear-gradient(135deg, rgba(245,158,11,0.3), rgba(139,92,246,0.2)); color: white; font-size: 12px; font-weight: 700; padding: 4px 14px; border-radius: 20px; backdrop-filter: blur(4px);">한국 직수입</span>
+                    </div>
+                    <div style="position: absolute; top: 16px; right: 16px;">
+                        <span style="background: #F59E0B; color: white; font-size: 12px; font-weight: 700; padding: 4px 14px; border-radius: 20px;">NEW</span>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px;">
+                    <span class="tag-badge" style="background: rgba(139,92,246,0.1); color: #8B5CF6; border: 1px solid rgba(139,92,246,0.2);">CAFE MORI</span>
+                    <span class="tag-badge" style="background: rgba(245,158,11,0.1); color: #F59E0B; border: 1px solid rgba(245,158,11,0.2);">JARDIN</span>
+                    <span class="tag-badge" style="background: rgba(245,158,11,0.06); color: #D97706; border: 1px solid rgba(245,158,11,0.15);">🌿 6가지 맛</span>
+                </div>
+                <h1 style="font-size: 36px; font-weight: 800; line-height: 1.2; margin-bottom: 12px; letter-spacing: -0.5px;">
+                    <span class="gold-purple-text">CAFE MORI · JARDIN 말차 라떼</span>
+                </h1>
+                <p style="font-size: 18px; line-height: 1.6; margin-bottom: 8px; color: #94A3B8;">
+                    한국 직수입 · 제주도 유기농 말차 · 6가지 맛
+                </p>
+                <div style="display: flex; align-items: center; gap: 24px; margin-top: 24px; margin-bottom: 24px;">
+                    <div>
+                        <p style="font-size: 12px; color: #64748B;">FOB 참고 가격</p>
+                        <p style="font-size: 28px; font-weight: 800; color: #F59E0B;">$3.5 <span style="font-size: 16px; font-weight: 400; color: #94A3B8;">/박스</span></p>
+                    </div>
+                    <div style="width: 1px; height: 48px; background: rgba(255,255,255,0.08);"></div>
+                    <div>
+                        <p style="font-size: 12px; color: #64748B;">최소 주문 수량 (MOQ)</p>
+                        <p style="font-size: 24px; font-weight: 800; color: #8B5CF6;">500 <span style="font-size: 16px; font-weight: 400; color: #94A3B8;">박스</span></p>
+                    </div>
+                </div>
+                <div style="display: flex; flex-wrap: wrap; gap: 12px;">
+                    <a href="#inquiry" class="btn-primary" style="font-size: 16px;">
+                        <i class="bi bi-chat-dots"></i> 이 제품의 대리점이 되고 싶습니다
+                    </a>
+                    <a href="/index_ko.html" class="btn-secondary" style="font-size: 16px;">
+                        <i class="bi bi-arrow-left"></i> 홈으로
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- BRAND STORY -->
+<section style="padding: 80px 24px;">
+    <div style="max-width: 1280px; margin: 0 auto;">
+        <div style="display: grid; grid-template-columns: 2fr 3fr; gap: 60px; align-items: center;">
+            <div>
+                <div class="product-placeholder" style="min-height: 280px;">
+                    <div style="text-align: center;">
+                        <i class="bi bi-image" style="font-size: 48px; color: #64748B;"></i>
+                        <p style="color: #475569; font-size: 14px; margin-top: 12px;">브랜드 스토리 이미지</p>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <h2 style="font-size: 28px; font-weight: 700; margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
+                    <i class="bi bi-bookmark-heart-fill" style="color: #F59E0B;"></i>
+                    <span class="gold-purple-text">브랜드 스토리</span>
+                </h2>
+                <div style="display: flex; flex-direction: column; gap: 16px; line-height: 1.8; color: #CBD5E1;">
+                    <p><strong>CAFE MORI</strong>는 서울에서 탄생한 프리미엄 커피 브랜드로, '모든 잔은 장인의 정성'이라는 철학으로 한국 커피 문화를 현대 생활에 접목시켰습니다.</p>
+                    <p><strong>JARDIN 시리즈 말차 라떼</strong>는 CAFE MORI의 대표 제품 라인입니다. 제주도 유기농 말차 가루와 한국산 고품질 분유를 엄선하여 수백 번의 맛 테스트를 거쳐 6가지 맛을 출시했습니다. 모든 박스는 한국에서 생산되어 서울 공장에서 중국으로 직배송됩니다.</p>
+                    <p>한국에서는 JARDIN 말차 라떼가 3,000+ 편의점과 커피숍에 입점해 있으며, 월 판매량 50,000박스를 돌파했습니다. 이제 중국 시장에서 대리점을 모집합니다.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 6 FLAVORS -->
+<section style="padding: 80px 24px;">
+    <div style="max-width: 1280px; margin: 0 auto;">
+        <h2 style="text-align: center; font-size: 32px; font-weight: 800; margin-bottom: 12px;">
+            <span class="gold-purple-text">🎨 6가지 맛 · 다양한 입맛을 만족시키다</span>
+        </h2>
+        <p style="text-align: center; font-size: 16px; margin-bottom: 48px; color: #64748B;">
+            오리지널 · 오트 · 헤이즐넛 · 바닐라 · 카라멜 · 초콜릿
+        </p>
+        <div style="display: grid; grid-template-columns: repeat(6, 1fr); gap: 16px;">
+            <div class="glass-card" style="padding: 24px; text-align: center;">
+                <div style="width: 56px; height: 56px; border-radius: 50%; background: linear-gradient(135deg, rgba(245,158,11,0.15), rgba(139,92,246,0.1)); display: flex; align-items: center; justify-content: center; margin: 0 auto 12px;">
+                    <i class="bi bi-cup-straw" style="font-size: 24px; color: #F59E0B;"></i>
+                </div>
+                <p style="font-weight: 700; font-size: 15px;">오리지널</p>
+                <p style="font-size: 12px; margin-top: 4px; color: #64748B;">클래식 말차</p>
+            </div>
+            <div class="glass-card" style="padding: 24px; text-align: center;">
+                <div style="width: 56px; height: 56px; border-radius: 50%; background: linear-gradient(135deg, rgba(245,158,11,0.15), rgba(139,92,246,0.1)); display: flex; align-items: center; justify-content: center; margin: 0 auto 12px;">
+                    <i class="bi bi-cup-straw" style="font-size: 24px; color: #D97706;"></i>
+                </div>
+                <p style="font-weight: 700; font-size: 15px;">오트</p>
+                <p style="font-size: 12px; margin-top: 4px; color: #64748B;">건강 곡물</p>
+            </div>
+            <div class="glass-card" style="padding: 24px; text-align: center;">
+                <div style="width: 56px; height: 56px; border-radius: 50%; background: linear-gradient(135deg, rgba(245,158,11,0.15), rgba(139,92,246,0.1)); display: flex; align-items: center; justify-content: center; margin: 0 auto 12px;">
+                    <i class="bi bi-cup-straw" style="font-size: 24px; color: #F59E0B;"></i>
+                </div>
+                <p style="font-weight: 700; font-size: 15px;">헤이즐넛</p>
+                <p style="font-size: 12px; margin-top: 4px; color: #64748B;">고소한 견과류</p>
+            </div>
+            <div class="glass-card" style="padding: 24px; text-align: center;">
+                <div style="width: 56px; height: 56px; border-radius: 50%; background: linear-gradient(135deg, rgba(245,158,11,0.15), rgba(139,92,246,0.1)); display: flex; align-items: center; justify-content: center; margin: 0 auto 12px;">
+                    <i class="bi bi-cup-straw" style="font-size: 24px; color: #8B5CF6;"></i>
+                </div>
+                <p style="font-weight: 700; font-size: 15px;">바닐라</p>
+                <p style="font-size: 12px; margin-top: 4px; color: #64748B;">달콤 부드러움</p>
+            </div>
+            <div class="glass-card" style="padding: 24px; text-align: center;">
+                <div style="width: 56px; height: 56px; border-radius: 50%; background: linear-gradient(135deg, rgba(245,158,11,0.15), rgba(139,92,246,0.1)); display: flex; align-items: center; justify-content: center; margin: 0 auto 12px;">
+                    <i class="bi bi-cup-straw" style="font-size: 24px; color: #D97706;"></i>
+                </div>
+                <p style="font-weight: 700; font-size: 15px;">카라멜</p>
+                <p style="font-size: 12px; margin-top: 4px; color: #64748B;">진한 풍미</p>
+            </div>
+            <div class="glass-card" style="padding: 24px; text-align: center;">
+                <div style="width: 56px; height: 56px; border-radius: 50%; background: linear-gradient(135deg, rgba(245,158,11,0.15), rgba(139,92,246,0.1)); display: flex; align-items: center; justify-content: center; margin: 0 auto 12px;">
+                    <i class="bi bi-cup-straw" style="font-size: 24px; color: #8B5CF6;"></i>
+                </div>
+                <p style="font-weight: 700; font-size: 15px;">초콜릿</p>
+                <p style="font-size: 12px; margin-top: 4px; color: #64748B;">부드러운 코코아</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- SPECIFICATIONS -->
+<section style="padding: 80px 24px; background: rgba(255,255,255,0.01);">
+    <div style="max-width: 1280px; margin: 0 auto;">
+        <h2 style="text-align: center; font-size: 32px; font-weight: 800; margin-bottom: 48px;">
+            <span class="gold-purple-text">📋 제품 사양</span>
+        </h2>
+        <div style="max-width: 720px; margin: 0 auto;">
+            <div class="glass-card" style="overflow: hidden;">
+                <table style="width: 100%; border-collapse: collapse;">
+                    <tbody>
+                        <tr><td class="spec-label">제품명</td><td style="font-weight: 600;">CAFE MORI JARDIN 말차 라떼</td></tr>
+                        <tr><td class="spec-label">브랜드</td><td style="font-weight: 600;">CAFE MORI</td></tr>
+                        <tr><td class="spec-label">시리즈</td><td style="font-weight: 600;">JARDIN</td></tr>
+                        <tr><td class="spec-label">원산지</td><td style="font-weight: 600;">한국 (서울)</td></tr>
+                        <tr><td class="spec-label">맛</td><td style="font-weight: 600;">오리지널, 오트, 헤이즐넛, 바닐라, 카라멜, 초콜릿 (6가지)</td></tr>
+                        <tr><td class="spec-label">순 함량</td><td style="font-weight: 600;">30g / 박스 (개별 포장 6조각 × 5g)</td></tr>
+                        <tr><td class="spec-label">포장 규격</td><td style="font-weight: 600;">20박스 / 박스</td></tr>
+                        <tr><td class="spec-label">유통기한</td><td style="font-weight: 600;">18개월</td></tr>
+                        <tr><td class="spec-label">주요 성분</td><td style="font-weight: 600;">말차 가루(제주도), 분유, 백설탕, 식용 향료</td></tr>
+                        <tr><td class="spec-label">보관 방법</td><td style="font-weight: 600;">서늘하고 건조한 곳, 직사광선 차단</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- PRICING -->
+<section style="padding: 80px 24px;">
+    <div style="max-width: 1280px; margin: 0 auto;">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; max-width: 800px; margin: 0 auto;">
+            <div class="glass-card" style="padding: 36px; text-align: center;">
+                <i class="bi bi-currency-dollar" style="font-size: 40px; color: #F59E0B; margin-bottom: 16px; display: block;"></i>
+                <h3 style="font-size: 20px; font-weight: 700; margin-bottom: 12px;" class="gold-purple-text">FOB 가격</h3>
+                <div style="font-size: 40px; font-weight: 800; color: #F59E0B; margin-bottom: 8px;">$3.50<span style="font-size: 18px; font-weight: 400; color: #94A3B8;"> USD/박스</span></div>
+                <p style="font-size: 14px; color: #64748B;">FOB 한국 주요 항구 (부산/인천)</p>
+                <p style="font-size: 12px; margin-top: 8px; color: #475569;">* 실제 가격은 주문량과 환율에 따라 변동됩니다</p>
+            </div>
+            <div class="glass-card" style="padding: 36px; text-align: center;">
+                <i class="bi bi-boxes" style="font-size: 40px; color: #8B5CF6; margin-bottom: 16px; display: block;"></i>
+                <h3 style="font-size: 20px; font-weight: 700; margin-bottom: 12px;" class="gold-purple-text">최소 주문 수량 (MOQ)</h3>
+                <div style="font-size: 40px; font-weight: 800; color: #8B5CF6; margin-bottom: 8px;">500<span style="font-size: 18px; font-weight: 400; color: #94A3B8;"> 박스</span></div>
+                <p style="font-size: 14px; color: #64748B;">첫 주문 최소 500박스 (25박스)</p>
+                <p style="font-size: 12px; margin-top: 8px; color: #475569;">* 재주문 시 MOQ 200박스로 인하 가능</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- COMPLIANCE INFO -->
+<section style="padding: 80px 24px; background: rgba(255,255,255,0.01);">
+    <div style="max-width: 1280px; margin: 0 auto;">
+        <div style="max-width: 800px; margin: 0 auto;">
+            <div class="glass-card" style="padding: 36px;">
+                <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 24px;">
+                    <i class="bi bi-shield-check" style="font-size: 28px; color: #F59E0B;"></i>
+                    <h3 style="font-size: 20px; font-weight: 700;" class="gold-purple-text">📜 수입 컴플라이언스 안내</h3>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+                    <div>
+                        <p style="font-size: 13px; font-weight: 600; margin-bottom: 8px; color: #94A3B8;">HS 코드 (참고)</p>
+                        <div style="padding: 16px; border-radius: 12px; background: rgba(255,255,255,0.03);">
+                            <p style="font-family: monospace; font-size: 20px; font-weight: 700; color: #F59E0B;">2101.20</p>
+                            <p style="font-size: 12px; margin-top: 4px; color: #475569;">차 또는 마테차 추출물, 정액 및 제품</p>
+                        </div>
+                    </div>
+                    <div>
+                        <p style="font-size: 13px; font-weight: 600; margin-bottom: 8px; color: #94A3B8;">수입 관세 (참고)</p>
+                        <div style="padding: 16px; border-radius: 12px; background: rgba(255,255,255,0.03); display: flex; flex-direction: column; gap: 8px;">
+                            <div style="display: flex; justify-content: space-between;"><span style="color:#94A3B8;">기본 관세</span><span style="font-weight:600;">15%</span></div>
+                            <div style="display: flex; justify-content: space-between;"><span style="color:#94A3B8;">부가가치세</span><span style="font-weight:600;">13%</span></div>
+                            <div style="display: flex; justify-content: space-between; padding-top:8px; border-top:1px solid rgba(255,255,255,0.04);"><span style="color:#94A3B8;">종합 세율 (약)</span><span style="font-weight:700;color:#F59E0B;">~29.95%</span></div>
+                        </div>
+                    </div>
+                </div>
+                <div style="margin-top: 20px; padding: 16px; border-radius: 12px; background: rgba(245,158,11,0.04); border: 1px solid rgba(245,158,11,0.12);">
+                    <p style="font-size: 14px; display: flex; align-items: flex-start; gap: 8px; color: #D97706;">
+                        <i class="bi bi-info-circle-fill" style="margin-top: 2px;"></i>
+                        <span><strong>안내사항:</strong> 위 정보는 참고용입니다. 한중 FTA에 따라 원산지 규정을 충족하는 경우 혜택 관세를 적용받을 수 있습니다. 실제 세율은 세관 확인을 기준으로 합니다. 전문 통관 대행업체를 통해 수입 절차를 진행하시기 바랍니다.</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- INQUIRY FORM -->
+<section id="inquiry" style="padding: 80px 24px;">
+    <div style="max-width: 1280px; margin: 0 auto;">
+        <div style="max-width: 560px; margin: 0 auto;">
+            <h2 style="text-align: center; font-size: 28px; font-weight: 800; margin-bottom: 8px;">
+                <span class="gold-purple-text">📩 이 제품의 대리점이 되고 싶습니다</span>
+            </h2>
+            <p style="text-align: center; font-size: 15px; margin-bottom: 40px; color: #64748B;">
+                아래 정보를 입력하시면, 파트너 하오란이 24시간 내에 연락드립니다
+            </p>
+            <div class="glass-card" style="padding: 36px;">
+                <form id="inquiryForm" onsubmit="handleSubmit(event)" style="display: flex; flex-direction: column; gap: 20px;">
+                    <div>
+                        <label class="form-label">이름 <span style="color: #EF4444;">*</span></label>
+                        <input type="text" name="name" required class="form-input" placeholder="이름">
+                    </div>
+                    <div>
+                        <label class="form-label">회사명 <span style="color: #EF4444;">*</span></label>
+                        <input type="text" name="company" required class="form-input" placeholder="회사명">
+                    </div>
+                    <div>
+                        <label class="form-label">연락처 <span style="color: #EF4444;">*</span></label>
+                        <input type="tel" name="phone" required class="form-input" placeholder="휴대폰 또는 유선전화">
+                    </div>
+                    <div>
+                        <label class="form-label">예상 월 판매량 (박스)</label>
+                        <select name="volume" class="form-input">
+                            <option value="" disabled selected style="color:#64748B;">예상 월 판매량을 선택하세요</option>
+                            <option value="500-1000">500 - 1,000 박스</option>
+                            <option value="1000-5000">1,000 - 5,000 박스</option>
+                            <option value="5000-10000">5,000 - 10,000 박스</option>
+                            <option value="10000+">10,000+ 박스</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="form-label">비고 (선택)</label>
+                        <textarea name="note" rows="3" class="form-input" placeholder="추가 문의사항"></textarea>
+                    </div>
+                    <button type="submit" class="btn-primary" style="width: 100%; justify-content: center; font-size: 16px; padding: 16px 32px;">
+                        <i class="bi bi-send"></i> 문의 제출
+                    </button>
+                    <p style="font-size: 12px; text-align: center; margin-top: 8px; color: #475569;">
+                        제출 시 <a href="privacy.html" style="color: #8B5CF6; text-decoration: underline;">개인정보 처리방침</a>에 동의합니다
+                    </p>
+                </form>
+                <div id="successMessage" style="display: none; text-align: center; padding: 32px 0;">
+                    <i class="bi bi-check-circle-fill" style="font-size: 48px; color: #10B981; margin-bottom: 16px; display: block;"></i>
+                    <h3 style="font-size: 22px; font-weight: 700; margin-bottom: 8px; color: #F59E0B;">제출 완료!</h3>
+                    <p style="color: #94A3B8;">귀하의 신뢰에 감사드립니다. 파트너 하오란이 곧 연락드리겠습니다.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- FOOTER -->
+<footer style="padding: 60px 24px 40px; border-top: 1px solid rgba(255,255,255,0.03);">
+    <div style="max-width: 1280px; margin: 0 auto;">
+        <div style="display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 40px;">
+            <div>
+                <div style="display: flex; align-items: center; gap: 10px; font-size: 20px; font-weight: 700; margin-bottom: 12px;">
+                    <span style="background: linear-gradient(135deg, #6366f1, #06b6d4); width: 28px; height: 28px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 16px; color: white;">G</span>
+                    <span style="background: linear-gradient(135deg, #6366f1, #06b6d4); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">go-aiport</span> <span style="font-size: 13px; font-weight: 400; opacity: 0.6;">· 한품우선</span>
+                </div>
+                <p style="font-size: 14px; line-height: 1.7; max-width: 320px; color: #475569;">
+                    중한 해외진출 디지털 포트의 한국 상품 플랫폼으로, 한국 우수 제품의 중국 진출을 지원하며 AI 기술로 정밀 매칭을 실현합니다.
+                </p>
+            </div>
+            <div>
+                <h4 style="font-size: 14px; font-weight: 700; margin-bottom: 16px;">링크</h4>
+                <div style="display: flex; flex-direction: column; gap: 4px;">
+                    <a href="/index_ko.html" class="footer-link">홈</a>
+                    <a href="/index_ko.html#products" class="footer-link">한국 상품</a>
+                    <a href="/index_ko.html#process" class="footer-link">협업 프로세스</a>
+                </div>
+            </div>
+            <div>
+                <h4 style="font-size: 14px; font-weight: 700; margin-bottom: 16px;">연락처</h4>
+                <div style="display: flex; flex-direction: column; gap: 4px; font-size: 14px; color: #475569;">
+                    <div style="display: flex; align-items: center; gap: 8px;"><i class="bi bi-envelope" style="color: #6366f1;"></i> haoran@go-aiport.com</div>
+                    <div style="display: flex; align-items: center; gap: 8px;"><i class="bi bi-wechat" style="color: #06b6d4;"></i> haoran_kr</div>
+                    <span style="font-size: 13px;">업무 시간 9:00-18:00 · 한중 이중 언어 서비스</span>
+                </div>
+            </div>
+        </div>
+        <div style="margin-top: 40px; padding-top: 24px; border-top: 1px solid rgba(255,255,255,0.03); text-align: center; font-size: 13px; color: #475569;">
+            © 2026 go-aiport.com · 중한 해외진출 디지털 포트 · All Rights Reserved
+        </div>
+    </div>
+</footer>
+
+<script>
+function handleSubmit(e) {
+    e.preventDefault();
+    var form = e.target;
+    form.style.display = 'none';
+    document.getElementById('successMessage').style.display = 'block';
+    setTimeout(function() {
+        form.style.display = 'flex';
+        form.style.flexDirection = 'column';
+        form.style.gap = '20px';
+        document.getElementById('successMessage').style.display = 'none';
+        form.reset();
+    }, 5000);
+    return false;
+}
+</script>
+
+</body>
+</html>
