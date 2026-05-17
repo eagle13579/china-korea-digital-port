@@ -262,6 +262,10 @@ from fastapi.responses import FileResponse as FR
 async def compliance_kr_page():
     return FileResponse(os.path.join(ROOT_DIR, "templates", "compliance_ko.html"))
 
+@app.get("/chat/ko")
+async def chat_ko_page():
+    return FileResponse(os.path.join(ROOT_DIR, "templates", "chat_ko.html"))
+
 @app.get("/health")
 async def health():
     return {"status": "ok"}

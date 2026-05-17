@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 고객센터 - 한중 해역 디지털 포트</title>
+<style>
+  /* ── Reset & Base ── */
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg-primary: #0f172a;
+    --bg-secondary: #1e293b;
+    --bg-card: #1a2332;
+    --bg-input: #1e293b;
+    --bg-bubble-user: linear-gradient(135deg, #4f46e5, #6366f1);
+    --bg-bubble-bot: #1e293b;
+    --text-primary: #f1f5f9;
+    --text-secondary: #94a3b8;
+    --text-muted: #64748b;
+    --accent: #4f46e5;
+    --accent-hover: #6366f1;
+    --accent-glow: rgba(79, 70, 229, 0.3);
+    --border: rgba(255,255,255,0.08);
+    --border-light: rgba(255,255,255,0.12);
+    --success: #22c55e;
+    --radius: 12px;
+    --radius-lg: 16px;
+    --radius-full: 9999px;
+    --shadow: 0 8px 32px rgba(0,0,0,0.5);
+    --font: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR", "Segoe UI", Roboto, sans-serif;
+  }
+
+  html, body {
+    height: 100%;
+    font-family: var(--font);
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    overflow: hidden;
+  }
+
+  /* ── Layout ── */
+  .app-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    max-width: 800px;
+    margin: 0 auto;
+    background: var(--bg-primary);
+    position: relative;
+  }
+
+  /* ── Header ── */
+  .chat-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px 20px;
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+    z-index: 10;
+  }
+
+  .chat-header-avatar {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #4f46e5, #7c3aed);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+    box-shadow: 0 0 20px var(--accent-glow);
+  }
+
+  .chat-header-info { flex: 1; min-width: 0; }
+  .chat-header-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text-primary);
+    line-height: 1.3;
+  }
+  .chat-header-status {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-top: 2px;
+  }
+  .status-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--success);
+    display: inline-block;
+    animation: pulse-dot 2s infinite;
+  }
+  @keyframes pulse-dot {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+
+  .header-actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+  .header-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid var(--border);
+    color: var(--text-secondary);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    transition: all 0.2s;
+    flex-shrink: 0;
+  }
+  .header-btn:hover {
+    background: rgba(255,255,255,0.12);
+    color: var(--text-primary);
+    border-color: var(--border-light);
+  }
+
+  /* ── Quick Reply Chips ── */
+  .quick-replies {
+    display: flex;
+    gap: 8px;
+    padding: 12px 20px;
+    overflow-x: auto;
+    flex-shrink: 0;
+    background: var(--bg-primary);
+    border-bottom: 1px solid var(--border);
+    scrollbar-width: none;
+  }
+  .quick-replies::-webkit-scrollbar { display: none; }
+
+  .quick-chip {
+    white-space: nowrap;
+    padding: 6px 14px;
+    border-radius: var(--radius-full);
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    color: var(--text-secondary);
+    font-size: 12.5px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: var(--font);
+    flex-shrink: 0;
+  }
+  .quick-chip:hover {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+    box-shadow: 0 0 16px var(--accent-glow);
+  }
+
+  /* ── Messages Area ── */
+  .messages-container {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    background: var(--bg-primary);
+    scroll-behavior: smooth;
+  }
+  .messages-container::-webkit-scrollbar { width: 5px; }
+  .messages-container::-webkit-scrollbar-track { background: transparent; }
+  .messages-container::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 3px; }
+
+  .message-row {
+    display: flex;
+    max-width: 88%;
+    animation: msgFadeIn 0.3s ease-out both;
+  }
+  @keyframes msgFadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .message-row.user {
+    align-self: flex-end;
+    flex-direction: row-reverse;
+  }
+  .message-row.bot {
+    align-self: flex-start;
+  }
+
+  .message-bubble {
+    padding: 10px 16px;
+    border-radius: 16px;
+    font-size: 14px;
+    line-height: 1.6;
+    word-break: break-word;
+    white-space: pre-wrap;
+    position: relative;
+  }
+  .message-row.user .message-bubble {
+    background: var(--bg-bubble-user);
+    color: #fff;
+    border-bottom-right-radius: 4px;
+  }
+  .message-row.bot .message-bubble {
+    background: var(--bg-bubble-bot);
+    color: var(--text-primary);
+    border: 1px solid var(--border);
+    border-bottom-left-radius: 4px;
+  }
+
+  .message-time {
+    font-size: 10px;
+    color: var(--text-muted);
+    margin-top: 4px;
+    text-align: right;
+    padding-right: 2px;
+  }
+
+  /* ── Typing Indicator ── */
+  .typing-indicator {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 12px 16px;
+    border-radius: 16px;
+    background: var(--bg-bubble-bot);
+    border: 1px solid var(--border);
+    align-self: flex-start;
+    border-bottom-left-radius: 4px;
+  }
+  .typing-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #6b7280;
+    animation: typingBounce 1.4s infinite ease-in-out both;
+  }
+  .typing-dot:nth-child(1) { animation-delay: -0.32s; }
+  .typing-dot:nth-child(2) { animation-delay: -0.16s; }
+  @keyframes typingBounce {
+    0%, 80%, 100% { transform: scale(0); }
+    40% { transform: scale(1); }
+  }
+
+  /* ── Input Area ── */
+  .input-container {
+    display: flex;
+    align-items: flex-end;
+    gap: 8px;
+    padding: 12px 20px 16px;
+    background: var(--bg-secondary);
+    border-top: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+
+  .input-wrapper {
+    flex: 1;
+    display: flex;
+    align-items: flex-end;
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 4px;
+    transition: border-color 0.2s;
+  }
+  .input-wrapper:focus-within {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-glow);
+  }
+
+  .input-wrapper textarea {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--text-primary);
+    font-size: 14px;
+    font-family: var(--font);
+    line-height: 1.5;
+    padding: 8px 12px;
+    resize: none;
+    max-height: 120px;
+    min-height: 24px;
+  }
+  .input-wrapper textarea::placeholder { color: var(--text-muted); }
+
+  .send-btn {
+    width: 38px;
+    height: 38px;
+    border-radius: 8px;
+    background: var(--accent);
+    border: none;
+    color: #fff;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    transition: all 0.2s;
+    flex-shrink: 0;
+    opacity: 0.5;
+  }
+  .send-btn.active {
+    opacity: 1;
+  }
+  .send-btn.active:hover {
+    background: var(--accent-hover);
+    box-shadow: 0 0 20px var(--accent-glow);
+  }
+
+  /* ── Empty State ── */
+  .empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    padding: 40px 20px;
+    text-align: center;
+  }
+  .empty-state-icon {
+    font-size: 56px;
+    margin-bottom: 16px;
+    opacity: 0.8;
+  }
+  .empty-state h2 {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: var(--text-primary);
+  }
+  .empty-state p {
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    max-width: 360px;
+  }
+
+  /* ── Responsive ── */
+  @media (max-width: 480px) {
+    .message-row { max-width: 92%; }
+    .quick-replies { padding: 10px 16px; }
+    .messages-container { padding: 14px; }
+    .input-container { padding: 10px 14px 14px; }
+    .chat-header { padding: 12px 16px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app-container" id="app">
+
+  <!-- ─── Header ─── -->
+  <header class="chat-header">
+    <div class="chat-header-avatar">🤖</div>
+    <div class="chat-header-info">
+      <div class="chat-header-title">AI 고객센터</div>
+      <div class="chat-header-status">
+        <span class="status-dot"></span>
+        <span id="status-text">온라인 · 실시간 상담 가능</span>
+      </div>
+    </div>
+    <div class="header-actions">
+      <button class="header-btn" id="btn-clear" title="대화 초기화" onclick="clearChat()">🗑</button>
+      <button class="header-btn" id="btn-close" title="닫기" onclick="closePage()">✕</button>
+    </div>
+  </header>
+
+  <!-- ─── Quick Replies ─── -->
+  <div class="quick-replies" id="quick-replies">
+    <button class="quick-chip" onclick="sendQuick('중국 시장에 진출하려면 어떤 절차가 필요한가요?')">🇨🇳 중국 시장 진출 절차</button>
+    <button class="quick-chip" onclick="sendQuick('한국 기업의 관세 및 통관 절차는 어떻게 되나요?')">📦 관세·통관</button>
+    <button class="quick-chip" onclick="sendQuick('중국에서 상표 등록하는 방법을 알려주세요.')">™️ 상표 등록</button>
+    <button class="quick-chip" onclick="sendQuick('중국 내 한국 기업의 물류 및 배송 전략은?')">🚚 물류·배송</button>
+    <button class="quick-chip" onclick="sendQuick('중국 전자상거래 플랫폼에 입점하려면?')">🛒 이커머스 입점</button>
+    <button class="quick-chip" onclick="sendQuick('한국 기업의 중국 진출 시 주요 법적 리스크는?')">⚖️ 법적 리스크</button>
+    <button class="quick-chip" onclick="sendQuick('중국 내 결제 시스템 및 환전 방법은?')">💳 결제·환전</button>
+    <button class="quick-chip" onclick="sendQuick('중국 시장에서의 디지털 마케팅 전략은?')">📱 디지털 마케팅</button>
+  </div>
+
+  <!-- ─── Messages ─── -->
+  <div class="messages-container" id="messages"></div>
+
+  <!-- ─── Input ─── -->
+  <div class="input-container">
+    <div class="input-wrapper">
+      <textarea id="chat-input" placeholder="메시지를 입력하세요..." rows="1"
+        oninput="autoResize(this); updateSendBtn();"
+        onkeydown="if(event.key==='Enter'&&(event.ctrlKey||event.metaKey)){event.preventDefault();sendMessage();}"></textarea>
+      <button class="send-btn" id="send-btn" onclick="sendMessage()">↑</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+(function() {
+  'use strict';
+
+  // ─── Configuration ────────────────────────────────
+  var API_URL = window.location.origin;
+  var messagesEl = document.getElementById('messages');
+  var inputEl = document.getElementById('chat-input');
+  var sendBtn = document.getElementById('send-btn');
+  var statusEl = document.getElementById('status-text');
+  var isLoading = false;
+  var messageCount = 0;
+
+  // ─── DeepSeek Base64 API Key ──────────────────────
+  function getApiKey() {
+    try {
+      return atob('c2stNDY2YTFlOTFiMjEwNGY4ZWE3ODNjZjg3OTQ1MDRkNWM=');
+    } catch(e) {
+      return '';
+    }
+  }
+
+  // ─── Show Empty State ──────────────────────────────
+  function showWelcome() {
+    messagesEl.innerHTML = '';
+    var emptyDiv = document.createElement('div');
+    emptyDiv.className = 'empty-state';
+    emptyDiv.id = 'empty-state';
+    emptyDiv.innerHTML =
+      '<div class="empty-state-icon">💬</div>' +
+      '<h2>안녕하세요! 무엇을 도와드릴까요?</h2>' +
+      '<p>저는 한중 해역 디지털 포트의 AI 고객센터입니다. ' +
+      '중국 시장 진출, 관세·통관, 상표 등록, 물류, ' +
+      '전자상거래, 법률 리스크, 결제 시스템 등 ' +
+      '한국 기업의 중국 비즈니스에 대해 문의해 주세요.</p>';
+    messagesEl.appendChild(emptyDiv);
+    updateSendBtn();
+  }
+
+  // ─── Add Message ────────────────────────────────────
+  function addMessage(text, role) {
+    // Remove empty state if present
+    var emptyState = document.getElementById('empty-state');
+    if (emptyState) emptyState.remove();
+
+    var now = new Date();
+    var timeStr = now.getHours().toString().padStart(2,'0') + ':' +
+                  now.getMinutes().toString().padStart(2,'0');
+
+    var row = document.createElement('div');
+    row.className = 'message-row ' + role;
+
+    var bubble = document.createElement('div');
+    bubble.className = 'message-bubble';
+    bubble.textContent = text;
+
+    var timeEl = document.createElement('div');
+    timeEl.className = 'message-time';
+    timeEl.textContent = timeStr;
+
+    row.appendChild(bubble);
+    row.appendChild(timeEl);
+    messagesEl.appendChild(row);
+
+    messagesEl.scrollTop = messagesEl.scrollHeight;
+    messageCount++;
+  }
+
+  // ─── Typing Indicator ──────────────────────────────
+  function showTyping() {
+    var typing = document.createElement('div');
+    typing.className = 'typing-indicator';
+    typing.id = 'typing-indicator';
+    for (var i = 0; i < 3; i++) {
+      var dot = document.createElement('span');
+      dot.className = 'typing-dot';
+      typing.appendChild(dot);
+    }
+    messagesEl.appendChild(typing);
+    messagesEl.scrollTop = messagesEl.scrollHeight;
+  }
+
+  function removeTyping() {
+    var t = document.getElementById('typing-indicator');
+    if (t) t.remove();
+  }
+
+  // ─── Send Message ──────────────────────────────────
+  function sendMessage() {
+    if (isLoading) return;
+    var text = inputEl.value.trim();
+    if (!text) return;
+    sendText(text);
+  }
+
+  function sendText(text) {
+    if (isLoading) return;
+    if (!text.trim()) return;
+
+    addMessage(text, 'user');
+    inputEl.value = '';
+    autoResize(inputEl);
+    updateSendBtn();
+
+    showTyping();
+    isLoading = true;
+
+    // Try DeepSeek API first via our backend proxy
+    callDeepSeekAPI(text);
+  }
+
+  // ─── DeepSeek API Call (via backend proxy) ───────────
+  function callDeepSeekAPI(message) {
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', API_URL + '/api/chat/ko', true);
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.timeout = 30000;
+
+    xhr.onload = function() {
+      removeTyping();
+      isLoading = false;
+      try {
+        var data = JSON.parse(xhr.responseText);
+        if (data.success && data.reply) {
+          addMessage(data.reply, 'bot');
+        } else {
+          addMessage('⚠️ 죄송합니다. 일시적으로 응답할 수 없습니다. 잠시 후 다시 시도해 주세요.', 'bot');
+        }
+      } catch(e) {
+        addMessage('⚠️ 응답 처리 중 오류가 발생했습니다. 다시 시도해 주세요.', 'bot');
+      }
+    };
+
+    xhr.onerror = function() {
+      removeTyping();
+      isLoading = false;
+      addMessage('⚠️ 네트워크 연결이 불안정합니다. 연결 상태를 확인 후 다시 시도해 주세요.', 'bot');
+    };
+
+    xhr.ontimeout = function() {
+      removeTyping();
+      isLoading = false;
+      addMessage('⏱️ 응답 시간이 초과되었습니다. 잠시 후 다시 시도해 주세요.', 'bot');
+    };
+
+    xhr.send(JSON.stringify({ message: message }));
+  }
+
+  // ─── Direct DeepSeek API Fallback ──────────────────
+  // (used if backend is unreachable)
+  function callDeepSeekDirect(message) {
+    var apiKey = getApiKey();
+    if (!apiKey) {
+      addMessage('죄송합니다. AI 서비스에 연결할 수 없습니다.', 'bot');
+      removeTyping();
+      isLoading = false;
+      return;
+    }
+
+    var payload = JSON.stringify({
+      model: 'deepseek-chat',
+      messages: [
+        {
+          role: 'system',
+          content: '당신은 한중 해역 디지털 포트의 한국어 고객센터 어시스턴트입니다. ' +
+                   '한국 기업의 중국 시장 진출에 관한 질문에 전문적으로 답변합니다. ' +
+                   '항상 한국어로 답변하며, 구체적이고 실용적인 정보를 제공합니다. ' +
+                   '관세, 통관, 물류, 상표권, 법률 리스크, 전자상거래, 결제 시스템, ' +
+                   '디지털 마케팅 등 중국 비즈니스 전반에 대해 도움을 드립니다.'
+        },
+        { role: 'user', content: message }
+      ],
+      temperature: 0.3
+    });
+
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', 'https://api.deepseek.com/v1/chat/completions', true);
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.setRequestHeader('Authorization', 'Bearer ' + apiKey);
+    xhr.timeout = 30000;
+
+    xhr.onload = function() {
+      removeTyping();
+      isLoading = false;
+      try {
+        var data = JSON.parse(xhr.responseText);
+        var reply = data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content;
+        if (reply) {
+          addMessage(reply, 'bot');
+        } else {
+          addMessage('⚠️ 죄송합니다. AI 응답을 생성할 수 없습니다.', 'bot');
+        }
+      } catch(e) {
+        addMessage('⚠️ 응답 처리 중 오류가 발생했습니다.', 'bot');
+      }
+    };
+
+    xhr.onerror = function() {
+      removeTyping();
+      isLoading = false;
+      addMessage('⚠️ AI 서비스에 연결할 수 없습니다. 잠시 후 다시 시도해 주세요.', 'bot');
+    };
+
+    xhr.send(payload);
+  }
+
+  // ─── Helper Functions ──────────────────────────────
+  function autoResize(el) {
+    el.style.height = 'auto';
+    el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+  }
+
+  function updateSendBtn() {
+    var val = inputEl.value.trim();
+    if (val) {
+      sendBtn.classList.add('active');
+      sendBtn.disabled = false;
+    } else {
+      sendBtn.classList.remove('active');
+      sendBtn.disabled = true;
+    }
+  }
+
+  function sendQuick(text) {
+    inputEl.value = text;
+    autoResize(inputEl);
+    updateSendBtn();
+    sendMessage();
+  }
+
+  function clearChat() {
+    if (messageCount === 0) return;
+    if (!confirm('대화를 초기화하시겠습니까?')) return;
+    messagesEl.innerHTML = '';
+    messageCount = 0;
+    showWelcome();
+  }
+
+  function closePage() {
+    window.close();
+    // Fallback if window.close() doesn't work
+    if (!window.closed) {
+      window.location.href = '/';
+    }
+  }
+
+  // ─── Init ────────────────────────────────────────────
+  showWelcome();
+
+  // Expose functions to global scope
+  window.sendMessage = sendMessage;
+  window.sendText = sendText;
+  window.sendQuick = sendQuick;
+  window.clearChat = clearChat;
+  window.closePage = closePage;
+  window.autoResize = autoResize;
+  window.updateSendBtn = updateSendBtn;
+
+})();
+</script>
+
+</body>
+</html>
