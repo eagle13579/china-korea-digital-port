@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>合规健康度自检 - 中韩出海数智港</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        body { font-family: Inter, system-ui, sans-serif; background: #f8fafc; }
+        .gradient-header { background: linear-gradient(135deg, #1e3a5f 0%, #2d6a9f 100%); }
+        .option-card { transition: all .2s; cursor: pointer; border: 2px solid transparent; }
+        .option-card:hover { border-color: #3b82f6; transform: translateY(-1px); }
+        .option-card.selected { border-color: #2563eb; background: #eff6ff; }
+        .progress-bar { transition: width .5s ease; }
+        .employee-badge { background: #f1f5f9; border-radius: 999px; padding: 2px 10px; font-size: 12px; }
+        .slide-enter { animation: slideIn .3s ease; }
+        @keyframes slideIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
+        .result-score { font-size: 4rem; font-weight: 800; line-height: 1; }
+        .result-ring { width: 160px; height: 160px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto; }
+        @media (max-width: 640px) { .result-score { font-size: 3rem; } .result-ring { width: 120px; height: 120px; } }
+    </style>
+</head>
+<body>
+<div x-data="app()" x-init="init()">
+    <div class="gradient-header text-white px-4 py-8 md:py-12">
+        <div class="max-w-3xl mx-auto text-center">
+            <div class="flex justify-center gap-2 mb-3">
+                <button @click="setLang('zh')" class="px-3 py-1 rounded-full text-xs" :class="lang=='zh'?'bg-white text-blue-900':'bg-blue-500/30'">🇨🇳 中文</button>
+                <button @click="setLang('ko')" class="px-3 py-1 rounded-full text-xs" :class="lang=='ko'?'bg-white text-blue-900':'bg-blue-500/30'">🇰🇷 한국어</button>
+            </div>
+            <h1 class="text-2xl md:text-3xl font-bold mb-2" x-text="t('title')"></h1>
+            <p class="text-blue-200 text-sm" x-text="t('subtitle')"></p>
+        </div>
+    </div>
+    <div class="max-w-3xl mx-auto px-4 py-6">
+        <div x-show="step > 0 && step <= qs.length" class="mb-6">
+            <div class="flex justify-between text-xs text-gray-500 mb-1">
+                <span x-text="t('progress')+' '+Math.round((step-1)/qs.length*100)+'%'"></span>
+                <span x-text="step+'/'+qs.length"></span>
+            </div>
+            <div class="bg-gray-200 rounded-full h-2"><div class="progress-bar h-2 rounded-full bg-blue-600" :style="'width:'+((step-1)/qs.length*100)+'%'"></div></div>
+        </div>
+        <div x-show="step===0" class="slide-enter">
+            <div class="bg-white rounded-2xl shadow-sm border p-6 md:p-8 text-center">
+                <div class="text-5xl mb-3">🛡️</div>
+                <h2 class="text-xl font-bold text-gray-800" x-text="t('start_title')"></h2>
+                <p class="text-gray-500 mt-2 text-sm" x-text="t('start_desc')"></p>
+                <button @click="step=1" class="mt-6 w-full py-3 bg-blue-600 text-white rounded-xl font-medium hover:bg-blue-700">▶ <span x-text="t('start_btn')"></span></button>
+                <div x-show="saved" class="mt-3"><p class="text-xs text-amber-600">📂 <span x-text="t('resume')"></span> <button @click="resumeProgress()" class="underline" x-text="t('resume_btn')"></button></p></div>
+            </div>
+        </div>
+        <template x-for="(q,i) in qs" :key="q.id">
+            <div x-show="step===i+1" class="slide-enter">
+                <div class="bg-white rounded-2xl shadow-sm border p-6 md:p-8">
+                    <div class="flex items-center gap-2 mb-4">
+                        <span class="employee-badge">👤 <span x-text="q.employee.name"></span> <span class="text-gray-400" x-text="q.employee.role"></span></span>
+                        <span class="text-xs text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full" x-text="q.employee.level"></span>
+                    </div>
+                    <div class="text-xs text-blue-600 font-medium mb-2" x-text="'📌 '+q.dimension_label"></div>
+                    <h3 class="text-lg font-semibold text-gray-800 mb-5" x-text="q.question"></h3>
+                    <div class="space-y-3">
+                        <template x-for="opt in q.options" :key="opt.value">
+                            <div class="option-card rounded-xl p-4 border" :class="ans[q.id]===opt.value ? 'selected border-blue-500 bg-blue-50' : 'border-gray-200'" @click="pick(q.id,opt.value)">
+                                <div class="flex items-start gap-3">
+                                    <div class="w-6 h-6 rounded-full border-2 flex-shrink-0 flex items-center justify-center mt-0.5" :class="ans[q.id]===opt.value ? 'bg-blue-600 border-blue-600' : 'border-gray-300'">
+                                        <i x-show="ans[q.id]===opt.value" class="fas fa-check text-white text-xs"></i>
+                                    </div>
+                                    <span class="text-sm text-gray-700" x-text="opt.label"></span>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+                    <div class="flex justify-between mt-6 pt-4 border-t">
+                        <button @click="if(i>0)step--" class="px-4 py-2 text-sm text-gray-500 hover:bg-gray-100 rounded-lg" x-show="i>0">← <span x-text="t('prev')"></span></button>
+                        <button @click="next()" class="px-6 py-2 text-sm font-medium rounded-lg ml-auto" :class="ans[q.id]!==undefined ? 'bg-blue-600 text-white hover:bg-blue-700' : 'bg-gray-200 text-gray-400 cursor-not-allows'">
+                            <span x-text="i < qs.length-1 ? t('next') : t('result')"></span> →
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </template>
+        <div x-show="step===qs.length+1 && report" class="slide-enter">
+            <div class="bg-white rounded-2xl shadow-sm border p-6 md:p-8 text-center">
+                <div class="result-ring" :style="'background: conic-gradient('+color(report.total_score)+' '+report.total_score*3.6+'deg, #e5e7eb 0deg)'">
+                    <div class="bg-white w-[140px] h-[140px] rounded-full flex flex-col items-center justify-center md:w-[100px] md:h-[100px]">
+                        <span class="result-score" :style="'color:'+color(report.total_score)" x-text="report.total_score"></span>
+                        <span class="text-xs text-gray-500">/ 100</span>
+                    </div>
+                </div>
+                <div class="mt-3"><span class="text-lg font-bold px-4 py-1 rounded-full" :style="'color:'+color(report.total_score)+';background:'+color(report.total_score)+'20'" x-text="report.level+' - '+report.level_label"></span></div>
+                <p class="text-sm text-gray-600 mt-2" x-text="report.summary"></p>
+                <div class="text-left mt-6 space-y-2">
+                    <template x-for="d in report.dimensions" :key="d.id">
+                        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
+                            <span class="text-sm" x-text="d.status_icon+' '+d.dimension_label"></span>
+                            <div class="flex items-center gap-2"><div class="w-24 bg-gray-200 rounded-full h-2"><div class="h-2 rounded-full" :style="'width:'+d.dim_score+'%;background:'+color(d.dim_score)"></div></div><span class="text-sm font-bold" :style="'color:'+color(d.dim_score)" x-text="d.dim_score"></span></div>
+                        </div>
+                    </template>
+                </div>
+                <div x-show="report.priorities && report.priorities.length" class="text-left mt-6">
+                    <h3 class="font-semibold text-gray-800 mb-3" x-text="t('prio')"></h3>
+                    <template x-for="p in report.priorities" :key="p.id">
+                        <div class="p-3 rounded-xl mb-2" :class="p.raw_score>=3 ? 'bg-red-50 border border-red-200' : 'bg-amber-50 border border-amber-200'">
+                            <span class="text-sm font-medium" x-text="p.dimension_label"></span> <span class="employee-badge text-xs" x-text="p.employee_name+' '+p.employee_role"></span>
+                            <p class="text-xs text-gray-600 mt-1" x-text="p.action_advice"></p>
+                        </div>
+                    </template>
+                </div>
+                <p class="text-[10px] text-gray-400 italic mt-4" x-text="report.disclaimer"></p>
+                <div class="flex gap-3 mt-6">
+                    <button @click="resetAll()" class="flex-1 py-2.5 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200">🔄 <span x-text="t('retry')"></span></button>
+                    <a href="/pricing-v2.html" class="flex-1 py-2.5 bg-blue-600 text-white rounded-xl hover:bg-blue-700 inline-block">📞 <span x-text="t('contact')"></span></a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+function app() {
+    return {
+        lang: 'zh', step: 0, qs: [], ans: {}, report: null, saved: false,
+        t(k) {
+            const m = {
+                title:{zh:'🛡️ 合规健康度自检',ko:'🛡️ 규제 준수 건강 상태 자가 진단'},
+                subtitle:{zh:'8道题 · 3分钟 · 6位AI合规官联合诊断',ko:'8문항 · 3분 · 6명 AI 규정 준수 책임자 공동 진단'},
+                progress:{zh:'进度',ko:'진행률'},
+                start_title:{zh:'了解您的合规健康度',ko:'규제 준수 건강 상태 확인'},
+                start_desc:{zh:'8道选择题覆盖行业准入、外商投资、数据安全等维度，3分钟获取专业评估报告',ko:'업종 진입, 외국인 투자, 데이터 보안 등 핵심 분야를涵盖한 8문항, 3분 만에 전문 평가 보고서 획득'},
+                start_btn:{zh:'开始自检',ko:'진단 시작'},
+                resume:{zh:'您有未完成的问卷',ko:'완료되지 않은 문진이 있습니다'},
+                resume_btn:{zh:'继续答题',ko:'계속하기'},
+                prev:{zh:'上一题',ko:'이전'},
+                next:{zh:'下一题',ko:'다음'},
+                result:{zh:'查看结果',ko:'결과 보기'},
+                prio:{zh:'优先行动建议',ko:'우선 조치 권장'},
+                retry:{zh:'重新测评',ko:'재평가'},
+                contact:{zh:'联系我们',ko:'문의하기'},
+            };
+            return m[k]?.[this.lang] || m[k]?.zh || k;
+        },
+        setLang(l) { this.lang=l; this.loadQuestions(); },
+        async loadQuestions() {
+            try { const r=await fetch('/api/v1/compliance/questions?language='+this.lang); const d=await r.json(); if(d.success) this.qs=d.questions; } catch(e){}
+        },
+        async init() { await this.loadQuestions(); try { const s=localStorage.getItem('ccp'); if(s) { const p=JSON.parse(s); if(p.ans&&Object.keys(p.ans).length) { this.saved=true; Object.assign(this.ans,p.ans); } } } catch(e){} },
+        pick(id,v) { this.ans[id]=v; try{localStorage.setItem('ccp',JSON.stringify({ans:this.ans,step:this.step}))}catch(e){} },
+        resumeProgress() { try{const s=JSON.parse(localStorage.getItem('ccp'));if(s){this.step=s.step||1;Object.assign(this.ans,s.ans||{})}}catch(e){} this.saved=false; },
+        async next() {
+            const q=this.qs[this.step-1]; if(!q||this.ans[q.id]===undefined) return;
+            if(this.step<this.qs.length) { this.step++; return; }
+            this.step=this.qs.length+1;
+            try { const r=await fetch('/api/v1/compliance/submit',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({answers:this.ans,language:this.lang})}); const d=await r.json(); if(d.success){this.report=d.report;localStorage.removeItem('ccp')} else alert('提交失败'); } catch(e){ alert('网络错误'); this.step=this.qs.length; }
+        },
+        resetAll() { this.step=0; this.ans={}; this.report=null; localStorage.removeItem('ccp'); },
+        color(s) { if(s>=85)return'#10b981';if(s>=70)return'#3b82f6';if(s>=50)return'#f59e0b';if(s>=30)return'#f97316';return'#ef4444'; }
+    };
+}
+</script>
+</body>
+</html>

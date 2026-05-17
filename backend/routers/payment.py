@@ -17,7 +17,7 @@ from fastapi import APIRouter, HTTPException, UploadFile, File, Form, Query, Hea
 from typing import Optional
 from backend.database import get_db
 from backend.license import generate_license
-from backend.analytics.event_tracker import track_event
+from backend.membership_helper import activate_membership
 from backend.analytics.event_tracker import track_event
 
 router = APIRouter(tags=["payment"])
@@ -365,6 +365,17 @@ async def update_order_status(
                 (license_key, order_id),
             )
 
+            # Activate membership for this order's user
+            try:
+                activate_membership(
+                    user_email=order["user_email"],
+                    plan_type=order["plan_type"],
+                    price=order["price"],
+                    conn=conn,
+                )
+            except Exception as me:
+                print(f"  W Membership activation failed: {me}")
+
             # 标记最近的付款记录为已确认
             cursor = conn.execute(
                 "SELECT id FROM payments WHERE order_id = ? AND status = 'pending' ORDER BY id DESC LIMIT 1",
@@ -607,6 +618,24 @@ async def alipay_query(body: dict):
                                 (order["id"],),
                             )
                             conn.commit()
+
+                            # Activate membership
+                            try:
+                                cursor2 = conn.execute(
+                                    "SELECT user_email, plan_type, price FROM orders WHERE id = ?",
+                                    (order["id"],),
+                                )
+                                o2 = cursor2.fetchone()
+                                if o2:
+                                    activate_membership(
+                                        user_email=o2[0],
+                                        plan_type=o2[1],
+                                        price=o2[2],
+                                        conn=conn,
+                                    )
+                            except Exception as me:
+                                print(f"  W Alipay membership activation failed: {me}")
+
                             return {
                                 "success": True,
                                 "trade_status": trade_status,
@@ -682,6 +711,24 @@ async def alipay_notify(request: Request):
                                 (order["id"],),
                             )
                             conn.commit()
+
+                            # Activate membership
+                            try:
+                                cursor2 = conn.execute(
+                                    "SELECT user_email, plan_type, price FROM orders WHERE id = ?",
+                                    (order["id"],),
+                                )
+                                o2 = cursor2.fetchone()
+                                if o2:
+                                    activate_membership(
+                                        user_email=o2[0],
+                                        plan_type=o2[1],
+                                        price=o2[2],
+                                        conn=conn,
+                                    )
+                            except Exception as me:
+                                print(f"  W Alipay notify membership activation failed: {me}")
+
                             print(f"[Alipay] 订单 {out_trade_no} 支付成功 (异步通知)")
                 finally:
                     conn.close()
@@ -746,5 +793,199 @@ async def create_voucher_payment(body: dict):
             "payment_id": cursor.lastrowid,
             "message": "支付记录已创建，请上传付款凭证完成验证",
         }
+    finally:
+        conn.close()
+
+
+# ════════════════════════════════════════════════════════════
+# checkout flow API endpoints (checkout.html calls)
+# ════════════════════════════════════════════════════════════
+
+PLAN_NAMES_V1 = {
+    "free": "免费初评",
+    "depth": "深度方案",
+    "annual": "年订阅",
+}
+
+PLAN_PRICES_V1 = {
+    "free": 0,
+    "depth": 9800.00,
+    "annual": 58000.00,
+}
+
+
+@router.post("/api/v1/payment/create")
+async def checkout_create_order(body: dict):
+    """
+    Checkout page order creation
+    Body: { customer_company, customer_name, customer_phone, customer_email, plan_type }
+    Returns: { success, order_id, order_no, is_free, qr_code_url, simulate_mode }
+    """
+    plan_type = body.get("plan_type", "")
+    if plan_type not in PLAN_PRICES_V1:
+        raise HTTPException(status_code=400, detail=f"Unsupported plan type: {plan_type}")
+
+    user_company = body.get("customer_company", "")
+    user_name = body.get("customer_name", "")
+    user_phone = body.get("customer_phone", "")
+    user_email = body.get("customer_email", "")
+
+    if not user_name or not user_email:
+        raise HTTPException(status_code=400, detail="Please provide contact name and email")
+
+    price = PLAN_PRICES_V1[plan_type]
+    order_no = _generate_order_no()
+    is_free = plan_type == "free"
+
+    conn = get_db()
+    try:
+        cursor = conn.execute(
+            "INSERT INTO orders (order_no, user_company, user_name, user_phone, user_email, plan_type, price, status) VALUES (?, ?, ?, ?, ?, ?, ?, 'pending')",
+            (order_no, user_company, user_name, user_phone, user_email, plan_type, price),
+        )
+        conn.commit()
+        order_id = cursor.lastrowid
+
+        result = {
+            "success": True,
+            "order_id": order_id,
+            "order_no": order_no,
+            "price": price,
+            "is_free": is_free,
+            "message": "Order created successfully",
+        }
+
+        if is_free:
+            from backend.license import generate_license
+            licensee = user_company or user_name
+            license_key = generate_license(licensee, plan_type, 30)
+            conn.execute(
+                "UPDATE orders SET status = 'paid', license_key = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?",
+                (license_key, order_id),
+            )
+            conn.commit()
+            # Activate free membership
+            try:
+                activate_membership(
+                    user_email=user_email,
+                    plan_type=plan_type,
+                    price=0,
+                    conn=conn,
+                )
+            except Exception as me:
+                print(f"  W Free membership activation failed: {me}")
+
+            result["license_key"] = license_key
+            result["message"] = "Free plan activated"
+        else:
+            result["qr_code_url"] = None
+            result["simulate_mode"] = True
+
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Order creation failed: {str(e)}")
+    finally:
+        conn.close()
+
+
+@router.get("/api/v1/payment/status/{order_id}")
+async def checkout_order_status(order_id: int):
+    """
+    Query order status
+    Returns: { success, data: { status, order_no, plan_type, plan_name, price, paid_at, updated_at, license_key } }
+    """
+    conn = get_db()
+    try:
+        cursor = conn.execute(
+            "SELECT id, order_no, plan_type, price, status, license_key, created_at, updated_at FROM orders WHERE id = ?",
+            (order_id,),
+        )
+        row = cursor.fetchone()
+        if not row:
+            raise HTTPException(status_code=404, detail="Order not found")
+
+        columns = [desc[0] for desc in cursor.description]
+        order = dict(zip(columns, row))
+
+        plan_name = PLAN_NAMES_V1.get(order["plan_type"], order["plan_type"])
+        paid_at = order.get("updated_at") if order["status"] == "paid" else None
+
+        return {
+            "success": True,
+            "data": {
+                "id": order["id"],
+                "order_no": order["order_no"],
+                "plan_type": order["plan_type"],
+                "plan_name": plan_name,
+                "price": order["price"],
+                "status": order["status"],
+                "license_key": order.get("license_key"),
+                "paid_at": paid_at,
+                "updated_at": order.get("updated_at"),
+                "created_at": order.get("created_at"),
+            }
+        }
+    finally:
+        conn.close()
+
+
+@router.post("/api/v1/payment/simulate/notify")
+async def checkout_simulate_notify(body: dict):
+    """
+    Simulate payment notification (dev mode)
+    Body: { order_no: "ORD20260512XXXXXX" }
+    """
+    order_no = body.get("order_no")
+    if not order_no:
+        raise HTTPException(status_code=400, detail="Missing order_no")
+
+    conn = get_db()
+    try:
+        cursor = conn.execute(
+            "SELECT id, status, plan_type, user_company, user_name FROM orders WHERE order_no = ?",
+            (order_no,),
+        )
+        row = cursor.fetchone()
+        if not row:
+            raise HTTPException(status_code=404, detail="Order not found")
+
+        columns = [desc[0] for desc in cursor.description]
+        order = dict(zip(columns, row))
+
+        if order["status"] != "pending":
+            return {"success": True, "message": f"Order status is {order['status']}, no action needed"}
+
+        from backend.license import generate_license
+        licensee = order.get("user_company") or order.get("user_name")
+        days_map = {"free": 30, "depth": 365, "annual": 365}
+        days = days_map.get(order["plan_type"], 365)
+        license_key = generate_license(licensee, order["plan_type"], days)
+
+        conn.execute(
+            "UPDATE orders SET status = 'paid', license_key = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?",
+            (license_key, order["id"]),
+        )
+        conn.commit()
+
+        # Activate membership
+        try:
+            activate_membership(
+                user_email=order.get("user_email", ""),
+                plan_type=order["plan_type"],
+                price=order.get("price", 0),
+                conn=conn,
+            )
+        except Exception as me:
+            print(f"  W Simulated membership activation failed: {me}")
+
+        return {
+            "success": True,
+            "message": "Simulated payment successful",
+            "license_key": license_key,
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Simulation failed: {str(e)}")
     finally:
         conn.close()

@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>合规基线报告 - 中韩出海数智港</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        body { font-family: Inter, system-ui, sans-serif; background: #f1f5f9; }
+        .gradient-header { background: linear-gradient(135deg, #1e3a5f 0%, #2d6a9f 100%); }
+        .card { transition: all 0.2s; }
+        .card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+        .badge { padding: 2px 10px; border-radius: 999px; font-size: 12px; font-weight: 600; display: inline-block; }
+        .status-dot { display: inline-block; width: 12px; height: 12px; border-radius: 50%; margin-right: 6px; }
+        .fade-in { animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+        .score-ring { width: 100px; height: 100px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto; }
+        @media (max-width: 640px) { .score-ring { width: 80px; height: 80px; } }
+        .progress-bar { height: 8px; border-radius: 4px; transition: width 1s ease; }
+    </style>
+</head>
+<body>
+<div x-data="app()" x-init="init()">
+    <!-- Header -->
+    <div class="gradient-header text-white px-4 py-8 md:py-10">
+        <div class="max-w-5xl mx-auto text-center">
+            <div class="text-5xl mb-2">🛡️</div>
+            <h1 class="text-2xl md:text-3xl font-bold mb-2">合规基线报告</h1>
+            <p class="text-blue-200 text-sm">K-DPA · GDPR · PIPL —— 多维法律制度合规自评工具</p>
+            <div class="flex justify-center gap-4 mt-4">
+                <button @click="loadData()" class="px-5 py-2 bg-white/20 hover:bg-white/30 rounded-full text-sm transition">
+                    <i class="fas fa-sync-alt mr-1" :class="{'fa-spin': loading}"></i> 刷新数据
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading -->
+    <div x-show="loading" class="text-center py-16">
+        <i class="fas fa-spinner fa-spin text-4xl text-blue-500"></i>
+        <p class="text-gray-500 mt-3">加载合规数据中...</p>
+    </div>
+
+    <!-- Error -->
+    <div x-show="error" class="max-w-3xl mx-auto px-4 py-8">
+        <div class="bg-red-50 border border-red-200 rounded-xl p-6 text-center">
+            <i class="fas fa-exclamation-triangle text-3xl text-red-400 mb-2"></i>
+            <p class="text-red-700" x-text="error"></p>
+            <button @click="loadData()" class="mt-3 px-4 py-2 bg-red-500 text-white rounded-lg text-sm">重试</button>
+        </div>
+    </div>
+
+    <!-- Content -->
+    <div x-show="!loading && !error" class="max-w-5xl mx-auto px-4 py-6 space-y-8 fade-in">
+
+        <!-- 合规总览卡片 -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <template x-for="(reg, key) in summary" :key="key">
+                <div class="card bg-white rounded-xl shadow-sm border p-5 text-center">
+                    <h3 class="font-bold text-gray-800 text-lg" x-text="reg.full_name"></h3>
+                    <div class="my-3">
+                        <div class="score-ring" :style="'background: ' + scoreColor(reg.score) + '20; border: 3px solid ' + scoreColor(reg.score)">
+                            <span class="text-2xl font-bold" :style="'color: ' + scoreColor(reg.score)" x-text="reg.score + '%'"></span>
+                        </div>
+                    </div>
+                    <div class="text-sm text-gray-500 mb-2" x-text="reg.level"></div>
+                    <div class="flex justify-center gap-3 text-xs">
+                        <span><span class="status-dot bg-green-500"></span> <span x-text="reg.compliant"></span></span>
+                        <span><span class="status-dot bg-yellow-400"></span> <span x-text="reg.partial"></span></span>
+                        <span><span class="status-dot bg-red-500"></span> <span x-text="reg.non_compliant"></span></span>
+                        <span><span class="status-dot bg-gray-300"></span> <span x-text="reg.not_started"></span></span>
+                    </div>
+                    <div class="text-xs text-gray-400 mt-2">共 <span x-text="reg.total"></span> 项</div>
+                </div>
+            </template>
+        </div>
+
+        <!-- 合规进度条总览 -->
+        <div class="bg-white rounded-xl shadow-sm border p-5">
+            <h2 class="text-lg font-bold text-gray-800 mb-4"><i class="fas fa-chart-bar text-blue-500 mr-2"></i>整体合规进度</h2>
+            <div class="space-y-4">
+                <template x-for="(reg, key) in summary" :key="'bar-'+key">
+                    <div>
+                        <div class="flex justify-between text-sm mb-1">
+                            <span class="font-medium text-gray-700" x-text="reg.full_name"></span>
+                            <span class="text-gray-500" x-text="reg.score + '%'"></span>
+                        </div>
+                        <div class="bg-gray-100 rounded-full">
+                            <div class="progress-bar rounded-full" :style="'width:' + reg.score + '%; background:' + scoreColor(reg.score)"></div>
+                        </div>
+                    </div>
+                </template>
+            </div>
+        </div>
+
+        <!-- 法规标签切换 -->
+        <div class="flex gap-2 border-b border-gray-200 pb-2 overflow-x-auto">
+            <template x-for="(regData, idx) in regulations" :key="idx">
+                <button @click="activeTab = idx"
+                    class="px-4 py-2 rounded-t-lg text-sm font-medium transition whitespace-nowrap"
+                    :class="activeTab === idx ? 'bg-white text-blue-600 border-b-2 border-blue-600 shadow-sm' : 'text-gray-500 hover:text-gray-700'">
+                    <span x-text="regData.full_name"></span>
+                    <span class="ml-1 text-xs px-1.5 py-0.5 rounded-full" :style="'background:' + scoreColor(summary[regData.regulation]?.score) + '20; color:' + scoreColor(summary[regData.regulation]?.score)" x-text="summary[regData.regulation]?.score + '%'"></span>
+                </button>
+            </template>
+        </div>
+
+        <!-- 检查清单详情 -->
+        <div x-show="regulations.length > 0">
+            <template x-for="(regData, idx) in regulations" :key="'reg-'+idx">
+                <div x-show="activeTab === idx" class="space-y-3 fade-in">
+                    <div class="flex items-center justify-between mb-2">
+                        <h2 class="text-xl font-bold text-gray-800">
+                            <span x-text="regData.full_name"></span>
+                            <span class="text-sm font-normal text-gray-500 ml-2" x-text="'共 ' + regData.items.length + ' 项'"></span>
+                        </h2>
+                        <div class="flex gap-1">
+                            <button @click="filterStatus = 'all'" class="px-2 py-1 text-xs rounded" :class="filterStatus==='all' ? 'bg-blue-100 text-blue-700' : 'text-gray-500'">全部</button>
+                            <button @click="filterStatus = 'compliant'" class="px-2 py-1 text-xs rounded" :class="filterStatus==='compliant' ? 'bg-green-100 text-green-700' : 'text-gray-500'">合规</button>
+                            <button @click="filterStatus = 'partial'" class="px-2 py-1 text-xs rounded" :class="filterStatus==='partial' ? 'bg-yellow-100 text-yellow-700' : 'text-gray-500'">部分</button>
+                            <button @click="filterStatus = 'non_compliant'" class="px-2 py-1 text-xs rounded" :class="filterStatus==='non_compliant' ? 'bg-red-100 text-red-700' : 'text-gray-500'">不合规</button>
+                            <button @click="filterStatus = 'not_started'" class="px-2 py-1 text-xs rounded" :class="filterStatus==='not_started' ? 'bg-gray-200 text-gray-700' : 'text-gray-500'">未开始</button>
+                        </div>
+                    </div>
+
+                    <template x-for="(item, i) in filteredItems(regData.items)" :key="item.id">
+                        <div class="bg-white rounded-xl shadow-sm border p-4 card fade-in" :style="'animation-delay: ' + (i * 50) + 'ms'">
+                            <div class="flex items-start gap-3">
+                                <!-- 状态指示器 -->
+                                <div class="mt-0.5 flex-shrink-0">
+                                    <span x-show="item.status === '✅'" class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-green-100 text-green-600"><i class="fas fa-check"></i></span>
+                                    <span x-show="item.status === '🟡'" class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-yellow-100 text-yellow-600"><i class="fas fa-exclamation"></i></span>
+                                    <span x-show="item.status === '❌'" class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-red-100 text-red-600"><i class="fas fa-times"></i></span>
+                                    <span x-show="item.status === '🔲' || !item.status" class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-gray-100 text-gray-400"><i class="far fa-circle"></i></span>
+                                </div>
+                                <!-- 内容 -->
+                                <div class="flex-1 min-w-0">
+                                    <div class="flex items-center gap-2 mb-1">
+                                        <span class="font-semibold text-gray-800 text-sm" x-text="item.name"></span>
+                                        <span class="badge text-xs" :style="statusBadgeStyle(item.status)" x-text="statusLabel(item.status)"></span>
+                                    </div>
+                                    <p class="text-gray-500 text-sm mb-2" x-text="item.description"></p>
+                                    <!-- 整改建议 -->
+                                    <div x-show="item.suggestion" class="bg-blue-50 border border-blue-100 rounded-lg p-2.5 text-xs text-blue-700 flex items-start gap-2">
+                                        <i class="fas fa-lightbulb mt-0.5 text-yellow-500"></i>
+                                        <div>
+                                            <span class="font-medium">整改建议：</span>
+                                            <span x-text="item.suggestion"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- 操作 -->
+                                <div class="flex-shrink-0 flex flex-col gap-1">
+                                    <button @click="updateStatus(item, '✅')"
+                                        class="w-7 h-7 flex items-center justify-center rounded text-xs border hover:bg-green-50 hover:border-green-300 transition"
+                                        :class="item.status === '✅' ? 'bg-green-100 border-green-400 text-green-600' : 'border-gray-200 text-gray-400'"
+                                        title="标记为合规"><i class="fas fa-check"></i></button>
+                                    <button @click="updateStatus(item, '🟡')"
+                                        class="w-7 h-7 flex items-center justify-center rounded text-xs border hover:bg-yellow-50 hover:border-yellow-300 transition"
+                                        :class="item.status === '🟡' ? 'bg-yellow-100 border-yellow-400 text-yellow-600' : 'border-gray-200 text-gray-400'"
+                                        title="标记为部分合规"><i class="fas fa-exclamation"></i></button>
+                                    <button @click="updateStatus(item, '❌')"
+                                        class="w-7 h-7 flex items-center justify-center rounded text-xs border hover:bg-red-50 hover:border-red-300 transition"
+                                        :class="item.status === '❌' ? 'bg-red-100 border-red-400 text-red-600' : 'border-gray-200 text-gray-400'"
+                                        title="标记为不合规"><i class="fas fa-times"></i></button>
+                                </div>
+                            </div>
+                            <!-- 分类标签 -->
+                            <div class="mt-2 ml-11">
+                                <span class="text-xs px-2 py-0.5 rounded bg-gray-100 text-gray-500" x-text="item.category"></span>
+                                <span class="text-xs text-gray-400 ml-2" x-text="item.id"></span>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+            </template>
+        </div>
+
+        <!-- 底部信息 -->
+        <div class="text-center py-6 text-gray-400 text-xs">
+            <p><i class="far fa-question-circle mr-1"></i> 本工具仅供合规自评参考，不构成法律意见。建议咨询专业律师进行正式合规审查。</p>
+            <p class="mt-1">中韩出海数智港 · 合规基线 v1.0</p>
+        </div>
+    </div>
+</div>
+
+<script>
+function app() {
+    return {
+        loading: true,
+        error: '',
+        summary: {},
+        regulations: [],
+        activeTab: 0,
+        filterStatus: 'all',
+
+        async init() {
+            await this.loadData();
+        },
+
+        async loadData() {
+            this.loading = true;
+            this.error = '';
+            try {
+                const resp = await fetch('/api/compliance/baseline?language=zh');
+                const data = await resp.json();
+                if (data.success) {
+                    this.summary = data.summary;
+                    this.regulations = data.regulations;
+                } else {
+                    this.error = '数据加载失败';
+                }
+            } catch (e) {
+                this.error = '无法连接到服务器，请确保后端已启动';
+            } finally {
+                this.loading = false;
+            }
+        },
+
+        filteredItems(items) {
+            if (!items) return [];
+            if (this.filterStatus === 'all') return items;
+            if (this.filterStatus === 'compliant') return items.filter(i => i.status === '✅');
+            if (this.filterStatus === 'partial') return items.filter(i => i.status === '🟡');
+            if (this.filterStatus === 'non_compliant') return items.filter(i => i.status === '❌');
+            if (this.filterStatus === 'not_started') return items.filter(i => i.status === '🔲' || !i.status);
+            return items;
+        },
+
+        updateStatus(item, status) {
+            item.status = status;
+            // Recalculate summary locally
+            this.recalcSummary();
+        },
+
+        recalcSummary() {
+            for (const reg of this.regulations) {
+                const items = reg.items;
+                const total = items.length;
+                const compliant = items.filter(i => i.status === '✅').length;
+                const partial = items.filter(i => i.status === '🟡').length;
+                const non_compliant = items.filter(i => i.status === '❌').length;
+                const not_started = items.filter(i => i.status === '🔲' || !i.status).length;
+                const score = total > 0 ? Math.round((compliant * 100 + partial * 50) / total * 10) / 10 : 0;
+                if (this.summary[reg.regulation]) {
+                    this.summary[reg.regulation].compliant = compliant;
+                    this.summary[reg.regulation].partial = partial;
+                    this.summary[reg.regulation].non_compliant = non_compliant;
+                    this.summary[reg.regulation].not_started = not_started;
+                    this.summary[reg.regulation].score = score;
+                    this.summary[reg.regulation].level = this.scoreLevel(score);
+                }
+            }
+        },
+
+        scoreColor(score) {
+            if (score >= 80) return '#22c55e';
+            if (score >= 50) return '#eab308';
+            if (score >= 10) return '#f97316';
+            return '#9ca3af';
+        },
+
+        scoreLevel(score) {
+            if (score >= 80) return '合规';
+            if (score >= 50) return '部分合规';
+            if (score >= 10) return '低合规';
+            return '未开始';
+        },
+
+        statusLabel(status) {
+            const map = { '✅': '合规', '🟡': '部分合规', '❌': '不合规', '🔲': '未开始' };
+            return map[status] || '未开始';
+        },
+
+        statusBadgeStyle(status) {
+            const map = {
+                '✅': 'background: #dcfce7; color: #166534',
+                '🟡': 'background: #fef9c3; color: #854d0e',
+                '❌': 'background: #fee2e2; color: #991b1b',
+                '🔲': 'background: #f3f4f6; color: #6b7280'
+            };
+            return map[status] || map['🔲'];
+        }
+    };
+}
+</script>
+</body>
+</html>

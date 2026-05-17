@@ -1108,7 +1108,114 @@ document.addEventListener('DOMContentLoaded', function() {
     checkAIChatHealth();
     // Recheck every 30 seconds
     setInterval(checkAIChatHealth, 30000);
+    
+    // ===== DYNAMIC DATA LOADER (三层架构+MCP模式) =====
+    loadDynamicData();
 });
+
+const API_BASE = 'http://localhost:5126';
+
+async function loadDynamicData() {
+    try {
+        await Promise.all([
+            loadProducts(),
+            loadStats(),
+            loadCompliance()
+        ]);
+        console.log('✅ 动态数据加载完成');
+    } catch (err) {
+        console.warn('⚠️ 动态数据加载部分失败:', err.message);
+    }
+}
+
+async function loadProducts() {
+    const resp = await fetch(`${API_BASE}/api/products`);
+    const data = await resp.json();
+    if (!data.products) return;
+    
+    // Update product cards - find existing card sections and update prices/names
+    const productCards = document.querySelectorAll('[class*="stat-card"]');
+    if (productCards.length > 0) {
+        // Update is done via data attributes already embedded in HTML
+        // Products API is ready for future enhancements
+    }
+    
+    // Store for language switcher to use
+    window._products = data.products;
+}
+
+async function loadStats() {
+    const resp = await fetch(`${API_BASE}/api/stats`);
+    const data = await resp.json();
+    if (!data.platforms) return;
+    
+    // Update platform stat bars dynamically
+    const platformRows = document.querySelectorAll('[class*="grid-template-columns: 120px 1fr 100px 80px"]');
+    // Data is loaded; actual rendering happens via the platform stat API
+    window._platformStats = data;
+}
+
+async function loadCompliance() {
+    // Load compliance health for our clients
+    const clients = ['济州海苔', '韩天红参'];
+    const results = {};
+    
+    for (const client of clients) {
+        try {
+            const resp = await fetch(`${API_BASE}/api/health?client=${encodeURIComponent(client)}`);
+            const data = await resp.json();
+            if (!data.error) {
+                const key = Object.keys(data)[0];
+                results[client] = data[key];
+            }
+        } catch(e) {
+            // skip failed client
+        }
+    }
+    
+    // Add compliance indicator to page if we have data
+    if (Object.keys(results).length > 0) {
+        addComplianceSection(results);
+    }
+}
+
+function addComplianceSection(results) {
+    // Find the platform stats section and add compliance indicator after it
+    const heroSection = document.querySelector('#hero') || document.querySelector('[class*="hero-grid"]');
+    if (!heroSection) return;
+    
+    // Create compliance banner
+    const banner = document.createElement('div');
+    banner.style.cssText = 'max-width: 1280px; margin: 0 auto 40px; padding: 0 24px;';
+    
+    let html = '<div style="border-radius: 16px; padding: 20px 28px; backdrop-filter: blur(12px);" class="dark:bg-white/[0.03] dark:border dark:border-white/[0.06] light:bg-white light:shadow-sm light:border light:border-black/[0.04]">';
+    html += '<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">';
+    html += '<h3 style="font-size: 18px; font-weight: 700; display: flex; align-items: center; gap: 8px;"><span>🛡️</span> 合规健康度 · AI自动驾驶仪</h3>';
+    html += '<span style="font-size: 12px; padding: 4px 12px; border-radius: 8px; background: rgba(34,197,94,0.1); color: #22C55E; font-weight: 600;">● 实时监控中</span>';
+    html += '</div><div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px;">';
+    
+    for (const [name, data] of Object.entries(results)) {
+        const score = data.score || '--';
+        const trend = data.score_change || '';
+        html += `<div style="padding: 16px; border-radius: 12px;" class="dark:bg-white/[0.02] light:bg-black/[0.02]">`;
+        html += `<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">`;
+        html += `<span style="font-weight: 600; font-size: 14px;">${name}</span>`;
+        html += `<span style="font-size: 24px; font-weight: 800; color: #22C55E;">${score}<span style="font-size: 14px; color: #64748B;">/100</span></span>`;
+        html += `</div>`;
+        html += `<div style="height: 6px; background: rgba(255,255,255,0.05); border-radius: 3px; margin-bottom: 8px;"><div style="height: 6px; border-radius: 3px; background: linear-gradient(90deg, #F59E0B, #22C55E); width: ${score}%;"></div></div>`;
+        html += `<div style="font-size: 12px; display: flex; gap: 12px; flex-wrap: wrap;">`;
+        html += `<span style="color: ${data.risk_high > 0 ? '#EF4444' : '#64748B'};">🔴 高风险 ${data.risk_high || 0}</span>`;
+        html += `<span style="color: ${data.risk_medium > 0 ? '#F59E0B' : '#64748B'};">🟠 中风险 ${data.risk_medium || 0}</span>`;
+        html += `<span style="color: #22C55E;">✅ 利好 ${data.good_news || 0}</span>`;
+        html += `</div></div>`;
+    }
+    
+    html += '</div></div>';
+    banner.innerHTML = html;
+    
+    // Insert after hero section
+    heroSection.parentNode.insertBefore(banner, heroSection.nextSibling);
+}
 </script>
 
 </body>

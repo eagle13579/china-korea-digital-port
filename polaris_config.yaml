@@ -1,0 +1,352 @@
+# 中韩出海数智港 · 北极星配置 v1.0
+# 5个核心维度：合规完成度/客户数/健康度/团队效率/营收
+---
+version: "1.0"
+last_updated: 2026-05-16
+
+top_level:
+  - id: china_korea_port_polaris
+    name: 中韩出海数智港健康度
+    icon: 🌉
+    description: 中韩跨境数智化服务平台 — 合规+市场+技术全维度
+    stage_mapping:
+      - max_pct: 25
+        label: 探索期
+        icon: 🥚
+      - max_pct: 50
+        label: 成长期
+        icon: 🌱
+      - max_pct: 75
+        label: 扩张期
+        icon: 🚀
+      - max_pct: 100
+        label: 成熟期
+        icon: 🏆
+
+indicators:
+  # ──────── 维度：合规完成度 ────────
+  - id: compliance_readiness
+    name: 合规完成度
+    parent: china_korea_port_polaris
+    weight: 0.25
+    weight_label: 25%
+    formula: weighted_avg
+    children:
+      - id: korean_regulations
+        name: 韩国法规适配
+        weight: 0.35
+        progress: 70
+        target: 100
+        unit: '%'
+        expected_boost: 0.15
+        estimated_hours: 12
+        actions:
+          - id: customs_law
+            name: 海关法规系统对接
+            owner: 合规组
+            priority: P0
+            progress: 75
+            target: 100
+            status: in_progress
+          - id: food_safety
+            name: 食品安全法规引擎
+            owner: 合规组
+            priority: P0
+            progress: 65
+            target: 100
+            status: in_progress
+      - id: chinese_regulations
+        name: 中国法规适配
+        weight: 0.30
+        progress: 55
+        target: 100
+        unit: '%'
+        expected_boost: 0.12
+        estimated_hours: 10
+        actions:
+          - id: export_law
+            name: 出口管制合规检查
+            owner: 合规组
+            priority: P1
+            progress: 60
+            target: 100
+            status: in_progress
+          - id: data_privacy
+            name: 数据隐私合规（PIPL）
+            owner: 合规组
+            priority: P0
+            progress: 50
+            target: 100
+            status: in_progress
+      - id: compliance_monitor
+        name: 合规监控告警
+        weight: 0.35
+        progress: 60
+        target: 100
+        unit: '%'
+        expected_boost: 0.18
+        estimated_hours: 8
+        actions:
+          - id: realtime_monitor
+            name: 实时合规监控面板
+            owner: 开发组
+            priority: P1
+            progress: 65
+            target: 100
+            status: in_progress
+          - id: alert_system
+            name: 合规变更告警系统
+            owner: 开发组
+            priority: P1
+            progress: 55
+            target: 100
+            status: in_progress
+
+  # ──────── 维度：客户数 ────────
+  - id: customer_count
+    name: 客户数
+    parent: china_korea_port_polaris
+    weight: 0.20
+    weight_label: 20%
+    formula: weighted_avg
+    children:
+      - id: onboarded_clients
+        name: 已入驻客户数
+        weight: 0.45
+        progress: 25
+        target: 100
+        unit: '家'
+        expected_boost: 0.20
+        estimated_hours: 15
+        actions:
+          - id: client_onboarding
+            name: 首批客户入驻流程
+            owner: 销售组
+            priority: P0
+            progress: 40
+            target: 100
+            status: in_progress
+          - id: demo_portal
+            name: 客户演示门户搭建
+            owner: 开发组
+            priority: P0
+            progress: 60
+            target: 100
+            status: in_progress
+      - id: pipeline_leads
+        name: 销售线索数
+        weight: 0.30
+        progress: 40
+        target: 100
+        unit: '%'
+        expected_boost: 0.15
+        estimated_hours: 10
+        actions:
+          - id: lead_gen
+            name: 韩国市场线索开发
+            owner: 销售组
+            priority: P1
+            progress: 45
+            target: 100
+            status: in_progress
+          - id: lead_tracking
+            name: 线索追踪CRM
+            owner: 开发组
+            priority: P1
+            progress: 35
+            target: 100
+            status: in_progress
+      - id: satisfaction
+        name: 客户满意度
+        weight: 0.25
+        progress: 50
+        target: 100
+        unit: '%'
+        expected_boost: 0.10
+        estimated_hours: 5
+        actions:
+          - id: feedback_system
+            name: 客户反馈收集系统
+            owner: 产品组
+            priority: P2
+            progress: 50
+            target: 100
+            status: pending
+
+  # ──────── 维度：健康度 ────────
+  - id: platform_health
+    name: 健康度
+    parent: china_korea_port_polaris
+    weight: 0.20
+    weight_label: 20%
+    formula: weighted_avg
+    children:
+      - id: system_uptime
+        name: 系统可用率
+        weight: 0.35
+        progress: 92
+        target: 100
+        unit: '%'
+        expected_boost: 0.05
+        estimated_hours: 2
+        actions:
+          - id: uptime_monitor
+            name: 系统可用性监控
+            owner: 开发组
+            priority: P0
+            progress: 95
+            target: 100
+            status: done
+      - id: api_performance
+        name: API性能
+        weight: 0.30
+        progress: 78
+        target: 100
+        unit: '%'
+        expected_boost: 0.08
+        estimated_hours: 4
+        actions:
+          - id: api_optimize
+            name: API响应优化
+            owner: 开发组
+            priority: P1
+            progress: 78
+            target: 100
+            status: in_progress
+      - id: security_score
+        name: 安全评分
+        weight: 0.35
+        progress: 70
+        target: 100
+        unit: '%'
+        expected_boost: 0.12
+        estimated_hours: 6
+        actions:
+          - id: security_audit
+            name: 安全审计与加固
+            owner: 开发组
+            priority: P0
+            progress: 70
+            target: 100
+            status: in_progress
+
+  # ──────── 维度：团队效率 ────────
+  - id: team_efficiency
+    name: 团队效率
+    parent: china_korea_port_polaris
+    weight: 0.15
+    weight_label: 15%
+    formula: weighted_avg
+    children:
+      - id: sprint_velocity
+        name: 冲刺速度
+        weight: 0.40
+        progress: 65
+        target: 100
+        unit: '%'
+        expected_boost: 0.10
+        estimated_hours: 4
+        actions:
+          - id: sprint_planning
+            name: 冲刺计划优化
+            owner: 产品组
+            priority: P1
+            progress: 65
+            target: 100
+            status: in_progress
+      - id: pr_cycle_time
+        name: PR周期时间
+        weight: 0.35
+        progress: 55
+        target: 100
+        unit: '%'
+        expected_boost: 0.08
+        estimated_hours: 3
+        actions:
+          - id: ci_cd_pipeline
+            name: CI/CD流水线搭建
+            owner: 开发组
+            priority: P1
+            progress: 60
+            target: 100
+            status: in_progress
+      - id: knowledge_sharing
+        name: 知识共享
+        weight: 0.25
+        progress: 40
+        target: 100
+        unit: '%'
+        expected_boost: 0.06
+        estimated_hours: 2
+        actions:
+          - id: doc_system
+            name: 技术文档体系建设
+            owner: 产品组
+            priority: P2
+            progress: 40
+            target: 100
+            status: pending
+
+  # ──────── 维度：营收 ────────
+  - id: port_revenue
+    name: 营收
+    parent: china_korea_port_polaris
+    weight: 0.20
+    weight_label: 20%
+    formula: weighted_avg
+    children:
+      - id: service_fee
+        name: 服务费收入
+        weight: 0.40
+        progress: 20
+        target: 100
+        unit: '%'
+        expected_boost: 0.20
+        estimated_hours: 20
+        actions:
+          - id: pricing_tier
+            name: 服务定价分层设计
+            owner: 战略组
+            priority: P0
+            progress: 50
+            target: 100
+            status: in_progress
+          - id: first_deal
+            name: 首笔服务费签约
+            owner: 销售组
+            priority: P0
+            progress: 15
+            target: 100
+            status: pending
+      - id: subscription
+        name: 订阅收入
+        weight: 0.35
+        progress: 15
+        target: 100
+        unit: '%'
+        expected_boost: 0.15
+        estimated_hours: 15
+        actions:
+          - id: sub_model
+            name: 订阅制会员体系搭建
+            owner: 产品组
+            priority: P1
+            progress: 30
+            target: 100
+            status: in_progress
+      - id: value_added
+        name: 增值服务收入
+        weight: 0.25
+        progress: 10
+        target: 100
+        unit: '%'
+        expected_boost: 0.10
+        estimated_hours: 10
+        actions:
+          - id: consulting_pkg
+            name: 咨询服务包设计
+            owner: 战略组
+            priority: P2
+            progress: 15
+            target: 100
+            status: pending

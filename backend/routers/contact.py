@@ -38,6 +38,18 @@ async def submit_contact(form: ContactForm):
             pass
         except Exception:
             pass
+        
+        # 追踪转化漏斗事件
+        try:
+            from backend.analytics.event_tracker import track_event
+            track_event(
+                user_id=form.email,
+                event_type="lead_contact",
+                event_data={"name": form.name, "company": form.company},
+                page_url="/api/v1/contact",
+            )
+        except Exception:
+            pass
 
         return APIResponse(
             success=True,

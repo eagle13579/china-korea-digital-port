@@ -12,6 +12,10 @@ from typing import List, Optional
 from datetime import datetime
 
 from backend.database import get_db
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).parent.parent))
+from knowledge_graph import get_db as kg_get_db, search_articles, get_articles_by_dimension
 from backend.ai_dialogue import chat_send
 
 router = APIRouter(prefix="/api/chat", tags=["ai-dialogue"])

@@ -1,0 +1,1048 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>企业级合规健康度评估报告 - ㈜한국테크 (示例企业)</title>
+<style>
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0A0A0F; color: #F1F5F9; padding: 20px; }
+.report-enterprise { max-width: 1100px; margin: 0 auto; background: #12121A; border: 1px solid rgba(255,255,255,0.08); border-radius: 24px; overflow: hidden; }
+.module { padding: 40px 48px; }
+.page-break { page-break-before: always; }
+.module-header { margin-bottom: 28px; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 16px; }
+.module-header h2 { font-size: 24px; font-weight: 700; background: linear-gradient(135deg,#8B5CF6,#06B6D4); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.module-subtitle { font-size: 13px; color: #64748B; margin-top: 4px; text-transform: uppercase; letter-spacing: 1px; }
+
+/* Header */
+.report-header { padding: 48px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.08); background: linear-gradient(180deg,rgba(139,92,246,0.05),transparent); }
+.header-brand { display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 12px; }
+.brand-icon { font-size: 24px; }
+.brand-text { font-size: 16px; font-weight: 600; color: #8B5CF6; }
+.report-title { font-size: 32px; font-weight: 800; background: linear-gradient(135deg,#8B5CF6,#06B6D4,#10B981); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 8px; }
+.report-subtitle { color: #64748B; font-size: 14px; letter-spacing: 1px; }
+.report-meta { display: flex; justify-content: center; gap: 32px; margin-top: 24px; flex-wrap: wrap; }
+.meta-item { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.meta-label { font-size: 11px; color: #64748B; text-transform: uppercase; letter-spacing: 1px; }
+.meta-value { font-size: 14px; font-weight: 600; color: #E2E8F0; }
+
+/* M1: Executive Summary */
+.exec-summary-grid { display: grid; grid-template-columns: 1fr 2fr; gap: 32px; }
+.exec-score-section { text-align: center; padding: 32px; background: rgba(255,255,255,0.02); border-radius: 16px; }
+.overall-score-circle { width: 160px; height: 160px; border-radius: 50%; border: 6px solid; display: flex; flex-direction: column; align-items: center; justify-content: center; margin: 0 auto 20px; }
+.score-number { font-size: 52px; font-weight: 800; line-height: 1; }
+.score-unit { font-size: 18px; font-weight: 600; }
+.risk-badge { display: inline-block; padding: 8px 24px; border-radius: 20px; font-size: 14px; font-weight: 600; margin-bottom: 24px; }
+.score-meta-row { display: flex; justify-content: center; gap: 24px; }
+.score-meta-item { text-align: center; }
+.meta-num { font-size: 28px; font-weight: 800; display: block; }
+.meta-desc { font-size: 12px; color: #64748B; }
+.exec-detail-section { padding: 16px 0; }
+.exec-summary-text { font-size: 15px; line-height: 1.7; color: #CBD5E1; margin-bottom: 20px; }
+.key-findings { background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.2); border-radius: 12px; padding: 20px; margin-bottom: 20px; }
+.key-findings h4 { font-size: 14px; color: #EF4444; margin-bottom: 12px; }
+.key-findings ul { list-style: none; }
+.key-findings li { font-size: 13px; color: #FCA5A5; padding: 4px 0; padding-left: 16px; position: relative; }
+.key-findings li::before { content: '⚠️'; position: absolute; left: -4px; top: 4px; font-size: 12px; }
+.dim-bars-compact { margin-top: 16px; }
+.dim-bar-row { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+.dim-bar-label { width: 90px; font-size: 13px; color: #94A3B8; flex-shrink: 0; }
+.dim-bar-track { flex: 1; height: 14px; background: rgba(255,255,255,0.06); border-radius: 8px; overflow: hidden; }
+.dim-bar-fill { height: 100%; border-radius: 8px; transition: width 1s ease; }
+.dim-bar-score { width: 32px; font-size: 14px; font-weight: 700; text-align: right; }
+
+/* M2: Methodology */
+.methodology-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.method-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 16px; padding: 24px; }
+.method-card.wide-card { grid-column: 1 / -1; }
+.method-icon { font-size: 28px; margin-bottom: 12px; }
+.method-card h4 { font-size: 15px; font-weight: 600; margin-bottom: 8px; color: #E2E8F0; }
+.method-card p { font-size: 13px; line-height: 1.7; color: #94A3B8; }
+.standards-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+.std-badge { padding: 6px 14px; background: rgba(139,92,246,0.12); border: 1px solid rgba(139,92,246,0.25); border-radius: 20px; font-size: 12px; color: #A78BFA; }
+.method-stats { display: flex; gap: 24px; align-items: center; }
+.stat-item { text-align: center; padding: 16px 24px; background: rgba(255,255,255,0.03); border-radius: 12px; }
+.stat-num { font-size: 32px; font-weight: 800; color: #8B5CF6; display: block; }
+.stat-item span:last-child { font-size: 12px; color: #64748B; }
+.method-disclaimer { grid-column: 1 / -1; padding: 16px; background: rgba(251,191,36,0.06); border: 1px solid rgba(251,191,36,0.15); border-radius: 12px; font-size: 12px; color: #94A3B8; line-height: 1.6; }
+
+/* M3: Dashboard */
+.dashboard-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; }
+.radar-section { text-align: center; position: relative; }
+.radar-section h4, .dim-cards-section h4 { font-size: 14px; color: #64748B; margin-bottom: 16px; }
+.overall-score-badge { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 80px; height: 80px; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; opacity: 0; pointer-events: none; }
+.dim-cards-grid { display: flex; flex-direction: column; gap: 12px; }
+.dim-card { background: rgba(255,255,255,0.03); border-radius: 12px; padding: 14px 18px; }
+.dim-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.dim-card-name { font-size: 14px; font-weight: 500; }
+.dim-card-score { font-size: 20px; font-weight: 800; }
+.dim-card-bar { height: 6px; background: rgba(255,255,255,0.06); border-radius: 4px; overflow: hidden; }
+.dim-card-fill { height: 100%; border-radius: 4px; transition: width 1s ease; }
+
+/* M4: Risk Matrix */
+.risk-matrix-grid { display: grid; grid-template-columns: 1fr; gap: 32px; }
+.matrix-section { }
+.matrix-container { display: inline-grid; grid-template-columns: auto repeat(4,1fr); gap: 4px; }
+.matrix-header { display: contents; }
+.matrix-corner { grid-column: 1; }
+.matrix-col-label { font-size: 11px; color: #64748B; text-align: center; padding: 4px; }
+.matrix-header-row { display: contents; }
+.matrix-row-label { font-size: 11px; color: #64748B; display: flex; align-items: center; padding: 4px; writing-mode: vertical-lr; }
+.matrix-row { display: contents; }
+.matrix-cell { min-width: 70px; min-height: 70px; border-radius: 8px; padding: 8px; display: flex; align-items: center; justify-content: center; }
+.matrix-cell-content { text-align: center; }
+.matrix-rs { font-size: 18px; font-weight: 800; color: #fff; }
+.matrix-dims { margin-top: 4px; }
+.matrix-dim-tag { font-size: 9px; border: 1px solid; border-radius: 4px; padding: 1px 4px; margin: 2px 0; background: rgba(0,0,0,0.3); }
+.matrix-legend { display: flex; gap: 16px; margin-top: 16px; flex-wrap: wrap; }
+.legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #94A3B8; }
+.legend-color { width: 16px; height: 16px; border-radius: 4px; }
+.matrix-dim-table { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 16px; }
+.matrix-dim-table th { background: rgba(255,255,255,0.03); padding: 10px 12px; text-align: left; font-weight: 600; color: #94A3B8; font-size: 12px; }
+.matrix-dim-table td { padding: 10px 12px; border-bottom: 1px solid rgba(255,255,255,0.04); }
+.impact-bar { display: inline-block; width: 60px; height: 8px; background: rgba(255,255,255,0.06); border-radius: 4px; vertical-align: middle; overflow: hidden; }
+.impact-fill { height: 100%; border-radius: 4px; }
+.impact-label { font-size: 12px; margin-left: 6px; }
+.risk-score-badge { padding: 2px 10px; border-radius: 12px; font-weight: 600; font-size: 13px; }
+
+/* M5: Deep Dive */
+.deep-dive-list { display: flex; flex-direction: column; gap: 20px; }
+.deep-dive-item { background: rgba(255,255,255,0.02); border-radius: 16px; padding: 24px; }
+.dd-header { margin-bottom: 16px; }
+.dd-title-row { display: flex; align-items: center; gap: 12px; }
+.dd-icon { font-size: 20px; }
+.dd-title-row h4 { font-size: 18px; font-weight: 600; flex: 1; }
+.dd-score { font-size: 28px; font-weight: 800; }
+.dd-risk-badge { padding: 4px 14px; border-radius: 12px; font-size: 12px; font-weight: 600; }
+.dd-meta-row { display: flex; gap: 20px; margin-top: 8px; font-size: 12px; color: #64748B; }
+.dd-percentile { margin-top: 6px; font-size: 12px; color: #8B5CF6; }
+.dd-body { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.dd-findings, .dd-recommendations { background: rgba(255,255,255,0.03); border-radius: 12px; padding: 16px; }
+.dd-regulations { grid-column: 1 / -1; background: rgba(139,92,246,0.05); border: 1px solid rgba(139,92,246,0.1); border-radius: 12px; padding: 16px; }
+.dd-body h5 { font-size: 13px; color: #94A3B8; margin-bottom: 8px; }
+.dd-body ul { list-style: none; }
+.dd-body li { font-size: 13px; color: #CBD5E1; padding: 4px 0; padding-left: 16px; position: relative; }
+.dd-body li::before { content: '•'; position: absolute; left: 0; color: #8B5CF6; }
+.reg-refs-row { display: flex; flex-wrap: wrap; gap: 8px; }
+.regulation-ref { font-size: 12px; color: #A78BFA; }
+.reg-badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+.reg-badge.cn { background: rgba(239,68,68,0.12); color: #FCA5A5; }
+.reg-badge.kr { background: rgba(59,130,246,0.12); color: #93C5FD; }
+
+/* M6: Comparison Table */
+.comparison-table-wrapper { overflow-x: auto; }
+.comparison-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.comparison-table th { background: rgba(255,255,255,0.03); padding: 12px; text-align: left; font-weight: 600; color: #94A3B8; }
+.comparison-table td { padding: 12px; border-bottom: 1px solid rgba(255,255,255,0.04); vertical-align: top; color: #CBD5E1; }
+
+/* M7: Roadmap */
+.roadmap-container { display: flex; flex-direction: column; gap: 24px; }
+.roadmap-section { border-radius: 16px; padding: 24px; }
+.roadmap-section.p0 { background: rgba(239,68,68,0.06); border: 1px solid rgba(239,68,68,0.2); }
+.roadmap-section.p1 { background: rgba(245,158,11,0.06); border: 1px solid rgba(245,158,11,0.2); }
+.roadmap-section.p2 { background: rgba(16,185,129,0.06); border: 1px solid rgba(16,185,129,0.2); }
+.roadmap-section h4 { font-size: 16px; font-weight: 700; margin-bottom: 16px; }
+.roadmap-section.p0 h4 { color: #EF4444; }
+.roadmap-section.p1 h4 { color: #F59E0B; }
+.roadmap-section.p2 h4 { color: #10B981; }
+.no-items { font-size: 13px; color: #94A3B8; padding: 12px; }
+.roadmap-item { padding: 16px; border-radius: 12px; margin-bottom: 12px; }
+.roadmap-item.p0 { background: rgba(239,68,68,0.08); }
+.roadmap-item.p1 { background: rgba(245,158,11,0.08); }
+.roadmap-item.p2 { background: rgba(16,185,129,0.08); }
+.rm-item-header { display: flex; align-items: center; gap: 12px; }
+.rm-icon { font-size: 18px; }
+.rm-name { font-weight: 600; flex: 1; font-size: 14px; }
+.rm-deadline { font-size: 12px; padding: 3px 10px; border-radius: 8px; }
+.roadmap-item.p0 .rm-deadline { background: rgba(239,68,68,0.15); color: #FCA5A5; }
+.roadmap-item.p1 .rm-deadline { background: rgba(245,158,11,0.15); color: #FDE68A; }
+.roadmap-item.p2 .rm-deadline { background: rgba(16,185,129,0.15); color: #A7F3D0; }
+.rm-owner { font-size: 12px; color: #94A3B8; }
+.rm-timeline { margin-top: 8px; font-size: 13px; color: #CBD5E1; padding-left: 30px; }
+
+/* M8: Appendix */
+.appendix-section { margin-bottom: 28px; }
+.appendix-section h4 { font-size: 16px; font-weight: 600; margin-bottom: 16px; color: #E2E8F0; }
+.alerts-table-wrapper, .benchmark-table-wrapper { overflow-x: auto; }
+.alerts-table, .benchmark-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.alerts-table th, .benchmark-table th { background: rgba(255,255,255,0.03); padding: 10px 12px; text-align: left; font-weight: 600; color: #94A3B8; font-size: 12px; }
+.alerts-table td, .benchmark-table td { padding: 10px 12px; border-bottom: 1px solid rgba(255,255,255,0.04); color: #CBD5E1; }
+
+/* Footer */
+.report-footer { padding: 32px 48px; border-top: 1px solid rgba(255,255,255,0.06); text-align: center; }
+.disclaimer { font-size: 11px; color: #64748B; line-height: 1.6; max-width: 800px; margin: 0 auto 12px; }
+.copyright { font-size: 11px; color: #475569; }
+
+/* Responsive */
+@media (max-width: 768px) {
+    .exec-summary-grid { grid-template-columns: 1fr; }
+    .dashboard-grid { grid-template-columns: 1fr; }
+    .methodology-grid { grid-template-columns: 1fr; }
+    .dd-body { grid-template-columns: 1fr; }
+    .report-meta { gap: 16px; }
+    .module { padding: 24px 20px; }
+    .report-header { padding: 32px 20px; }
+    .overall-score-circle { width: 120px; height: 120px; }
+    .score-number { font-size: 40px; }
+    .score-meta-row { gap: 12px; }
+}
+
+/* Print */
+@media print {
+    body { background: #fff; color: #333; padding: 0; }
+    .report-enterprise { background: #fff; border: none; border-radius: 0; box-shadow: none; }
+    .module-header h2 { -webkit-text-fill-color: #333; }
+    .report-title { -webkit-text-fill-color: #333; }
+    .key-findings { background: #fef2f2; }
+    .deep-dive-item, .method-card { background: #f9fafb; border-color: #e5e7eb; }
+    .dim-bar-track, .dim-card-bar { background: #e5e7eb; }
+    .risk-matrix-cell { }
+}
+
+</style>
+</head>
+<body>
+<div class="report-enterprise">
+    <!-- 报告头部 -->
+    <div class="report-header">
+        <div class="header-brand">
+            <span class="brand-icon">🏛️</span>
+            <span class="brand-text">中韩出海数智港</span>
+        </div>
+        <h1 class="report-title">企业级合规健康度评估报告</h1>
+        <p class="report-subtitle">Enterprise Compliance Health Assessment Report</p>
+        <div class="report-meta">
+            <div class="meta-item"><span class="meta-label">报告编号</span><span class="meta-value">CHC-20260517-22E5</span></div>
+            <div class="meta-item"><span class="meta-label">评估对象</span><span class="meta-value">㈜한국테크 (示例企业)</span></div>
+            <div class="meta-item"><span class="meta-label">生成日期</span><span class="meta-value">2026-05-17 09:41</span></div>
+            <div class="meta-item"><span class="meta-label">版本类型</span><span class="meta-value">v2.0 企业付费版</span></div>
+        </div>
+    </div>
+
+    <!-- ===== 模块①: 执行摘要（独立成页 - 约束5）===== -->
+    
+    <div class="module page-break" id="module-1">
+        <div class="module-header">
+            <h2>一、执行摘要</h2>
+            <p class="module-subtitle">Executive Summary</p>
+        </div>
+        <div class="exec-summary-grid">
+            <div class="exec-score-section">
+                <div class="overall-score-circle" style="border-color:#EF4444;color:#EF4444;">
+                    <span class="score-number">52</span>
+                    <span class="score-unit">/100</span>
+                </div>
+                <div class="risk-badge" style="background:#EF4444;">风险等级: 高</div>
+                <div class="score-meta-row">
+                    <div class="score-meta-item">
+                        <span class="meta-num" style="color:#EF4444;">3</span>
+                        <span class="meta-desc">需关注维度</span>
+                    </div>
+                    <div class="score-meta-item">
+                        <span class="meta-num" style="color:#7F1D1D;">2</span>
+                        <span class="meta-desc">紧急维度</span>
+                    </div>
+                    <div class="score-meta-item">
+                        <span class="meta-num">8</span>
+                        <span class="meta-desc">评估维度</span>
+                    </div>
+                </div>
+            </div>
+            <div class="exec-detail-section">
+                <div class="exec-summary-text">本次综合合规评估报告总分为 **52分/100分**，风险等级: **高**。在全部 8 个评估维度中，有 3 个维度需要关注，其中 2 个维度需立即采取行动。数据安全与反商业贿赂为主要风险领域。本报告包含8个模块，提供各维度深度分析、中韩法规对比及分阶段整改路线图。</div>
+                <div class="key-findings">
+                    <h4>🔍 关键发现</h4>
+                    <ul>
+
+    <!-- ===== 模块②: 方法论与范围 ===== -->
+    
+    <div class="module" id="module-2">
+        <div class="module-header">
+            <h2>二、方法论与范围</h2>
+            <p class="module-subtitle">Methodology & Scope</p>
+        </div>
+        <div class="methodology-grid">
+            <div class="method-card">
+                <div class="method-icon">🎯</div>
+                <h4>评估范围</h4>
+                <p>本次评估覆盖韩国企业进入中国市场的8大合规维度。评估方法论结合行业标准(ISO 37301, NIST CSF)与核心监管要求(PIPL、K-DPA、数据安全法等)。</p>
+            </div>
+            <div class="method-card">
+                <div class="method-icon">⚙️</div>
+                <h4>评估方法</h4>
+                <p>评估方法: 自评问卷 → 评分计算 → 风险矩阵分析 → 行业对标 → 整改路线图</p>
+            </div>
+            <div class="method-card wide-card">
+                <div class="method-icon">📚</div>
+                <h4>参考标准</h4>
+                <div class="standards-row"><span class="std-badge">ISO 37301 合规管理体系</span><span class="std-badge">NIST Cybersecurity Framework</span><span class="std-badge">PIPL 个人信息保护法</span><span class="std-badge">K-DPA 韩国个人信息保护法</span></div>
+            </div>
+            <div class="method-stats">
+                <div class="stat-item"><span class="stat-num">8</span><span>覆盖合规维度</span></div>
+                <div class="stat-item"><span class="stat-num">26</span><span>法规引用数</span></div>
+            </div>
+            <div class="method-disclaimer">
+                <strong>免责声明:</strong> 本报告基于用户提供的信息自动生成，不构成正式法律意见。建议在采取行动前咨询持证专业人士。
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== 模块③: 全景仪表盘雷达图 ===== -->
+    
+    <div class="module page-break" id="module-3">
+        <div class="module-header">
+            <h2>三、全景合规仪表盘</h2>
+            <p class="module-subtitle">Compliance Dashboard</p>
+        </div>
+        <div class="dashboard-grid">
+            <div class="radar-section">
+                <h4>合规雷达图</h4>
+                
+    <div class="radar-svg-container">
+        <svg viewBox="0 0 360 360" width="100%" height="100%" style="max-width:360px;margin:0 auto;display:block;">
+            <polygon points="180.0000371502571,152.00000000002464 204.24871749767144,166.00001072435686 204.24871749767144,193.99998927564314 180.0000371502571,207.99999999997536 155.7513196526426,194.00005362174312 155.7512453521853,166.0000750705554" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="1"/><polygon points="180.0000743005142,124.00000000004928 228.49743499534287,152.00002144871368 228.49743499534287,207.99997855128632 180.0000743005142,235.99999999995072 131.5026393052852,208.00010724348624 131.5024907043706,152.00015014111077" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="1"/><polygon points="180.00011145077133,96.00000000007394 252.74615249301428,138.0000321730705 252.74615249301428,221.9999678269295 180.00011145077133,263.99999999992605 107.25395895792778,222.00016086522936 107.25373605655588,138.00022521166616" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="1"/><polygon points="180.00014860102843,68.00000000009858 276.99486999068574,124.00004289742736 276.99486999068574,235.99995710257264 180.00014860102843,291.99999999990143 83.00527861057037,236.00021448697248 83.00498140874117,124.00030028222156" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="1"/><polygon points="180.00018575128553,40.00000000012324 301.24358748835715,110.0000536217842 301.24358748835715,249.99994637821578 180.00018575128553,319.99999999987676 58.756598263212965,250.0002681087156 58.75622676092647,110.00037535277694" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+            <line x1="180" y1="180" x2="180.00019238526002" y2="35.00000000012761" stroke="rgba(255,255,255,0.08)" stroke-width="1"/><line x1="180" y1="180" x2="305.5737156129413" y2="107.50005553684792" stroke="rgba(255,255,255,0.08)" stroke-width="1"/><line x1="180" y1="180" x2="305.5737156129413" y2="252.49994446315208" stroke="rgba(255,255,255,0.08)" stroke-width="1"/><line x1="180" y1="180" x2="180.00019238526002" y2="324.9999999998724" stroke="rgba(255,255,255,0.08)" stroke-width="1"/><line x1="180" y1="180" x2="54.42647677261343" y2="252.50027768402686" stroke="rgba(255,255,255,0.08)" stroke-width="1"/><line x1="180" y1="180" x2="54.42609200238813" y2="107.50038875823326" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+            <polygon points="180.00011841644454,90.75000000007856 231.5285246825518,150.25002278925828 180.0,180.0 180.00011841644454,269.24999999992144 76.94310852373101,239.50022789240825 180.0,180.0" fill="rgba(139,92,246,0.3)" stroke="#8B5CF6" stroke-width="2"/>
+            <circle cx="180.00011841644454" cy="90.75000000007856" r="4" fill="#8B5CF6"/><circle cx="231.5285246825518" cy="150.25002278925828" r="4" fill="#8B5CF6"/><circle cx="180.0" cy="180.0" r="4" fill="#8B5CF6"/><circle cx="180.00011841644454" cy="269.24999999992144" r="4" fill="#8B5CF6"/><circle cx="76.94310852373101" cy="239.50022789240825" r="4" fill="#8B5CF6"/><circle cx="180.0" cy="180.0" r="4" fill="#8B5CF6"/>
+            <text x="180.00022290154263" y="12.000000000147878" text-anchor="middle" dominant-baseline="middle" fill="#94A3B8" font-size="11">行业准入</text><text x="180.0001963656447" y="36.00000000013026" text-anchor="middle" dominant-baseline="middle" fill="#8B5CF6" font-size="12" font-weight="bold">75</text><text x="325.49230498602856" y="96.00006434614104" text-anchor="middle" dominant-baseline="middle" fill="#94A3B8" font-size="11">数据安全</text><text x="308.17179248769185" y="110.00005668588615" text-anchor="middle" dominant-baseline="middle" fill="#8B5CF6" font-size="12" font-weight="bold">50</text><text x="325.49230498602856" y="263.999935653859" text-anchor="middle" dominant-baseline="middle" fill="#94A3B8" font-size="11">知识产权</text><text x="308.17179248769185" y="257.99994331411386" text-anchor="middle" dominant-baseline="middle" fill="#8B5CF6" font-size="12" font-weight="bold">0</text><text x="180.00022290154263" y="347.9999999998521" text-anchor="middle" dominant-baseline="middle" fill="#94A3B8" font-size="11">跨境财税</text><text x="180.0001963656447" y="331.9999999998697" text-anchor="middle" dominant-baseline="middle" fill="#8B5CF6" font-size="12" font-weight="bold">75</text><text x="34.50791791585556" y="264.0003217304587" text-anchor="middle" dominant-baseline="middle" fill="#94A3B8" font-size="11">劳动用工</text><text x="51.82840387825371" y="258.0002834292136" text-anchor="middle" dominant-baseline="middle" fill="#8B5CF6" font-size="12" font-weight="bold">100</text><text x="34.50747211311176" y="96.00045042333232" text-anchor="middle" dominant-baseline="middle" fill="#94A3B8" font-size="11">签证移民</text><text x="51.82801114726513" y="110.00039680150705" text-anchor="middle" dominant-baseline="middle" fill="#8B5CF6" font-size="12" font-weight="bold">0</text>
+            <circle cx="180" cy="180" r="4" fill="#8B5CF6"/>
+        </svg>
+    </div>
+                <div class="overall-score-badge" style="background:#EF4444;">
+                    <span class="osb-label">综合评分</span>
+                    <span class="osb-value">52</span>
+                </div>
+            </div>
+            <div class="dim-cards-section">
+                <h4>六大核心维度概览</h4>
+                <div class="dim-cards-grid">
+        <div class="dim-card" style="border-left:4px solid #F59E0B;">
+            <div class="dim-card-header">
+                <span class="dim-card-name">行业准入</span>
+                <span class="dim-card-score" style="color:#F59E0B;">75</span>
+            </div>
+            <div class="dim-card-bar"><div class="dim-card-fill" style="width:75%;background:#F59E0B;"></div></div>
+        </div>
+        <div class="dim-card" style="border-left:4px solid #EF4444;">
+            <div class="dim-card-header">
+                <span class="dim-card-name">数据安全</span>
+                <span class="dim-card-score" style="color:#EF4444;">50</span>
+            </div>
+            <div class="dim-card-bar"><div class="dim-card-fill" style="width:50%;background:#EF4444;"></div></div>
+        </div>
+        <div class="dim-card" style="border-left:4px solid #7F1D1D;">
+            <div class="dim-card-header">
+                <span class="dim-card-name">知识产权</span>
+                <span class="dim-card-score" style="color:#7F1D1D;">0</span>
+            </div>
+            <div class="dim-card-bar"><div class="dim-card-fill" style="width:0%;background:#7F1D1D;"></div></div>
+        </div>
+        <div class="dim-card" style="border-left:4px solid #F59E0B;">
+            <div class="dim-card-header">
+                <span class="dim-card-name">跨境财税</span>
+                <span class="dim-card-score" style="color:#F59E0B;">75</span>
+            </div>
+            <div class="dim-card-bar"><div class="dim-card-fill" style="width:75%;background:#F59E0B;"></div></div>
+        </div>
+        <div class="dim-card" style="border-left:4px solid #10B981;">
+            <div class="dim-card-header">
+                <span class="dim-card-name">劳动用工</span>
+                <span class="dim-card-score" style="color:#10B981;">100</span>
+            </div>
+            <div class="dim-card-bar"><div class="dim-card-fill" style="width:100%;background:#10B981;"></div></div>
+        </div>
+        <div class="dim-card" style="border-left:4px solid #7F1D1D;">
+            <div class="dim-card-header">
+                <span class="dim-card-name">签证移民</span>
+                <span class="dim-card-score" style="color:#7F1D1D;">0</span>
+            </div>
+            <div class="dim-card-bar"><div class="dim-card-fill" style="width:0%;background:#7F1D1D;"></div></div>
+        </div></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== 模块④: 风险矩阵4×4热力图（约束2）===== -->
+    
+    <div class="module page-break" id="module-4">
+        <div class="module-header">
+            <h2>四、风险矩阵4×4热力图</h2>
+            <p class="module-subtitle">Risk Matrix Heatmap (4×4)</p>
+        </div>
+        <div class="risk-matrix-grid">
+            <div class="matrix-section">
+                <div class="matrix-axis-label y-label">影响程度 ↑</div>
+                <div class="matrix-container">
+                    <div class="matrix-header">
+                        <div class="matrix-corner"></div>
+                        <div class="matrix-col-label">低 ← 发生概率 →</div>
+                        <div class="matrix-col-label">中</div>
+                        <div class="matrix-col-label">高</div>
+                        <div class="matrix-col-label">严重</div>
+                    </div>
+                    <div class="matrix-header-row">
+                        <div class="matrix-row-label">严重</div>
+                        <div class="matrix-row">
+            <div class="matrix-cell" style="background:#F59E0B;">
+                <div class="matrix-cell-content">
+                    <div class="matrix-rs">4</div>
+                    <div class="matrix-dims"></div>
+                </div>
+            </div>
+            <div class="matrix-cell" style="background:#EF4444;">
+                <div class="matrix-cell-content">
+                    <div class="matrix-rs">8</div>
+                    <div class="matrix-dims"></div>
+                </div>
+            </div>
+            <div class="matrix-cell" style="background:#7F1D1D;">
+                <div class="matrix-cell-content">
+                    <div class="matrix-rs">12</div>
+                    <div class="matrix-dims"></div>
+                </div>
+          
+                    </div>
+                </div>
+                
+    <div class="matrix-legend">
+        <div class="legend-item"><div class="legend-color" style="background:#7F1D1D;"></div><span>严重 (12-16)</span></div>
+        <div class="legend-item"><div class="legend-color" style="background:#EF4444;"></div><span>高 (8-9)</span></div>
+        <div class="legend-item"><div class="legend-color" style="background:#F59E0B;"></div><span>中 (4-6)</span></div>
+        <div class="legend-item"><div class="legend-color" style="background:#10B981;"></div><span>低 (1-3)</span></div>
+    </div>
+            </div>
+            <div class="matrix-table-section">
+                <h4>P0: 立即行动 / P1: 短期整改 / P2: 持续监控</h4>
+                <table class="matrix-dim-table">
+                    <thead><tr><th>五、逐维度深度分析</th><th>影响程度</th><th>发生概率</th><th>风险等级图例</th><th>风险等级</th><th>负责人</th></tr></thead>
+                    <tbody>
+        <tr>
+            <td>行业准入</td>
+            <td><div class="impact-bar"><div class="impact-fill" style="width:25.0%;background:#10B981;"></div></div><span class="impact-label">1/4</span></td>
+            <td><div class="impact-bar"><div class="impact-fill" style="width:25.0%;background:#10B981;"></div></div><span class="impact-label">1/4</span></td>
+            <td><span class="risk-score-badge" style="background:#10B981;">1</span></td>
+            <td style="color:#10B981;font-weight:600;">低</td>
+            <td>徐准</td>
+        </tr>
+        <tr>
+            <td>数据安全</td>
+            <td><div class="impact-bar"><div class="impact-fill" style="width:50.0%;background:#F59E0B;"></div></div><span class="impact-label">2/4</span></td>
+            <td><div class="impact-bar"><div class="impact-fill" style="width:50.0%;background:#F59E0B;"></div></div><span class="impact-label">2/4</span></td>
+            <td><span class="risk-score-badge" style="background:#F59E0B;">4</span></td>
+            <td style="color:#F59E0B;font-weight:600;">中</td>
+            <td>丹书</td>
+        </tr>
+        <tr>
+            <td>知识产权</td>
+            <td><div class="impact-bar"><div class="impact-fill" style="width:100.0%;background:#7F1D1D;"></div></div><span class="impact-label">4/4</span></td>
+            <td><div class="impact-bar"><div class="impact-fill" style="width:100.0%;background:#7F1D1D;"></div></div><span class="impact-label">4/4</span></td>
+            <td><span class="risk-score-badge" style="background:#7F1D1D;">16</span></td>
+            <td style="color:#7F1D1D;font-weight:600;">严重</td>
+            <td>金镇宇</td>
+        </tr>
+        <tr>
+            <td>跨境财税</td>
+            <td><div class="impact-bar"><div class="impact-fill" style="width:25.0%;background:#10B981;"></div></div><span class="impact-label">1/4</span></td>
+            <td><div class="impact-bar"><div class="impact-fill" style="width:25.0%;background:#10B981;"></div></div><span class="impact-label">1/4</span></td>
+            <td><span class="risk-score-badge" style="background:#10B981;">1</span></td>
+            <td style="color:#10B981;font-weight:600;">低</td>
+            <td>朴泰俊</td>
+        </tr>
+        <tr>
+            <td>劳动用工</td>
+            <td><div class="impact-bar"><div class="impact-fill" style="width:25.0%;background:#10B981;"></div></div><span class="impact-label">1/4</span></td>
+            <td><div class="impact-bar"><div class="impact-fill" style="width:25.0%;background:#10B981;"></div></div><span class="impact-label">1/4</span></td>
+            <td><span class="risk-score-badge" style="background:#10B981;">1</span></td>
+            <td style="color:#10B981;font-weight:600;">低</td>
+            <td>李朴</td>
+        </tr>
+        <tr>
+            <td>签证移民</td>
+            <td><div class="impact-bar"><div class="impact-fill" style="width:100.0%;background:#7F1D1D;"></div></div><span class="impact-label">4/4</span></td>
+            <td><div class="impact-bar"><div class="impact-fill" style="width:100.0%;background:#7F1D1D;"></div></div><span class="impact-label">4/4</span></td>
+            <td><span class="risk-score-badge" style="background:#7F1D1D;">16</span></td>
+            <td style="color:#7F1D1D;font-weight:600;">严重</td>
+            <td>崔敏智</td>
+        </tr>
+        <tr>
+            <td>贸易合规</td>
+            <td><div class="impact-bar"><div class="impact-fill" style="width:50.0%;background:#F59E0B;"></div></div><span class="impact-label">2/4</span></td>
+            <td><div class="impact-bar"><div class="impact-fill" style="width:50.0%;background:#F59E0B;"></div></div><span class="impact-label">2/4</span></td>
+            <td><span class="risk-score-badge" style="background:#F59E0B;">4</span></td>
+            <td style="color:#F59E0B;font-weight:600;">中</td>
+            <td>朴泰俊</td>
+        </tr>
+        <tr>
+            <td>反商业贿赂</td>
+            <td><div class="impact-bar"><div class="impact-fill" style="width:75.0%;background:#EF4444;"></div></div><span class="impact-label">3/4</span></td>
+            <td><div class="impact-bar"><div class="impact-fill" style="width:75.0%;background:#EF4444;"></div></div><span class="impact-label">3/4</span></td>
+            <td><span class="risk-score-badge" style="background:#EF4444;">9</span></td>
+            <td style="color:#EF4444;font-weight:600;">高</td>
+            <td>徐准</td>
+        </tr></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== 模块⑤: 逐维度深挖（约束1: 法规编号）===== -->
+    
+    <div class="module page-break" id="module-5">
+        <div class="module-header">
+            <h2>五、逐维度深度分析</h2>
+            <p class="module-subtitle">Dimension Deep-dive Analysis</p>
+        </div>
+        <div class="deep-dive-list">
+            
+        <div class="deep-dive-item" style="border-left:4px solid #F59E0B;">
+            <div class="dd-header">
+                <div class="dd-title-row">
+                    <span class="dd-icon">🏛️</span>
+                    <h4>行业准入</h4>
+                    <span class="dd-score" style="color:#F59E0B;">75</span>
+                    <span class="dd-risk-badge" style="background:#F59E0B;">中</span>
+                </div>
+                <div class="dd-meta-row">
+                    <span class="dd-owner">👤 负责人: 徐准</span>
+                    <span class="dd-matrix">
+                        🎯 4×4矩阵定位: 影响程度=1/4, 发生概率=1/4
+                        → <strong style="color:#10B981;">低</strong>
+                    </span>
+                </div>
+                <div class="dd-percentile">📊 百分位: 50% | 中等 (行业中位) | 与行业均值差距: +13</div>
+            </div>
+            <div class="dd-body">
+                <div class="dd-findings">
+                    <h5>🔍 主要发现</h5>
+                    <ul><li>已进行行业准入评估，合规状况良好</li></ul>
+                </div>
+                <div class="dd-recommendations">
+                    <h5>💡 整改建议</h5>
+                    <ul><li>聘请专业律师进行负面清单合规审查 (外商投资法第4条)</li><li>确定最优投资架构 (WFOE/JV/代表处)</li><li>启动公司注册流程并取得行业许可证</li></ul>
+                </div>
+                <div class="dd-regulations">
+                    <h5>📜 法规引用</h5>
+                    <div class="reg-refs-row"><span class="regulation-ref"><span class="reg-badge">外商投资法</span> 第4-28条 — 外商投资准入管理</span></div>
+                </div>
+            </div>
+        </div>
+        <div class="deep-dive-item" style="border-left:4px solid #EF4444;">
+            <div class="dd-header">
+                <div class="dd-title-row">
+                    <span class="dd-icon">🔒</span>
+                    <h4>数据安全</h4>
+                    <span class="dd-score" style="color:#EF4444;">50</span>
+                    <span class="dd-risk-badge" style="background:#EF4444;">高</span>
+                </div>
+                <div class="dd-meta-row">
+                    <span class="dd-owner">👤 负责人: 丹书</span>
+                    <span class="dd-matrix">
+                        🎯 4×4矩阵定位: 影响程度=2/4, 发生概率=2/4
+                        → <strong style="color:#F59E0B;">中</strong>
+                    </span>
+                </div>
+                <div class="dd-percentile">📊 百分位: 50% | 中等 (行业中位) | 与行业均值差距: +5</div>
+            </div>
+            <div class="dd-body">
+                <div class="dd-findings">
+                    <h5>🔍 主要发现</h5>
+                    <ul><li>已了解数据安全要求但未完全落实保护措施</li></ul>
+                </div>
+                <div class="dd-recommendations">
+                    <h5>💡 整改建议</h5>
+                    <ul><li>立即启动数据资产盘点和分类分级 (数据安全法第21条)</li><li>评估数据出境场景，启动安全评估或签订标准合同 (PIPL第38条)</li><li>更新隐私政策，确保告知同意的充分性 (PIPL第17条)</li><li>完成网络安全等级保护定级备案 (网络安全法第21条)</li></ul>
+                </div>
+                <div class="dd-regulations">
+                    <h5>📜 法规引用</h5>
+                    <div class="reg-refs-row"><span class="regulation-ref"><span class="reg-badge">PIPL</span> 第38-43条 — 个人信息跨境传输</span><span class="regulation-ref"><span class="reg-badge">PIPL</span> 第13-14条 — 告知同意规则</span><span class="regulation-ref"><span class="reg-badge">K-DPA</span> 第36-39条 — 个人信息跨境传输</span><span class="regulation-ref"><span class="reg-badge">数据安全法</span> 第21条 — 数据分类分级制度</span><span class="regulation-ref"><span class="reg-badge">网络安全法</span> 第21-38条 — 网络安全等级保护</span></div>
+                </div>
+            </div>
+        </div>
+        <div class="deep-dive-item" style="border-left:4px solid #7F1D1D;">
+            <div class="dd-header">
+                <div class="dd-title-row">
+                    <span class="dd-icon">©️</span>
+                    <h4>知识产权</h4>
+                    <span class="dd-score" style="color:#7F1D1D;">0</span>
+                    <span class="dd-risk-badge" style="background:#7F1D1D;">严重</span>
+                </div>
+                <div class="dd-meta-row">
+                    <span class="dd-owner">👤 负责人: 金镇宇</span>
+                    <span class="dd-matrix">
+                        🎯 4×4矩阵定位: 影响程度=4/4, 发生概率=4/4
+                        → <strong style="color:#7F1D1D;">严重</strong>
+                    </span>
+                </div>
+                <div class="dd-percentile">📊 百分位: 10% | 落后 (行业后25%) | 与行业均值差距: -38</div>
+            </div>
+            <div class="dd-body">
+                <div class="dd-findings">
+                    <h5>🔍 主要发现</h5>
+                    <ul><li>该维度评分较低（0分），需要立即采取合规整改措施</li></ul>
+                </div>
+                <div class="dd-recommendations">
+                    <h5>💡 整改建议</h5>
+                    <ul><li>进行中国商标检索并提交核心商标注册 (商标法第4条)</li><li>评估核心专利是否需要中国申请 (专利法第9条)</li><li>完成知识产权海关备案 (知识产权海关保护条例)</li></ul>
+                </div>
+                <div class="dd-regulations">
+                    <h5>📜 法规引用</h5>
+                    <div class="reg-refs-row"><span class="regulation-ref" style="color:#64748B;">无特定法规引用</span></div>
+                </div>
+            </div>
+        </div>
+        <div class="deep-dive-item" style="border-left:4px solid #F59E0B;">
+            <div class="dd-header">
+                <div class="dd-title-row">
+                    <span class="dd-icon">💹</span>
+                    <h4>跨境财税</h4>
+                    <span class="dd-score" style="color:#F59E0B;">75</span>
+                    <span class="dd-risk-badge" style="background:#F59E0B;">中</span>
+                </div>
+                <div class="dd-meta-row">
+                    <span class="dd-owner">👤 负责人: 朴泰俊</span>
+                    <span class="dd-matrix">
+                        🎯 4×4矩阵定位: 影响程度=1/4, 发生概率=1/4
+                        → <strong style="color:#10B981;">低</strong>
+                    </span>
+                </div>
+                <div class="dd-percentile">📊 百分位: 75% | 良好 (行业前25%) | 与行业均值差距: +35</div>
+            </div>
+            <div class="dd-body">
+                <div class="dd-findings">
+                    <h5>🔍 主要发现</h5>
+                    <ul><li>该维度合规状况良好（75分），继续保持</li></ul>
+                </div>
+                <div class="dd-recommendations">
+                    <h5>💡 整改建议</h5>
+                    <ul><li>评估跨境财税合规现状并制定改进计划</li></ul>
+                </div>
+                <div class="dd-regulations">
+                    <h5>📜 法规引用</h5>
+                    <div class="reg-refs-row"><span class="regulation-ref" style="color:#64748B;">无特定法规引用</span></div>
+                </div>
+            </div>
+        </div>
+        <div class="deep-dive-item" style="border-left:4px solid #10B981;">
+            <div class="dd-header">
+                <div class="dd-title-row">
+                    <span class="dd-icon">👥</span>
+                    <h4>劳动用工</h4>
+                    <span class="dd-score" style="color:#10B981;">100</span>
+                    <span class="dd-risk-badge" style="background:#10B981;">低</span>
+                </div>
+                <div class="dd-meta-row">
+                    <span class="dd-owner">👤 负责人: 李朴</span>
+                    <span class="dd-matrix">
+                        🎯 4×4矩阵定位: 影响程度=1/4, 发生概率=1/4
+                        → <strong style="color:#10B981;">低</strong>
+                    </span>
+                </div>
+                <div class="dd-percentile">📊 百分位: 90% | 领先 (行业前10%) | 与行业均值差距: +45</div>
+            </div>
+            <div class="dd-body">
+                <div class="dd-findings">
+                    <h5>🔍 主要发现</h5>
+                    <ul><li>该维度合规状况良好（100分），继续保持</li></ul>
+                </div>
+                <div class="dd-recommendations">
+                    <h5>💡 整改建议</h5>
+                    <ul><li>评估劳动用工合规现状并制定改进计划</li></ul>
+                </div>
+                <div class="dd-regulations">
+                    <h5>📜 法规引用</h5>
+                    <div class="reg-refs-row"><span class="regulation-ref"><span class="reg-badge">劳动合同法</span> 第7-50条 — 劳动合同订立与履行</span></div>
+                </div>
+            </div>
+        </div>
+        <div class="deep-dive-item" style="border-left:4px solid #7F1D1D;">
+            <div class="dd-header">
+                <div class="dd-title-row">
+                    <span class="dd-icon">🛂</span>
+                    <h4>签证移民</h4>
+                    <span class="dd-score" style="color:#7F1D1D;">0</span>
+                    <span class="dd-risk-badge" style="background:#7F1D1D;">严重</span>
+                </div>
+                <div class="dd-meta-row">
+                    <span class="dd-owner">👤 负责人: 崔敏智</span>
+                    <span class="dd-matrix">
+                        🎯 4×4矩阵定位: 影响程度=4/4, 发生概率=4/4
+                        → <strong style="color:#7F1D1D;">严重</strong>
+                    </span>
+                </div>
+                <div class="dd-percentile">📊 百分位: 10% | 落后 (行业后25%) | 与行业均值差距: -48</div>
+            </div>
+            <div class="dd-body">
+                <div class="dd-findings">
+                    <h5>🔍 主要发现</h5>
+                    <ul><li>该维度评分较低（0分），需要立即采取合规整改措施</li></ul>
+                </div>
+                <div class="dd-recommendations">
+                    <h5>💡 整改建议</h5>
+                    <ul><li>评估签证移民合规现状并制定改进计划</li></ul>
+                </div>
+                <div class="dd-regulations">
+                    <h5>📜 法规引用</h5>
+                    <div class="reg-refs-row"><span class="regulation-ref"><span class="reg-badge">出境入境管理法</span> 第41-47条 — 外国人工作签证管理</span></div>
+                </div>
+            </div>
+        </div>
+        <div class="deep-dive-item" style="border-left:4px solid #EF4444;">
+            <div class="dd-header">
+                <div class="dd-title-row">
+                    <span class="dd-icon">📦</span>
+                    <h4>贸易合规</h4>
+                    <span class="dd-score" style="color:#EF4444;">50</span>
+                    <span class="dd-risk-badge" style="background:#EF4444;">高</span>
+                </div>
+                <div class="dd-meta-row">
+                    <span class="dd-owner">👤 负责人: 朴泰俊</span>
+                    <span class="dd-matrix">
+                        🎯 4×4矩阵定位: 影响程度=2/4, 发生概率=2/4
+                        → <strong style="color:#F59E0B;">中</strong>
+                    </span>
+                </div>
+                <div class="dd-percentile">📊 百分位: 50% | 中等 (行业中位) | 与行业均值差距: +0</div>
+            </div>
+            <div class="dd-body">
+                <div class="dd-findings">
+                    <h5>🔍 主要发现</h5>
+                    <ul><li>该维度存在中等风险（50分），建议持续改进</li></ul>
+                </div>
+                <div class="dd-recommendations">
+                    <h5>💡 整改建议</h5>
+                    <ul><li>评估贸易合规合规现状并制定改进计划</li></ul>
+                </div>
+                <div class="dd-regulations">
+                    <h5>📜 法规引用</h5>
+                    <div class="reg-refs-row"><span class="regulation-ref" style="color:#64748B;">无特定法规引用</span></div>
+                </div>
+            </div>
+        </div>
+        <div class="deep-dive-item" style="border-left:4px solid #EF4444;">
+            <div class="dd-header">
+                <div class="dd-title-row">
+                    <span class="dd-icon">⚖️</span>
+                    <h4>反商业贿赂</h4>
+                    <span class="dd-score" style="color:#EF4444;">40</span>
+                    <span class="dd-risk-badge" style="background:#EF4444;">高</span>
+                </div>
+                <div class="dd-meta-row">
+                    <span class="dd-owner">👤 负责人: 徐准</span>
+                    <span class="dd-matrix">
+                        🎯 4×4矩阵定位: 影响程度=3/4, 发生概率=3/4
+                        → <strong style="color:#EF4444;">高</strong>
+                    </span>
+                </div>
+                <div class="dd-percentile">📊 百分位: 50% | 中等 (行业中位) | 与行业均值差距: +5</div>
+            </div>
+            <div class="dd-body">
+                <div class="dd-findings">
+                    <h5>🔍 主要发现</h5>
+                    <ul><li>该维度存在中等风险（40分），建议持续改进</li></ul>
+                </div>
+                <div class="dd-recommendations">
+                    <h5>💡 整改建议</h5>
+                    <ul><li>评估反商业贿赂合规现状并制定改进计划</li></ul>
+                </div>
+                <div class="dd-regulations">
+                    <h5>📜 法规引用</h5>
+                    <div class="reg-refs-row"><span class="regulation-ref" style="color:#64748B;">无特定法规引用</span></div>
+                </div>
+            </div>
+        </div>
+        </div>
+    </div>
+
+    <!-- ===== 模块⑥: 中韩法规对比表 ===== -->
+    
+    <div class="module" id="module-6">
+        <div class="module-header">
+            <h2>六、中韩法规对比表</h2>
+            <p class="module-subtitle">CN-KR Regulation Comparison</p>
+        </div>
+        <div class="comparison-table-wrapper">
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>合规主题</th>
+                        <th>中国法规</th>
+                        <th>韩国法规</th>
+                        <th>中国要求</th>
+                        <th>韩国要求</th>
+                        <th>差异分析</th>
+                    </tr>
+                </thead>
+                <tbody>
+        <tr>
+            <td><strong>个人信息保护原则</strong></td>
+            <td><span class="reg-badge cn">PIPL第4-7条</span></td>
+            <td><span class="reg-badge kr">K-DPA第3条</span></td>
+            <td style="font-size:13px;">合法、正当、必要、诚信原则，目的明确，最小收集</td>
+            <td style="font-size:13px;">公开、公平、合法原则，最小收集，安全管理</td>
+            <td style="font-size:13px;color:#F59E0B;">中韩均采用最小收集原则，但中国强调'诚信'，韩国强调'公开'，差异较小</td>
+        </tr>
+        <tr>
+            <td><strong>告知同意规则</strong></td>
+            <td><span class="reg-badge cn">PIPL第13-17条</span></td>
+            <td><span class="reg-badge kr">K-DPA第15条</span></td>
+            <td style="font-size:13px;">取得明确同意，单独同意（敏感信息、跨境传输等场景）</td>
+            <td style="font-size:13px;">取得自主同意，告知目的、范围、保留期限</td>
+            <td style="font-size:13px;color:#F59E0B;">中国要求更严格，需'单独同意'场景多于韩国；韩国对同意记录保存要求更高</td>
+        </tr>
+        <tr>
+            <td><strong>数据跨境传输</strong></td>
+            <td><span class="reg-badge cn">PIPL第38-43条</span></td>
+            <td><span class="reg-badge kr">K-DPA第36-39条</span></td>
+            <td style="font-size:13px;">安全评估/标准合同/认证 + 单独同意 + 影响评估</td>
+            <td style="font-size:13px;">信息主体同意 + 通知K-DPA + 安全保障措施</td>
+            <td style="font-size:13px;color:#F59E0B;">中国要求安全评估或认证，成本更高；韩国以通知义务为主。跨境传输场景需同时满足两国要求</td>
+        </tr>
+        <tr>
+            <td><strong>敏感个人信息</strong></td>
+            <td><span class="reg-badge cn">PIPL第28-32条</span></td>
+            <td><span class="reg-badge kr">K-DPA第28条</span></td>
+            <td style="font-size:13px;">特定目的+充分必要性+单独同意+影响评估</td>
+            <td style="font-size:13px;">严格限制处理，取得明确同意</td>
+            <td style="font-size:13px;color:#F59E0B;">中国对敏感信息处理增加了影响评估要求，合规成本更高</td>
+        </tr>
+        <tr>
+            <td><strong>数据安全义务</strong></td>
+            <td><span class="reg-badge cn">数据安全法第21-31条</span></td>
+            <td><span class="reg-badge kr">K-DPA第29-32条</span></td>
+            <td style="font-size:13px;">数据分类分级+等级保护+安全审查+应急预案</td>
+            <td style="font-size:13px;">安全管理措施+内部计划+定期培训+事故报告</td>
+            <td style="font-size:13px;color:#F59E0B;">中国等保制度独有，韩国无对应要求；韩国事故报告时限更短</td>
+        </tr></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ===== 模块⑦: 整改路线图P0/P1/P2（约束3: 时间线+负责人）===== -->
+    
+    <div class="module page-break" id="module-7">
+        <div class="module-header">
+            <h2>七、整改路线图 P0/P1/P2</h2>
+            <p class="module-subtitle">Remediation Roadmap</p>
+        </div>
+        <div class="roadmap-container">
+            <div class="roadmap-section p0"><h4>P0 — 紧急 (2周内)</h4>
+            <div class="roadmap-item p0">
+                <div class="rm-item-header">
+                    <span class="rm-icon">©️</span>
+                    <span class="rm-name">知识产权</span>
+                    <span class="rm-deadline">立即 (2周内)</span>
+                    <span class="rm-owner">👤 金镇宇</span>
+                </div>
+                <div class="rm-timeline">📅 时间线: 第1-2周: 紧急商标检索 → 第3-4周: 提交核心商标注册</div>
+            </div>
+            <div class="roadmap-item p0">
+                <div class="rm-item-header">
+                    <span class="rm-icon">🛂</span>
+                    <span class="rm-name">签证移民</span>
+                    <span class="rm-deadline">立即 (2周内)</span>
+                    <span class="rm-owner">👤 崔敏智</span>
+                </div>
+                <div class="rm-timeline">📅 时间线: 第1-2周: 紧急评估与整改启动 → 第3-4周: 整改方案实施</div>
+            </div></div>
+            <div class="roadmap-section p1"><h4>P1 — 短期 (1-2个月)</h4>
+            <div class="roadmap-item p1">
+                <div class="rm-item-header">
+                    <span class="rm-icon">⚖️</span>
+                    <span class="rm-name">反商业贿赂</span>
+                    <span class="rm-deadline">短期 (1-2个月)</span>
+                    <span class="rm-owner">👤 徐准</span>
+                </div>
+                <div class="rm-timeline">📅 时间线: 第1个月: 详细评估 → 第2个月: 整改方案制定与执行</div>
+            </div>
+            <div class="roadmap-item p1">
+                <div class="rm-item-header">
+                    <span class="rm-icon">🔒</span>
+                    <span class="rm-name">数据安全</span>
+                    <span class="rm-deadline">短期 (1-2个月)</span>
+                    <span class="rm-owner">👤 丹书</span>
+                </div>
+                <div class="rm-timeline">📅 时间线: 第1个月: 数据分类分级 → 第2个月: 隐私政策更新</div>
+            </div>
+            <div class="roadmap-item p1">
+                <div class="rm-item-header">
+                    <span class="rm-icon">📦</span>
+                    <span class="rm-name">贸易合规</span>
+                    <span class="rm-deadline">短期 (1-2个月)</span>
+                    <span class="rm-owner">👤 朴泰俊</span>
+                </div>
+                <div class="rm-timeline">📅 时间线: 第1个月: 详细评估 → 第2个月: 整改方案制定与执行</div>
+            </div></div>
+            <div class="roadmap-section p2"><h4>P2 — 中期 (3-6个月)</h4>
+            <div class="roadmap-item p2">
+                <div class="rm-item-header">
+                    <span class="rm-icon">🏛️</span>
+                    <span class="rm-name">行业准入</span>
+                    <span class="rm-deadline">中期 (3-6个月)</span>
+                    <span class="rm-owner">👤 徐准</span>
+                </div>
+                <div class="rm-timeline">📅 时间线: 第1-2个月: 评估准入方案 → 第3-4个月: 启动架构设计</div>
+            </div>
+            <div class="roadmap-item p2">
+                <div class="rm-item-header">
+                    <span class="rm-icon">💹</span>
+                    <span class="rm-name">跨境财税</span>
+                    <span class="rm-deadline">中期 (3-6个月)</span>
+                    <span class="rm-owner">👤 朴泰俊</span>
+                </div>
+                <div class="rm-timeline">📅 时间线: 第1-2个月: 评估现状 → 第3-4个月: 持续优化</div>
+            </div>
+            <div class="roadmap-item p2">
+                <div class="rm-item-header">
+                    <span class="rm-icon">👥</span>
+                    <span class="rm-name">劳动用工</span>
+                    <span class="rm-deadline">中期 (3-6个月)</span>
+                    <span class="rm-owner">👤 李朴</span>
+                </div>
+                <div class="rm-timeline">📅 时间线: 第1-2个月: 评估现状 → 第3-4个月: 持续优化</div>
+            </div></div>
+        </div>
+    </div>
+
+    <!-- ===== 模块⑧: 附录（约束6: 行业对标百分位 + 约束7: 法规预警）===== -->
+    
+    <div class="module" id="module-8">
+        <div class="module-header">
+            <h2>八、附录</h2>
+            <p class="module-subtitle">Appendix</p>
+        </div>
+
+        <!-- 约束7: 未来3个月法规预警 -->
+        <div class="appendix-section">
+            <h4>🚨 未来3个月法规预警</h4>
+            <div class="alerts-table-wrapper">
+                <table class="alerts-table">
+                    <thead><tr><th>日期</th><th>预警事项</th><th>潜在影响</th><th>建议行动</th><th>法规引用</th></tr></thead>
+                    <tbody>
+        <tr>
+            <td style="white-space:nowrap;">2026-06-01</td>
+            <td><strong>PIPL数据出境安全评估年度报告提交截止</strong></td>
+            <td style="color:#EF4444;font-size:13px;">未按时提交报告可能面临最高5000万元或上年度营业额5%的罚款</td>
+            <td style="font-size:13px;">评估数据出境场景，准备年度合规报告</td>
+            <td>pipl-38</td>
+        </tr>
+        <tr>
+            <td style="white-space:nowrap;">2026-07-01</td>
+            <td><strong>K-DPA修订版正式生效（数据可携权强化）</strong></td>
+            <td style="color:#EF4444;font-size:13px;">数据可携权范围扩大，企业需在30日内响应用户数据转移请求</td>
+            <td style="font-size:13px;">审查数据处理流程，确保数据可携权合规</td>
+            <td>kdpa-03</td>
+        </tr>
+        <tr>
+            <td style="white-space:nowrap;">2026-08-15</td>
+            <td><strong>网络安全等级保护2.0年度测评截止</strong></td>
+            <td style="color:#EF4444;font-size:13px;">二级及以上系统需每年完成等级测评，未达标系统可能被责令整改</td>
+            <td style="font-size:13px;">安排等保测评机构进行年度测评</td>
+            <td>nsl-21</td>
+        </tr>
+        <tr>
+            <td style="white-space:nowrap;">2026-06-30</td>
+            <td><strong>外商投资信息报告(FIRC)半年度更新</strong></td>
+            <td style="color:#EF4444;font-size:13px;">未按时更新FIRC信息可能影响外汇登记和利润汇出</td>
+            <td style="font-size:13px;">更新外商投资信息报告</td>
+            <td>fil-04</td>
+        </tr>
+        <tr>
+            <td style="white-space:nowrap;">2026-09-01</td>
+            <td><strong>中韩FTA原产地证书年度核查</strong></td>
+            <td style="color:#EF4444;font-size:13px;">FTA优惠关税需提供有效原产地证，过期可能导致追缴关税</td>
+            <td style="font-size:13px;">核查FTA原产地证有效期，续期申请</td>
+            <td></td>
+        </tr></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 约束6: 行业对标百分位 -->
+        <div class="appendix-section">
+            <h4>📊 行业对标百分位分析</h4>
+            <div class="benchmark-table-wrapper">
+                <table class="benchmark-table">
+                    <thead><tr><th>五、逐维度深度分析</th><th>评分</th><th>与行业均值差距</th><th>百分位</th><th>预警事项</th></tr></thead>
+                    <tbody>
+        <tr>
+            <td>行业准入</td>
+            <td><strong>75</strong></td>
+            <td>62</td>
+            <td style="color:#10B981;font-weight:600;">+13</td>
+            <td>50%</td>
+            <td>中等 (行业中位)</td>
+        </tr>
+        <tr>
+            <td>数据安全</td>
+            <td><strong>50</strong></td>
+            <td>45</td>
+            <td style="color:#10B981;font-weight:600;">+5</td>
+            <td>50%</td>
+            <td>中等 (行业中位)</td>
+        </tr>
+        <tr>
+            <td>知识产权</td>
+            <td><strong>0</strong></td>
+            <td>38</td>
+            <td style="color:#EF4444;font-weight:600;">-38</td>
+            <td>10%</td>
+            <td>落后 (行业后25%)</td>
+        </tr>
+        <tr>
+            <td>跨境财税</td>
+            <td><strong>75</strong></td>
+            <td>40</td>
+            <td style="color:#10B981;font-weight:600;">+35</td>
+            <td>75%</td>
+            <td>良好 (行业前25%)</td>
+        </tr>
+        <tr>
+            <td>劳动用工</td>
+            <td><strong>100</strong></td>
+            <td>55</td>
+            <td style="color:#10B981;font-weight:600;">+45</td>
+            <td>90%</td>
+            <td>领先 (行业前10%)</td>
+        </tr>
+        <tr>
+            <td>签证移民</td>
+            <td><strong>0</strong></td>
+            <td>48</td>
+            <td style="color:#EF4444;font-weight:600;">-48</td>
+            <td>10%</td>
+            <td>落后 (行业后25%)</td>
+        </tr>
+        <tr>
+            <td>贸易合规</td>
+            <td><strong>50</strong></td>
+            <td>50</td>
+            <td style="color:#10B981;font-weight:600;">+0</td>
+            <td>50%</td>
+            <td>中等 (行业中位)</td>
+        </tr>
+        <tr>
+            <td>反商业贿赂</td>
+            <td><strong>40</strong></td>
+            <td>35</td>
+            <td style="color:#10B981;font-weight:600;">+5</td>
+            <td>50%</td>
+            <td>中等 (行业中位)</td>
+        </tr></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="appendix-section">
+            <h4>📋 法规引用数 []</h4>
+        </div>
+    </div>
+
+    <!-- 页脚 -->
+    <div class="report-footer">
+        <p class="disclaimer">※ 本报告由AI数字员工基于您提供的信息自动生成，仅供一般性参考，不构成正式法律意见或合规建议。针对具体情况，建议咨询持证专业人士。</p>
+        <p class="copyright">© 2026 中韩出海数智港 · China-Korea Digital Trade Gateway · All Rights Reserved</p>
+    </div>
+</div>
+</body>
+</html>

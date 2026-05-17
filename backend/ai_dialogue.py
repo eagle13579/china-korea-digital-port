@@ -20,8 +20,12 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # 项目根目录
-PROJECT_ROOT = Path(__file__).parent.parent  # china-korea-digital-port/
+PROJECT_ROOT = Path(__file__).parent.parent
+
+# 知识图谱引擎
 BACKEND_DIR = Path(__file__).parent  # backend/
+sys.path.insert(0, str(BACKEND_DIR))
+from knowledge_graph import get_db as kg_get_db, search_articles, get_articles_by_dimension, ALL_ARTICLES, DIMENSIONS, DIMENSION_MAP  # china-korea-digital-port/
 
 # ── 知识库路径 ──────────────────────────────────────────
 PRD_DIR = PROJECT_ROOT / "PRD"
@@ -34,7 +38,7 @@ COMPLIANCE_BACKEND_DIR = BACKEND_DIR / "compliance"
 DEEPSEEK_API_KEY = os.environ.get("DEEPSEEK_API_KEY", "")
 DEEPSEEK_BASE_URL = os.environ.get("DEEPSEEK_BASE_URL", "https://api.deepseek.com")
 DEEPSEEK_MODEL = os.environ.get("DEEPSEEK_MODEL", "deepseek-chat")
-USE_MOCK = not bool(DEEPSEEK_API_KEY)
+USE_MOCK = False
 
 # ── 合规维度关键词映射 ──────────────────────────────────
 DIMENSION_KEYWORDS = {
@@ -250,62 +254,52 @@ def load_knowledge_docs() -> List[Dict[str, Any]]:
 
 
 def search_relevant_context(query: str, docs: List[Dict], dimension: Optional[str] = None, max_chars: int = 3000) -> str:
-    """从知识库中搜索与用户问题相关的文档片段"""
-    if not docs:
-        return ""
+    """从知识图谱+知识库混合检索（知识图谱结构化条款优先，MD文档补充）"""
+    result_parts = []
 
-    query_lower = query.lower()
-    query_words = set(query_lower.split())
+    # 方法1: 知识图谱结构化检索（优先）
+    try:
+        articles = search_articles(query[:50], "zh")
+        for a in articles[:5]:
+            title = a.get("title", "") or a.get("title_ko", "法规条款")
+            number = a.get("article_number", "") or a.get("article_number_ko", "")
+            reg = a.get("regulation", "中国相关法规")
+            summary = a.get("summary", "") or a.get("summary_ko", "") or ""
+            entry = "[法规条款] " + title + " (" + reg + ")"
+            if number:
+                entry += " 第" + number + "条"
+            entry += "\n" + summary[:600]
+            reqs = a.get("requirements", [])
+            if reqs:
+                entry += "\n合规义务:\n" + "\n".join("- " + r[:100] for r in reqs[:3])
+            result_parts.append(entry)
+    except Exception as e:
+        print(f"KG检索错误: {e}")
 
-    scored_chunks = []
+    # 方法2: MD知识库关键词检索（补充）
+    if docs:
+        import hashlib
+        query_words = set(query.lower().split())
+        seen = set()
+        for doc in docs:
+            paras = [p.strip() for p in doc["content"].split("\n\n") if len(p.strip()) > 30]
+            for para in paras:
+                score = sum(1 for w in query_words if len(w) > 1 and w in para.lower())
+                h = hashlib.md5(para[:100].encode()).hexdigest()[:8]
+                if score >= 3 and h not in seen:
+                    seen.add(h)
+                    result_parts.append("[知识库参考]\n" + para[:800])
+                    break
 
-    for doc in docs:
-        content = doc["content"]
-        # 拆分成段落
-        paragraphs = re.split(r'\n\s*\n', content)
+    if not result_parts and dimension:
+        dim_label = dimension
+        if dimension in DIMENSION_KEYWORDS:
+            kw = DIMENSION_KEYWORDS[dimension].get("zh", [])
+            if kw:
+                dim_label = kw[0]
+        result_parts.append("[" + dim_label + "] 请咨询专业合规顾问获取定制化建议。")
 
-        for para in paragraphs:
-            para = para.strip()
-            if len(para) < 20:
-                continue  # 跳过太短的段落
-
-            para_lower = para.lower()
-            score = 0
-
-            # 评分策略1：关键词匹配
-            for word in query_words:
-                if len(word) > 1 and word in para_lower:
-                    score += 1
-
-            # 评分策略2：维度关键词
-            if dimension and dimension in DIMENSION_KEYWORDS:
-                for lang in ["zh", "ko"]:
-                    for kw in DIMENSION_KEYWORDS[dimension].get(lang, []):
-                        if kw.lower() in para_lower:
-                            score += 3
-
-            # 评分策略3：文件名匹配
-            if dimension and dimension.lower() in doc["filename"].lower():
-                score += 2
-
-            if score > 0:
-                # 截取前后文
-                para_trimmed = para[:2000] if len(para) > 2000 else para
-                scored_chunks.append((score, para_trimmed))
-
-    # 按得分排序
-    scored_chunks.sort(key=lambda x: -x[0])
-
-    # 拼装结果（限制总字符数）
-    result = []
-    total_chars = 0
-    for score, chunk in scored_chunks[:10]:
-        if total_chars + len(chunk) > max_chars:
-            break
-        result.append(f"[相关文档片段 (相关度:{score})]\n{chunk}")
-        total_chars += len(chunk)
-
-    return "\n\n---\n\n".join(result)
+    return "\n\n---\n\n".join(result_parts[:5])
 
 
 def get_mock_reply(user_message: str, language: str) -> Dict[str, Any]:
@@ -340,21 +334,23 @@ def get_ai_reply(user_message: str, language: str, context: str = "") -> Dict[st
     if dimension and dimension in DIMENSION_KEYWORDS:
         dim_label = DIMENSION_KEYWORDS[dimension][language][0] if DIMENSION_KEYWORDS[dimension][language] else dimension
 
-    system_prompt = f"""你是中韩出海数智港的AI数字员工合规顾问，负责为韩国企业提供进军中国市场的合规咨询服务。
+        system_prompt = f"""你是中韩出海数智港的AI合规顾问，专业提供中国市场合规咨询。
 
 【核心能力】
-1. 专业合规咨询：覆盖8大合规维度——行业准入、数据安全、知识产权、跨境财税、劳动用工、签证移民、公司设立、进出口
-2. 中韩双语回应：根据用户输入语言自动匹配，中文提问用中文回答，韩语提问用韩语回答
-3. 法规依据：所有回答基于中国现行法律法规、中韩FTA及相关政策
-4. 保守专业：不确定的事项明确说明，不编造法规条款
+1. 覆盖20+合规维度：行业准入、数据安全、知识产权、跨境财税、劳动用工、签证移民、公司设立、进出口、环评、食品药品、广告、电商、金融等
+2. 中韩双语回应：中文提问中文答，韩语提问韩语答
+3. 法规依据：严格基于知识图谱中的中国现行法规条款回答
 
-【回答原则】
-- 清晰结构化：使用小标题、要点列表、emoji标注
-- 行动导向：每条建议附带可执行的下步行动
-- 风险提示：对常见违规风险做醒目提醒
-- 信息来源：尽量标明涉及的法规名称
+【回答四原则】
+1. 引用标注：每条建议标注所依据的法规名称
+2. 置信度三级标注：
+   - 确定(有明确法规依据)
+   - 建议(基于行业经验)
+   - 待确认(信息不足，会追问)
+3. 行动导向：每条建议附带可执行的下步动作
+4. 保守专业：不确定绝不编造
 
-当前检测到的合规维度：{dim_label or '综合咨询'}
+当前检测维度：{dim_label or '综合咨询'}
 用户语言：{'한국어' if language == 'ko' else '中文'}
 """
 

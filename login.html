@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>登录 - 中韩出海数智港</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+<script src="/js/auth.js"></script>
+<style>
+body { background: #0a0e1a; font-family: 'Inter', sans-serif; }
+.glow-card { background: linear-gradient(135deg,rgba(30,41,59,0.9),rgba(15,23,42,0.95)); border:1px solid rgba(99,102,241,0.15); box-shadow:0 0 40px rgba(99,102,241,0.05),0 8px 32px rgba(0,0,0,0.3); }
+.glow-input { background:rgba(15,23,42,0.8); border:1px solid rgba(99,102,241,0.2); }
+.glow-input:focus { border-color:rgba(99,102,241,0.6); box-shadow:0 0 15px rgba(99,102,241,0.15); outline:none; }
+.btn-primary { background:linear-gradient(135deg,#6366f1,#8b5cf6); }
+.btn-primary:disabled { opacity:0.6; cursor:not-allowed; }
+.gradient-text { background:linear-gradient(135deg,#6366f1,#a78bfa); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+</style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4">
+<div x-data="loginForm()" class="w-full max-w-md">
+<div class="text-center mb-8">
+<a href="/"><h1 class="text-2xl font-bold gradient-text">中韩出海数智港</h1></a>
+<p class="text-gray-500 mt-2 text-sm">登录您的账号</p>
+</div>
+<div class="glow-card rounded-2xl p-8">
+<div x-show="error" x-transition class="bg-red-500/10 border border-red-500/30 text-red-300 rounded-lg px-4 py-3 mb-6 text-sm" x-text="error"></div>
+<form @submit.prevent="handleLogin" class="space-y-5">
+<div><label class="block text-gray-400 text-sm font-medium mb-2">邮箱地址</label><input type="email" x-model="email" required placeholder="your@email.com" class="glow-input w-full rounded-xl px-4 py-3 text-gray-100 placeholder-gray-600"></div>
+<div><label class="block text-gray-400 text-sm font-medium mb-2">密码</label><input type="password" x-model="password" required placeholder="输入密码" class="glow-input w-full rounded-xl px-4 py-3 text-gray-100 placeholder-gray-600"></div>
+<button type="submit" :disabled="loading" class="btn-primary w-full rounded-xl py-3 text-white font-semibold text-sm flex items-center justify-center gap-2">
+<svg x-show="loading" class="animate-spin h-5 w-5" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
+<span x-text="loading?'登录中...':'登录'"></span>
+</button>
+</form>
+<div class="mt-6 text-center"><p class="text-gray-500 text-sm">还没有账号？<a href="/register.html" class="text-indigo-400 hover:text-indigo-300">立即注册</a></p></div>
+<div class="mt-4 text-center"><a href="/" class="text-gray-600 hover:text-gray-400 text-xs">&larr; 返回首页</a></div>
+</div>
+</div>
+<script>
+function loginForm() {
+    return {
+        email: '', password: '', error: '', loading: false,
+        async handleLogin() {
+            this.error=''; this.loading=true;
+            try {
+                const r = await fetch('/api/v1/auth/login', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({username:this.email.trim(),password:this.password}) });
+                const d = await r.json();
+                if (!r.ok || !d.success) { this.error = d.detail || d.message || '登录失败'; return; }
+                AUTH.setToken(d.data.token, d.data.user);
+                const params = new URLSearchParams(window.location.search);
+                window.location.href = params.get('redirect') || '/';
+            } catch(e) { this.error='网络错误'; } finally { this.loading=false; }
+        }
+    };
+}
+</script>
+</body>
+</html>

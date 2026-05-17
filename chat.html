@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-lang-key="page_title">AI数字员工对话 - 中韩出海数智港</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: #f0f4f8;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .header-gradient {
+            background: linear-gradient(135deg, #1e3a5f 0%, #2d6a9f 100%);
+        }
+        .chat-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            max-width: 800px;
+            margin: 0 auto;
+            width: 100%;
+            padding: 0 16px;
+            height: calc(100vh - 64px);
+        }
+        .messages-area {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px 0;
+            scroll-behavior: smooth;
+        }
+        .messages-area::-webkit-scrollbar { width: 4px; }
+        .messages-area::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 2px; }
+        .message-bubble {
+            max-width: 85%;
+            padding: 14px 18px;
+            border-radius: 18px;
+            line-height: 1.6;
+            font-size: 14px;
+            animation: fadeInUp .3s ease;
+            word-wrap: break-word;
+            white-space: pre-wrap;
+        }
+        .message-user {
+            background: #2563eb;
+            color: white;
+            border-bottom-right-radius: 4px;
+            margin-left: auto;
+        }
+        .message-assistant {
+            background: white;
+            color: #1e293b;
+            border: 1px solid #e2e8f0;
+            border-bottom-left-radius: 4px;
+            box-shadow: 0 1px 3px rgba(0,0,0,.05);
+        }
+        .message-assistant h3, .message-assistant h4 {
+            margin-top: 12px;
+            margin-bottom: 6px;
+            font-weight: 600;
+            color: #1e3a5f;
+        }
+        .message-assistant h3 { font-size: 15px; }
+        .message-assistant h4 { font-size: 14px; }
+        .message-assistant ul, .message-assistant ol {
+            padding-left: 20px;
+            margin: 6px 0;
+        }
+        .message-assistant li { margin: 3px 0; }
+        .message-assistant p { margin: 6px 0; }
+        .message-assistant strong { color: #1e40af; }
+        .message-assistant hr {
+            margin: 12px 0;
+            border: none;
+            border-top: 1px solid #e2e8f0;
+        }
+        .dimension-badge {
+            display: inline-block;
+            background: #dbeafe;
+            color: #1d4ed8;
+            font-size: 11px;
+            padding: 2px 10px;
+            border-radius: 999px;
+            margin-bottom: 6px;
+            font-weight: 500;
+        }
+        .typing-indicator {
+            display: flex;
+            gap: 4px;
+            padding: 12px 0;
+        }
+        .typing-dot {
+            width: 8px; height: 8px;
+            background: #94a3b8;
+            border-radius: 50%;
+            animation: typing 1.4s infinite;
+        }
+        .typing-dot:nth-child(2) { animation-delay: .2s; }
+        .typing-dot:nth-child(3) { animation-delay: .4s; }
+        @keyframes typing {
+            0%, 60%, 100% { opacity: .3; transform: translateY(0); }
+            30% { opacity: 1; transform: translateY(-4px); }
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .input-area {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 8px 8px 8px 16px;
+            display: flex;
+            align-items: flex-end;
+            gap: 8px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,.06);
+            transition: border-color .2s;
+        }
+        .input-area:focus-within {
+            border-color: #3b82f6;
+            box-shadow: 0 2px 12px rgba(59,130,246,.15);
+        }
+        .input-area textarea {
+            flex: 1;
+            border: none;
+            outline: none;
+            resize: none;
+            font-size: 14px;
+            font-family: inherit;
+            line-height: 1.5;
+            max-height: 120px;
+            min-height: 24px;
+            background: transparent;
+            color: #1e293b;
+        }
+        .input-area textarea::placeholder { color: #94a3b8; }
+        .send-btn {
+            width: 40px; height: 40px;
+            border-radius: 12px;
+            background: #2563eb;
+            color: white;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all .2s;
+            flex-shrink: 0;
+        }
+        .send-btn:hover { background: #1d4ed8; transform: scale(1.05); }
+        .send-btn:disabled { background: #93c5fd; cursor: not-allowed; transform: none; }
+        .source-tag {
+            font-size: 10px;
+            color: #94a3b8;
+            margin-top: 6px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .welcome-card {
+            background: white;
+            border-radius: 20px;
+            padding: 32px 24px;
+            text-align: center;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 4px 16px rgba(0,0,0,.06);
+            animation: fadeInUp .4s ease;
+        }
+        .welcome-card .icon { font-size: 48px; margin-bottom: 12px; }
+        .welcome-card h2 { font-size: 20px; font-weight: 700; color: #1e3a5f; margin-bottom: 8px; }
+        .welcome-card p { color: #64748b; font-size: 14px; line-height: 1.7; }
+        .welcome-card .dim-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px;
+            margin: 16px 0;
+            text-align: left;
+        }
+        .welcome-card .dim-item {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 8px 10px;
+            font-size: 13px;
+            color: #334155;
+        }
+        .welcome-card .dim-item .emoji { margin-right: 4px; }
+        .clear-btn {
+            background: transparent;
+            border: 1px solid #e2e8f0;
+            color: #64748b;
+            padding: 4px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all .2s;
+        }
+        .clear-btn:hover {
+            background: #fef2f2;
+            border-color: #fca5a5;
+            color: #dc2626;
+        }
+        @media (max-width: 640px) {
+            .chat-container { padding: 0 12px; }
+            .message-bubble { max-width: 92%; font-size: 13px; padding: 12px 14px; }
+            .welcome-card { padding: 24px 16px; }
+            .welcome-card .dim-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<div x-data="chatApp()" x-init="init()" class="h-screen flex flex-col">
+    <!-- 头部 -->
+    <div class="header-gradient text-white px-4 py-3 flex items-center justify-between flex-shrink-0">
+        <div class="flex items-center gap-3">
+            <a href="/" class="text-white/70 hover:text-white transition">
+                <i class="fas fa-arrow-left text-sm"></i>
+            </a>
+            <div>
+                <div class="flex items-center gap-2">
+                    <span class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
+                    <h1 class="font-semibold text-sm">AI数字员工 · 合规顾问</h1>
+                </div>
+                <p class="text-blue-200 text-xs mt-0.5" x-text="statusText"></p>
+            </div>
+        </div>
+        <div class="flex items-center gap-2">
+            <button @click="clearChat()" class="clear-btn" title="清除对话">
+                <i class="fas fa-trash-can text-xs"></i>
+                <span class="hidden sm:inline ml-1">清除</span>
+            </button>
+            <div class="flex gap-1">
+                <button @click="setLang('zh')"
+                        class="px-2 py-0.5 rounded text-xs font-medium transition"
+                        :class="lang==='zh' ? 'bg-white text-blue-900' : 'bg-white/20 text-white/80 hover:bg-white/30'">
+                    🇨🇳 中文
+                </button>
+                <button @click="setLang('ko')"
+                        class="px-2 py-0.5 rounded text-xs font-medium transition"
+                        :class="lang==='ko' ? 'bg-white text-blue-900' : 'bg-white/20 text-white/80 hover:bg-white/30'">
+                    🇰🇷 한국어
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 对话区域 -->
+    <div class="chat-container">
+        <div class="messages-area" x-ref="messagesArea">
+            <!-- 欢迎消息 -->
+            <div x-show="messages.length === 0" class="flex justify-center py-8">
+                <div class="welcome-card max-w-lg">
+                    <div class="icon">🤖</div>
+                    <h2 x-text="lang==='ko' ? 'AI 디지털 직원 · 규제 컨설턴트' : 'AI数字员工 · 合规顾问'"></h2>
+                    <p x-text="lang==='ko'
+                        ? '안녕하세요! 한중 해외 진출 디지털 포트의 AI 디지털 직원입니다. 중국 시장 진출 관련 규제 질문에 답변해 드립니다.'
+                        : '您好！我是中韩出海数智港的AI数字员工合规顾问。请告诉我您关于中国市场的合规问题，我将为您提供专业解答。'">
+                    </p>
+                    <div class="dim-grid">
+                        <template x-for="dim in dimensions" :key="dim.key">
+                            <div class="dim-item cursor-pointer hover:bg-blue-50 transition"
+                                 @click="sendQuickQuestion(dim.key)">
+                                <span class="emoji" x-text="dim.emoji"></span>
+                                <span x-text="lang==='ko' ? dim.label_ko : dim.label_zh"></span>
+                            </div>
+                        </template>
+                    </div>
+                    <p class="text-xs text-gray-400 mt-2">
+                        <i class="fas fa-lightbulb"></i>
+                        <span x-text="lang==='ko'
+                            ? '위 항목을 클릭하시거나 직접 질문을 입력해주세요'
+                            : '点击上方维度或直接输入您的问题'"></span>
+                    </p>
+                </div>
+            </div>
+
+            <!-- 消息列表 -->
+            <template x-for="(msg, idx) in messages" :key="msg.id || idx">
+                <div class="flex mb-4" :class="msg.role === 'user' ? 'justify-end' : 'justify-start'">
+                    <div :class="'message-bubble ' + (msg.role === 'user' ? 'message-user' : 'message-assistant')">
+                        <!-- AI回复的维度标签 -->
+                        <template x-if="msg.role === 'assistant' && msg.dimension_label">
+                            <div class="dimension-badge">
+                                <span x-text="msg.dimension_label"></span>
+                            </div>
+                        </template>
+                        <div x-html="renderContent(msg.content)"></div>
+                        <!-- 来源标签 -->
+                        <template x-if="msg.role === 'assistant' && msg.source">
+                            <div class="source-tag">
+                                <i class="fas fa-robot"></i>
+                                <span x-text="msg.source === 'mock_faq' || msg.source === 'mock_fallback' || msg.source === 'mock_faq_general'
+                                    ? (lang==='ko' ? 'FAQ 기반 응답' : '📘 知识库FAQ回复')
+                                    : (lang==='ko' ? 'DeepSeek AI 응답' : '🧠 DeepSeek AI回复')">
+                                </span>
+                                <span class="text-xs ml-2" x-text="formatTime(msg.created_at)"></span>
+                            </div>
+                        </template>
+                        <template x-if="msg.role === 'user'">
+                            <div class="source-tag justify-end">
+                                <i class="fas fa-user"></i>
+                                <span x-text="lang==='ko' ? '사용자' : '您'"></span>
+                                <span class="ml-2" x-text="formatTime(msg.created_at)"></span>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+            </template>
+
+            <!-- 打字指示器 -->
+            <div x-show="loading" class="flex justify-start mb-4">
+                <div class="message-bubble message-assistant">
+                    <div class="dimension-badge" x-show="detecting">
+                        <i class="fas fa-search text-xs mr-1"></i>
+                        <span x-text="lang==='ko' ? '분석 중...' : '分析中...'"></span>
+                    </div>
+                    <div class="typing-indicator">
+                        <div class="typing-dot"></div>
+                        <div class="typing-dot"></div>
+                        <div class="typing-dot"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 输入区域 -->
+        <div class="input-area">
+            <textarea x-model="inputText"
+                      @keydown.enter.prevent="sendMessage()"
+                      rows="1"
+                      x-ref="inputArea"
+                      :placeholder="lang==='ko' ? '규제 질문을 입력하세요...' : '请输入您的合规问题...'"
+                      :disabled="loading">
+            </textarea>
+            <button class="send-btn" @click="sendMessage()" :disabled="loading || !inputText.trim()">
+                <i class="fas fa-paper-plane" :class="loading ? 'fa-spin' : ''"></i>
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+function chatApp() {
+    return {
+        messages: [],
+        inputText: '',
+        loading: false,
+        detecting: false,
+        lang: 'zh',
+
+        dimensions: [
+            { key: 'industry_access',     emoji: '📌', label_zh: '行业准入',     label_ko: '업종 진입' },
+            { key: 'data_security',        emoji: '🔒', label_zh: '数据安全',     label_ko: '데이터 보안' },
+            { key: 'intellectual_property',emoji: '⚖️', label_zh: '知识产权',     label_ko: '지식재산권' },
+            { key: 'cross_border_tax',     emoji: '💰', label_zh: '跨境财税',     label_ko: '국경 간 세무' },
+            { key: 'labor_employment',     emoji: '👥', label_zh: '劳动用工',     label_ko: '노동 고용' },
+            { key: 'visa_immigration',     emoji: '🛂', label_zh: '签证移民',     label_ko: '비자·이민' },
+            { key: 'company_formation',    emoji: '🏢', label_zh: '公司设立',     label_ko: '회사 설립' },
+            { key: 'import_export',        emoji: '📦', label_zh: '进出口',       label_ko: '수출입' },
+        ],
+
+        get statusText() {
+            if (this.loading) return this.lang === 'ko' ? '답변 생성 중...' : '思考中...';
+            if (this.messages.length === 0) return this.lang === 'ko' ? '무엇을 도와드릴까요?' : '有什么可以帮您的？';
+            const count = this.messages.filter(m => m.role === 'assistant').length;
+            return this.lang === 'ko' ? `${count}개의 답변` : `${count}条回复`;
+        },
+
+        async init() {
+            // 加载历史消息
+            await this.loadHistory();
+
+            // 自动调整textarea高度
+            this.$watch('inputText', () => this.autoResize());
+
+            // 如果用户之前没选过语言，根据浏览器语言检测
+            const savedLang = localStorage.getItem('chat_lang');
+            if (savedLang) {
+                this.lang = savedLang;
+            }
+        },
+
+        autoResize() {
+            const el = this.$refs.inputArea;
+            if (el) {
+                el.style.height = 'auto';
+                el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+            }
+        },
+
+        setLang(lang) {
+            this.lang = lang;
+            localStorage.setItem('chat_lang', lang);
+        },
+
+        async loadHistory() {
+            try {
+                const resp = await fetch('/api/chat/history');
+                const data = await resp.json();
+                if (data.success && data.messages) {
+                    this.messages = data.messages;
+                    this.scrollToBottom();
+                }
+            } catch (e) {
+                console.warn('加载历史记录失败:', e);
+            }
+        },
+
+        async sendMessage() {
+            const text = this.inputText.trim();
+            if (!text || this.loading) return;
+
+            this.inputText = '';
+            this.loading = true;
+            this.detecting = true;
+
+            // 立即显示用户消息
+            const userMsg = {
+                id: Date.now(),
+                role: 'user',
+                content: text,
+                created_at: new Date().toISOString(),
+            };
+            this.messages.push(userMsg);
+            this.scrollToBottom();
+
+            try {
+                const resp = await fetch('/api/chat/send', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: text }),
+                });
+                const data = await resp.json();
+
+                this.detecting = false;
+
+                if (data.success) {
+                    const aiMsg = {
+                        id: Date.now() + 1,
+                        role: 'assistant',
+                        content: data.reply,
+                        dimension: data.dimension,
+                        dimension_label: data.dimension_label,
+                        source: data.source,
+                        created_at: new Date().toISOString(),
+                    };
+                    this.messages.push(aiMsg);
+                } else {
+                    this.messages.push({
+                        id: Date.now() + 1,
+                        role: 'assistant',
+                        content: this.lang === 'ko'
+                            ? '죄송합니다. 요청을 처리하는 중 오류가 발생했습니다. 다시 시도해 주세요.'
+                            : '抱歉，处理请求时出现错误，请重试。',
+                        source: 'error',
+                        created_at: new Date().toISOString(),
+                    });
+                }
+            } catch (e) {
+                this.detecting = false;
+                this.messages.push({
+                    id: Date.now() + 1,
+                    role: 'assistant',
+                    content: this.lang === 'ko'
+                        ? '네트워크 오류가 발생했습니다. 연결을 확인하고 다시 시도해 주세요.'
+                        : '网络连接出错，请检查网络后重试。',
+                    source: 'error',
+                    created_at: new Date().toISOString(),
+                });
+            }
+
+            this.loading = false;
+            this.scrollToBottom();
+        },
+
+        sendQuickQuestion(key) {
+            const questions = {
+                'industry_access': {
+                    zh: '韩国企业进入中国市场，行业准入有哪些要求？',
+                    ko: '한국 기업이 중국 시장에 진입하려면 업종 진입 요건은 무엇인가요?',
+                },
+                'data_security': {
+                    zh: '数据跨境传输需要满足什么条件？',
+                    ko: '데이터 역외 이전을 위해 어떤 조건을 충족해야 하나요?',
+                },
+                'intellectual_property': {
+                    zh: '在中国注册商标和专利需要注意什么？',
+                    ko: '중국에서 상표와 특허를 등록할 때 주의할 점은 무엇인가요?',
+                },
+                'cross_border_tax': {
+                    zh: '中韩跨境经营涉及哪些税务问题？',
+                    ko: '한중 국경 간 경영과 관련된 세무 문제는 무엇인가요?',
+                },
+                'labor_employment': {
+                    zh: '在中国雇佣韩国员工需要什么手续？',
+                    ko: '중국에서 한국인 직원을 고용하려면 어떤 절차가 필요한가요?',
+                },
+                'visa_immigration': {
+                    zh: '韩国员工去中国工作需要什么签证？',
+                    ko: '한국인 직원이 중국에서 일하려면 어떤 비자가 필요한가요?',
+                },
+                'company_formation': {
+                    zh: '在中国设立公司选择WFOE还是代表处？',
+                    ko: '중국에서 회사 설립 시 WFOE와 대표처 중 어떤 것을 선택해야 하나요?',
+                },
+                'import_export': {
+                    zh: '中韩进出口贸易有哪些合规要求？',
+                    ko: '한중 수출입 무역의 규제 요건은 무엇인가요?',
+                },
+            };
+
+            const q = questions[key];
+            if (q) {
+                this.inputText = q[this.lang] || q['zh'];
+                this.sendMessage();
+            }
+        },
+
+        async clearChat() {
+            if (!confirm(this.lang === 'ko' ? '대화를 모두 지우시겠습니까?' : '确定清除所有对话记录吗？')) return;
+
+            try {
+                const resp = await fetch('/api/chat/clear', { method: 'POST' });
+                const data = await resp.json();
+                if (data.success) {
+                    this.messages = [];
+                    this.scrollToBottom();
+                }
+            } catch (e) {
+                console.warn('清除失败:', e);
+            }
+        },
+
+        renderContent(text) {
+            if (!text) return '';
+            // 将文本中的Markdown格式转换为HTML（简单实现）
+            let html = text
+                // 标题（### / ## / #）
+                .replace(/^### (.+)$/gm, '<h4>$1</h4>')
+                .replace(/^## (.+)$/gm, '<h3>$1</h3>')
+                .replace(/^# (.+)$/gm, '<h3>$1</h3>')
+                // 加粗
+                .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+                // 列表项
+                .replace(/^- (.+)$/gm, '<li>$1</li>')
+                .replace(/^\d+\. (.+)$/gm, '<li>$1</li>')
+                // 合并连续的li
+                .replace(/(<li>.*<\/li>)\n<li>/g, '$1\n<li>')
+                .replace(/(<li>(?:.|\n)*?)<\/li>(?:\n|$)/g, function(m) {
+                    const items = m.match(/<li>(.+?)<\/li>/g);
+                    if (items && items.length > 1) {
+                        return '<ul>' + items.join('') + '</ul>';
+                    }
+                    return m;
+                })
+                // 分隔线
+                .replace(/^---$/gm, '<hr>')
+                // 换行
+                .replace(/\n/g, '<br>');
+
+            return html;
+        },
+
+        formatTime(dateStr) {
+            if (!dateStr) return '';
+            try {
+                const d = new Date(dateStr);
+                const h = String(d.getHours()).padStart(2, '0');
+                const m = String(d.getMinutes()).padStart(2, '0');
+                return `${h}:${m}`;
+            } catch {
+                return '';
+            }
+        },
+
+        scrollToBottom() {
+            this.$nextTick(() => {
+                const el = this.$refs.messagesArea;
+                if (el) el.scrollTop = el.scrollHeight;
+            });
+        },
+    };
+}
+</script>
+</body>
+</html>

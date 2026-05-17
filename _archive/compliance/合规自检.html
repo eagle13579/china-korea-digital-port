@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-lang-key="page_title">合规自检 - 中韩出海数智港</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', system-ui, sans-serif; background: #f8fafc; }
+        .header-gradient { background: linear-gradient(135deg, #1e3a5f 0%, #2d6a9f 100%); }
+        .card { transition: all .2s; border: 2px solid transparent; }
+        .card:hover { border-color: #3b82f6; transform: translateY(-1px); }
+        .card.selected { border-color: #2563eb; background: #eff6ff; }
+        .progress-bar { transition: width .5s ease; }
+        .result-score { font-size: 4rem; font-weight: 800; line-height: 1; }
+        .result-ring { width: 160px; height: 160px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto; }
+        @media (max-width: 640px) { .result-score { font-size: 2.5rem; } .result-ring { width: 120px; height: 120px; } }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .anim-in { animation: fadeInUp .35s ease; }
+        .radar-svg { max-width: 100%; height: auto; }
+        .badge { background: #f1f5f9; border-radius: 999px; padding: 2px 10px; font-size: 12px; }
+    </style>
+</head>
+<body>
+<div x-data="app()" x-init="init()">
+    <!-- 头部 -->
+    <div class="header-gradient text-white px-4 py-8 md:py-12">
+        <div class="max-w-3xl mx-auto text-center">
+            <div class="flex justify-center gap-2 mb-3">
+                <button @click="setLang('zh')" class="px-3 py-1 rounded-full text-xs" :class="lang=='zh'?'bg-white text-blue-900':'bg-white/30'">🇨🇳 中文</button>
+                <button @click="setLang('ko')" class="px-3 py-1 rounded-full text-xs" :class="lang=='ko'?'bg-white text-blue-900':'bg-white/30'">🇰🇷 한국어</button>
+            </div>
+            <h1 class="text-2xl md:text-3xl font-bold mb-2" x-text="t('title')"></h1>
+            <p class="text-blue-200 text-sm" x-text="t('subtitle')"></p>
+        </div>
+    </div>
+
+    <div class="max-w-3xl mx-auto px-4 py-6">
+        <!-- 进度条 -->
+        <div x-show="step > 0 && step <= questions.length" class="mb-6">
+            <div class="flex justify-between text-xs text-gray-500 mb-1">
+                <span x-text="t('progress')+' '+Math.round((step-1)/questions.length*100)+'%'"></span>
+                <span x-text="step+'/'+questions.length"></span>
+            </div>
+            <div class="bg-gray-200 rounded-full h-2">
+                <div class="progress-bar h-2 rounded-full bg-blue-600" :style="'width:'+((step-1)/questions.length*100)+'%'"></div>
+            </div>
+        </div>
+
+        <!-- 开始页 -->
+        <div x-show="step===0" class="anim-in">
+            <div class="bg-white rounded-2xl shadow-sm border p-6 md:p-8 text-center">
+                <div class="text-5xl mb-3">🛡️</div>
+                <h2 class="text-xl font-bold text-gray-800" x-text="t('start_title')"></h2>
+                <p class="text-gray-500 mt-2 text-sm" x-text="t('start_desc')"></p>
+                <div class="mt-6 grid grid-cols-2 md:grid-cols-4 gap-3 text-left">
+                    <template x-for="q in questions" :key="q.id">
+                        <div class="bg-gray-50 rounded-lg p-2.5 text-center">
+                            <div class="text-lg mb-1">📌</div>
+                            <div class="text-xs text-gray-600 font-medium" x-text="q.dimension_label"></div>
+                        </div>
+                    </template>
+                </div>
+                <button @click="step=1" class="mt-6 w-full py-3 bg-blue-600 text-white rounded-xl font-medium hover:bg-blue-700 transition">
+                    ▶ <span x-text="t('start_btn')"></span>
+                </button>
+                <div x-show="saved" class="mt-3">
+                    <p class="text-xs text-amber-600">📂 <span x-text="t('resume')"></span>
+                        <button @click="resumeProgress()" class="underline" x-text="t('resume_btn')"></button>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 答题页 -->
+        <template x-for="(q, i) in questions" :key="q.id">
+            <div x-show="step === i+1" class="anim-in">
+                <div class="bg-white rounded-2xl shadow-sm border p-6 md:p-8">
+                    <!-- 维度标签 -->
+                    <div class="flex items-center gap-2 mb-1">
+                        <span class="text-xs text-blue-600 font-medium">📌 <span x-text="q.dimension_label"></span></span>
+                    </div>
+                    <!-- 题目 -->
+                    <h3 class="text-lg font-semibold text-gray-800 mb-5 mt-2" x-text="q.question"></h3>
+                    <!-- 选项 -->
+                    <div class="space-y-3">
+                        <template x-for="opt in q.options" :key="opt.value">
+                            <div class="card rounded-xl p-4 border cursor-pointer"
+                                 :class="answers[q.id]===opt.value ? 'selected border-blue-500 bg-blue-50' : 'border-gray-200'"
+                                 @click="pick(q.id, opt.value)">
+                                <div class="flex items-start gap-3">
+                                    <div class="w-6 h-6 rounded-full border-2 flex-shrink-0 flex items-center justify-center mt-0.5"
+                                         :class="answers[q.id]===opt.value ? 'bg-blue-600 border-blue-600' : 'border-gray-300'">
+                                        <i x-show="answers[q.id]===opt.value" class="fas fa-check text-white text-xs"></i>
+                                    </div>
+                                    <span class="text-sm text-gray-700" x-text="opt.label"></span>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+                    <!-- 导航 -->
+                    <div class="flex justify-between mt-6 pt-4 border-t">
+                        <button @click="if(i>0)step--" class="px-4 py-2 text-sm text-gray-500 hover:bg-gray-100 rounded-lg" x-show="i>0">
+                            ← <span x-text="t('prev')"></span>
+                        </button>
+                        <button @click="next()" class="px-6 py-2 text-sm font-medium rounded-lg ml-auto transition"
+                                :class="answers[q.id]!==undefined ? 'bg-blue-600 text-white hover:bg-blue-700' : 'bg-gray-200 text-gray-400 cursor-not-allowed'">
+                            <span x-text="i < questions.length-1 ? t('next') : t('result')"></span> →
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </template>
+
+        <!-- 结果页 -->
+        <div x-show="step===questions.length+1 && report" class="anim-in">
+            <div class="bg-white rounded-2xl shadow-sm border p-6 md:p-8">
+                <!-- 总分环 -->
+                <div class="text-center">
+                    <div class="result-ring" :style="'background: conic-gradient('+color(report.total_score)+' '+report.total_score*3.6+'deg, #e5e7eb 0deg)'">
+                        <div class="bg-white w-[140px] h-[140px] rounded-full flex flex-col items-center justify-center md:w-[100px] md:h-[100px]">
+                            <span class="result-score" :style="'color:'+color(report.total_score)" x-text="report.total_score"></span>
+                            <span class="text-xs text-gray-500">/ 100</span>
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <span class="text-lg font-bold px-4 py-1 rounded-full"
+                              :style="'color:'+color(report.total_score)+';background:'+color(report.total_score)+'20'"
+                              x-text="'['+report.risk_level+'] '+report.risk_label">
+                        </span>
+                    </div>
+                    <p class="text-sm text-gray-600 mt-2" x-text="report.summary"></p>
+                </div>
+
+                <!-- 各维度评分 -->
+                <div class="text-left mt-6 space-y-2">
+                    <h3 class="font-semibold text-gray-800 mb-3" x-text="t('dim_scores')"></h3>
+                    <template x-for="d in report.dimensions" :key="d.id">
+                        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
+                            <span class="text-sm" x-text="d.status_icon+' '+d.dimension_label"></span>
+                            <div class="flex items-center gap-2">
+                                <div class="w-24 bg-gray-200 rounded-full h-2">
+                                    <div class="h-2 rounded-full" :style="'width:'+d.dim_score+'%;background:'+color(d.dim_score)"></div>
+                                </div>
+                                <span class="text-sm font-bold" :style="'color:'+color(d.dim_score)" x-text="d.dim_score"></span>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+
+                <!-- 雷达图 -->
+                <div class="mt-6">
+                    <h3 class="font-semibold text-gray-800 mb-3" x-text="t('radar')"></h3>
+                    <canvas id="radarCanvas" class="w-full max-w-md mx-auto" width="300" height="300"></canvas>
+                </div>
+
+                <!-- 优先行动建议 -->
+                <div x-show="report.priorities && report.priorities.length" class="text-left mt-6">
+                    <h3 class="font-semibold text-gray-800 mb-3" x-text="t('priorities')"></h3>
+                    <template x-for="p in report.priorities" :key="p.id">
+                        <div class="p-3 rounded-xl mb-2" :class="p.raw_score>=3 ? 'bg-red-50 border border-red-200' : 'bg-amber-50 border border-amber-200'">
+                            <span class="text-sm font-medium" x-text="p.dimension_label"></span>
+                            <p class="text-xs text-gray-600 mt-1" x-text="p.action_advice"></p>
+                        </div>
+                    </template>
+                </div>
+
+                <p class="text-[10px] text-gray-400 italic mt-4" x-text="report.disclaimer"></p>
+
+                <!-- 操作按钮 -->
+                <div class="flex flex-col sm:flex-row gap-3 mt-6">
+                    <button @click="resetAll()" class="flex-1 py-2.5 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition">
+                        🔄 <span x-text="t('retry')"></span>
+                    </button>
+                    <button @click="downloadPDF()" class="flex-1 py-2.5 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 transition" :disabled="pdfLoading">
+                        <span x-show="!pdfLoading">📄 <span x-text="t('download_pdf')"></span></span>
+                        <span x-show="pdfLoading"><i class="fas fa-spinner fa-spin"></i> <span x-text="t('generating')"></span></span>
+                    </button>
+                    <a href="/pricing-v2.html" class="flex-1 py-2.5 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition text-center">
+                        📞 <span x-text="t('contact')"></span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function app() {
+    return {
+        lang: 'zh',
+        step: 0,
+        questions: [],
+        answers: {},
+        report: null,
+        saved: false,
+        pdfLoading: false,
+
+        // ── 多语言字典 ──
+        t(key) {
+            const dict = {
+                page_title:        {zh:'合规自检 - 中韩出海数智港', ko:'규제 준수 자가 진단 - 중한 출해 스마트 포트'},
+                title:             {zh:'🛡️ 合规自检工具', ko:'🛡️ 규제 준수 자가 진단 도구'},
+                subtitle:          {zh:'8道题 · 3分钟 · 覆盖8大核心合规维度', ko:'8문항 · 3분 · 8대 핵심 규제 분야'},
+                progress:          {zh:'进度', ko:'진행률'},
+                start_title:       {zh:'了解您的出海合规健康度', ko:'해외 진출 규제 준수 건강 상태 확인'},
+                start_desc:        {zh:'8道选择题覆盖行业准入、数据安全、知识产权、跨境财税、劳动用工、签证移民、公司设立、进出口八大维度，3分钟获取专业评估报告', ko:'업종 진입, 데이터 보안, 지식재산권, 국경 간 세무, 노동 고용, 비자·이민, 회사 설립, 수출입 8대 분야를 포괄하는 8문항, 3분 만에 전문 평가 보고서 획득'},
+                start_btn:         {zh:'开始自检', ko:'진단 시작'},
+                resume:            {zh:'您有未完成的问卷', ko:'완료되지 않은 문진이 있습니다'},
+                resume_btn:        {zh:'继续答题', ko:'계속하기'},
+                prev:              {zh:'上一题', ko:'이전'},
+                next:              {zh:'下一题', ko:'다음'},
+                result:            {zh:'查看结果', ko:'결과 보기'},
+                dim_scores:        {zh:'各维度评分', ko:'분야별 점수'},
+                radar:             {zh:'合规雷达图', ko:'규제 준수 레이더 차트'},
+                priorities:        {zh:'优先行动建议', ko:'우선 조치 권장'},
+                download_pdf:      {zh:'下载PDF报告', ko:'PDF 보고서 다운로드'},
+                generating:        {zh:'生成中...', ko:'생성 중...'},
+                retry:             {zh:'重新测评', ko:'재평가'},
+                contact:           {zh:'联系我们', ko:'문의하기'},
+            };
+            return dict[key]?.[this.lang] || dict[key]?.zh || key;
+        },
+
+        setLang(l) {
+            this.lang = l;
+            this.loadQuestions();
+        },
+
+        // ── 加载题目 ──
+        async loadQuestions() {
+            try {
+                const r = await fetch('/api/compliance/questions?language=' + this.lang);
+                const d = await r.json();
+                if (d.success) this.questions = d.questions;
+            } catch(e) {
+                console.error('Failed to load questions', e);
+            }
+        },
+
+        async init() {
+            await this.loadQuestions();
+            // 恢复本地缓存
+            try {
+                const s = localStorage.getItem('compliance_check');
+                if (s) {
+                    const p = JSON.parse(s);
+                    if (p.answers && Object.keys(p.answers).length) {
+                        this.saved = true;
+                        Object.assign(this.answers, p.answers);
+                    }
+                }
+            } catch(e) {}
+        },
+
+        pick(id, val) {
+            this.answers[id] = val;
+            try {
+                localStorage.setItem('compliance_check', JSON.stringify({answers: this.answers, step: this.step}));
+            } catch(e) {}
+        },
+
+        resumeProgress() {
+            try {
+                const s = JSON.parse(localStorage.getItem('compliance_check'));
+                if (s) {
+                    this.step = s.step || 1;
+                    Object.assign(this.answers, s.answers || {});
+                }
+            } catch(e) {}
+            this.saved = false;
+        },
+
+        async next() {
+            const q = this.questions[this.step - 1];
+            if (!q || this.answers[q.id] === undefined) return;
+            if (this.step < this.questions.length) {
+                this.step++;
+                return;
+            }
+            // 最后一道题 → 提交答案
+            this.step = this.questions.length + 1;
+            try {
+                const r = await fetch('/api/compliance/check', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({answers: this.answers, language: this.lang})
+                });
+                const d = await r.json();
+                if (d.success) {
+                    this.report = d.report;
+                    localStorage.removeItem('compliance_check');
+                    // 绘制雷达图
+                    this.$nextTick(() => { this.drawRadar(); });
+                } else {
+                    alert(this.lang === 'zh' ? '提交失败' : '제출 실패');
+                    this.step = this.questions.length;
+                }
+            } catch(e) {
+                alert(this.lang === 'zh' ? '网络错误，请重试' : '네트워크 오류');
+                this.step = this.questions.length;
+            }
+        },
+
+        resetAll() {
+            this.step = 0;
+            this.answers = {};
+            this.report = null;
+            localStorage.removeItem('compliance_check');
+        },
+
+        // ── 颜色映射 ──
+        color(score) {
+            if (score > 80) return '#059669';   // 低风险 - 绿
+            if (score >= 60) return '#d97706';  // 中风险 - 橙
+            return '#dc2626';                    // 高风险 - 红
+        },
+
+        // ── 雷达图绘制 ──
+        drawRadar() {
+            const canvas = document.getElementById('radarCanvas');
+            if (!canvas || !this.report || !this.report.dimensions) return;
+            const ctx = canvas.getContext('2d');
+            const W = canvas.width, H = canvas.height;
+            const cx = W/2, cy = H/2;
+            const r = Math.min(W, H) * 0.35;
+            const n = this.report.dimensions.length;
+            if (n === 0) return;
+
+            ctx.clearRect(0, 0, W, H);
+
+            const dims = this.report.dimensions;
+
+            // 画网格
+            for (let ring = 1; ring <= 5; ring++) {
+                ctx.beginPath();
+                const radius = r * ring / 5;
+                for (let i = 0; i <= n; i++) {
+                    const angle = Math.PI/2 - i * 2*Math.PI/n;
+                    const x = cx + radius * Math.cos(angle);
+                    const y = cy - radius * Math.sin(angle);
+                    i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+                }
+                ctx.closePath();
+                ctx.strokeStyle = '#d1d5db';
+                ctx.lineWidth = 0.5;
+                ctx.stroke();
+            }
+
+            // 画轴线
+            for (let i = 0; i < n; i++) {
+                const angle = Math.PI/2 - i * 2*Math.PI/n;
+                ctx.beginPath();
+                ctx.moveTo(cx, cy);
+                ctx.lineTo(cx + r * Math.cos(angle), cy - r * Math.sin(angle));
+                ctx.strokeStyle = '#d1d5db';
+                ctx.lineWidth = 0.5;
+                ctx.stroke();
+            }
+
+            // 画数据多边形
+            ctx.beginPath();
+            const pts = [];
+            for (let i = 0; i < n; i++) {
+                const score = Math.max(0.05, dims[i].dim_score / 100);
+                const angle = Math.PI/2 - i * 2*Math.PI/n;
+                const x = cx + r * score * Math.cos(angle);
+                const y = cy - r * score * Math.sin(angle);
+                pts.push({x, y});
+                i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+            }
+            ctx.closePath();
+            ctx.fillStyle = 'rgba(37, 99, 235, 0.15)';
+            ctx.fill();
+            ctx.strokeStyle = '#2563eb';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            // 画数据点
+            pts.forEach(p => {
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, 4, 0, 2 * Math.PI);
+                ctx.fillStyle = '#2563eb';
+                ctx.fill();
+                ctx.strokeStyle = '#ffffff';
+                ctx.lineWidth = 1;
+                ctx.stroke();
+            });
+
+            // 画标签
+            for (let i = 0; i < n; i++) {
+                const angle = Math.PI/2 - i * 2*Math.PI/n;
+                const lx = cx + (r + 28) * Math.cos(angle);
+                const ly = cy - (r + 28) * Math.sin(angle);
+                ctx.fillStyle = '#1e293b';
+                ctx.font = '10px Inter, sans-serif';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                let label = dims[i].dimension_label;
+                if (label.length > 6) label = label.slice(0, 5) + '..';
+                ctx.fillText(label, lx, ly);
+            }
+
+            // 中心平均分
+            const avg = Math.round(dims.reduce((s, d) => s + d.dim_score, 0) / n);
+            ctx.fillStyle = '#1a56db';
+            ctx.font = 'bold 16px Inter, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(avg, cx, cy - 6);
+            ctx.fillStyle = '#6b7280';
+            ctx.font = '9px Inter, sans-serif';
+            ctx.fillText(this.lang === 'zh' ? '均分' : '평균', cx, cy + 12);
+        },
+
+        // ── 下载PDF ──
+        async downloadPDF() {
+            if (!this.report || this.pdfLoading) return;
+            this.pdfLoading = true;
+            try {
+                const r = await fetch('/api/compliance/check/pdf', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({answers: this.answers, language: this.lang})
+                });
+                if (!r.ok) throw new Error('PDF generation failed');
+                const blob = await r.blob();
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'compliance_report_' + Date.now() + '.pdf';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            } catch(e) {
+                alert(this.lang === 'zh' ? 'PDF下载失败' : 'PDF 다운로드 실패');
+            } finally {
+                this.pdfLoading = false;
+            }
+        },
+    };
+}
+</script>
+</body>
+</html>

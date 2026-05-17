@@ -21,6 +21,7 @@ from backend.knowledge_graph import router as knowledge_graph_router
 from backend.routers.compliance_feedback import router as compliance_feedback_router
 from backend.routers.compliance_diagnosis import router as compliance_diagnosis_router
 from backend.routers.compliance_scoring import router as compliance_scoring_router
+from backend.routers.compliance_report import router as compliance_report_router
 from backend.routers import contact, demo, pricing, admin, employees, service_inquiry, payment, members, compliance, cortex_api, ai_dialogue
 from backend.routers import products
 import backend.channel_tracker as channel_tracker
@@ -70,6 +71,7 @@ app.include_router(knowledge_graph_router)
 app.include_router(compliance_feedback_router)
 app.include_router(compliance_diagnosis_router)
 app.include_router(compliance_scoring_router)
+app.include_router(compliance_report_router)
 app.include_router(products.router)
 
 # ── 渠道/KOI追踪中间件 ────────────────────────────────

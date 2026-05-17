@@ -23,6 +23,24 @@ async def submit_service_inquiry(form: ServiceInquiry):
         )
         conn.commit()
         conn.close()
+        
+        # 追踪转化漏斗事件
+        try:
+            from backend.analytics.event_tracker import track_event
+            track_event(
+                user_id=form.email,
+                event_type="lead_service_inquiry",
+                event_data={
+                    "name": form.name,
+                    "company": form.company,
+                    "employee_id": form.employee_id,
+                    "employee_name": form.employee_name,
+                },
+                page_url="/api/v1/service-inquiry",
+            )
+        except Exception:
+            pass
+        
         return APIResponse(
             success=True,
             message="邀请已提交！销售团队将主动联系您。"
