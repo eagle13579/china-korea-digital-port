@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>중한 해외진출 디지털 포트 — AI 기반 한중跨境 무역 플랫폼</title>
+    <meta name="description" content="중한 해외진출 디지털 포트 — 한국에서 중국까지, AI가 정확한 채널 매칭을 도와드립니다. CFC 엔진과 AI 디지털 직원이 중한 무역 결정을 몇 개월에서 몇 시간으로 단축합니다.">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="icon" href="favicon.ico">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        navy: { 900: '#0B1120', 800: '#0F172A', 700: '#1E293B' },
+                        gold: { 400: '#F59E0B', 500: '#D97706' },
+                        purple: { 500: '#7C3AED', 400: '#8B5CF6' },
+                        cyan: { 400: '#06B6D4', 500: '#0891B2' },
+                        lightbg: '#F8F9FA'
+                    },
+                    fontFamily: {
+                        sans: ['-apple-system', 'BlinkMacSystemFont', '"Apple SD Gothic Neo"', '"Noto Sans KR"', '"Malgun Gothic"', 'sans-serif']
+                    },
+                    animation: {
+                        'fade-up': 'fadeUp 0.6s ease-out forwards',
+                        'fade-in': 'fadeIn 0.8s ease-out forwards',
+                        'slide-up': 'slideUp 0.5s ease-out forwards',
+                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'float': 'float 6s ease-in-out infinite'
+                    },
+                    keyframes: {
+                        fadeUp: { '0%': { opacity: '0', transform: 'translateY(30px)' }, '100%': { opacity: '1', transform: 'translateY(0)' } },
+                        fadeIn: { '0%': { opacity: '0' }, '100%': { opacity: '1' } },
+                        slideUp: { '0%': { opacity: '0', transform: 'translateY(20px)' }, '100%': { opacity: '1', transform: 'translateY(0)' } },
+                        float: { '0%, 100%': { transform: 'translateY(0)' }, '50%': { transform: 'translateY(-20px)' } }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", sans-serif;
+            overflow-x: hidden;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+        body.dark { background: #0B1120; color: #F1F5F9; }
+        body.light { background: #F8F9FA; color: #1E293B; }
+
+        .hero-grid { background-image: linear-gradient(rgba(139,92,246,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(139,92,246,0.03) 1px, transparent 1px); background-size: 60px 60px; }
+        .hero-glow { position: absolute; width: 600px; height: 600px; border-radius: 50%; filter: blur(120px); pointer-events: none; }
+        .dark .hero-glow-1 { top: -200px; left: -200px; background: rgba(6,182,212,0.08); }
+        .light .hero-glow-1 { top: -200px; left: -200px; background: rgba(6,182,212,0.12); }
+        .dark .hero-glow-2 { bottom: -300px; right: -200px; background: rgba(99,102,241,0.06); }
+        .light .hero-glow-2 { bottom: -300px; right: -200px; background: rgba(99,102,241,0.10); }
+
+        .glass-card {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 16px;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            transition: all 0.4s cubic-bezier(0.4,0,0.2,1);
+        }
+        .glass-card:hover { transform: translateY(-4px); border-color: rgba(255,255,255,0.12); box-shadow: 0 20px 60px rgba(0,0,0,0.15); }
+        .light .glass-card { background: rgba(255,255,255,0.8); border-color: rgba(0,0,0,0.06); }
+        .light .glass-card:hover { border-color: rgba(99,102,241,0.2); box-shadow: 0 20px 60px rgba(99,102,241,0.08); }
+
+        .stat-card {
+            border-radius: 12px;
+            padding: 24px;
+            transition: all 0.3s ease;
+        }
+        .dark .stat-card { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); }
+        .light .stat-card { background: rgba(255,255,255,0.9); border: 1px solid rgba(0,0,0,0.04); box-shadow: 0 2px 8px rgba(0,0,0,0.02); }
+
+        .btn-primary {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 14px 32px; border-radius: 12px;
+            font-weight: 700; font-size: 16px;
+            background: linear-gradient(135deg, #6366f1, #06b6d4);
+            color: white; border: none; cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 12px 40px rgba(99,102,241,0.25); }
+        .btn-primary i { font-size: 18px; }
+
+        .btn-secondary {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 14px 32px; border-radius: 12px;
+            font-weight: 600; font-size: 16px;
+            transition: all 0.3s ease; cursor: pointer;
+            text-decoration: none;
+        }
+        .dark .btn-secondary { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); color: #CBD5E1; }
+        .dark .btn-secondary:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.2); color: white; }
+        .light .btn-secondary { background: rgba(0,0,0,0.03); border: 1px solid rgba(0,0,0,0.08); color: #475569; }
+        .light .btn-secondary:hover { background: rgba(0,0,0,0.05); border-color: rgba(0,0,0,0.15); color: #1E293B; }
+
+        .gradient-text { background: linear-gradient(135deg, #6366f1, #06b6d4); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .purple-cyan-text { background: linear-gradient(135deg, #6366f1, #06b6d4); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+
+        .nav-link { text-decoration: none; font-size: 15px; font-weight: 500; padding: 8px 16px; border-radius: 8px; transition: all 0.2s ease; }
+        .dark .nav-link { color: #94A3B8; }
+        .dark .nav-link:hover { color: white; background: rgba(255,255,255,0.04); }
+        .light .nav-link { color: #64748B; }
+        .light .nav-link:hover { color: #0B1120; background: rgba(0,0,0,0.03); }
+
+        .product-card {
+            border-radius: 20px;
+            overflow: hidden;
+            transition: all 0.4s ease;
+        }
+        .dark .product-card { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); }
+        .dark .product-card:hover { border-color: rgba(99,102,241,0.3); box-shadow: 0 20px 60px rgba(99,102,241,0.06); }
+        .light .product-card { background: white; border: 1px solid rgba(0,0,0,0.04); box-shadow: 0 4px 20px rgba(0,0,0,0.02); }
+        .light .product-card:hover { border-color: rgba(99,102,241,0.2); box-shadow: 0 20px 60px rgba(99,102,241,0.06); }
+
+        .step-number {
+            min-width: 56px; height: 56px;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 800; font-size: 20px;
+        }
+        .dark .step-number { background: linear-gradient(135deg, rgba(99,102,241,0.15), rgba(6,182,212,0.1)); color: #06B6D4; border: 2px solid rgba(99,102,241,0.2); }
+        .light .step-number { background: linear-gradient(135deg, rgba(99,102,241,0.08), rgba(6,182,212,0.06)); color: #6366f1; border: 2px solid rgba(99,102,241,0.15); }
+
+        .footer-link { font-size: 14px; text-decoration: none; transition: color 0.2s ease; display: block; padding: 4px 0; }
+        .dark .footer-link { color: #475569; }
+        .dark .footer-link:hover { color: #06B6D4; }
+        .light .footer-link { color: #64748B; }
+        .light .footer-link:hover { color: #6366f1; }
+
+        .tag-badge { font-size: 12px; padding: 4px 12px; border-radius: 12px; font-weight: 500; display: inline-block; }
+        .data-bar { height: 4px; border-radius: 2px; background: linear-gradient(90deg, #6366f1, #06b6d4); transition: width 1.5s ease-out; }
+
+        .service-icon {
+            width: 64px; height: 64px; border-radius: 16px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 28px; margin-bottom: 16px;
+        }
+
+        .lang-btn { padding: 6px 14px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; border: none; transition: all 0.2s ease; background: transparent; }
+        .dark .lang-btn { color: #64748B; }
+        .light .lang-btn { color: #94A3B8; }
+        .lang-btn.active { background: linear-gradient(135deg, rgba(99,102,241,0.2), rgba(6,182,212,0.15)); }
+        .dark .lang-btn.active { color: #06B6D4; }
+        .light .lang-btn.active { color: #6366f1; }
+
+        .theme-btn { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; cursor: pointer; border: none; font-size: 18px; transition: all 0.2s ease; }
+        .dark .theme-btn { background: rgba(255,255,255,0.04); color: #06B6D4; }
+        .dark .theme-btn:hover { background: rgba(255,255,255,0.08); color: #06B6D4; }
+        .light .theme-btn { background: rgba(0,0,0,0.03); color: #6366f1; }
+        .light .theme-btn:hover { background: rgba(0,0,0,0.06); color: #6366f1; }
+
+        .mobile-menu { display: none; }
+        .mobile-menu.open { display: flex; }
+
+        @media (max-width: 768px) {
+            .hero-title { font-size: 32px !important; line-height: 1.2 !important; }
+            .section-title { font-size: 28px !important; }
+            .desktop-nav { display: none !important; }
+            .mobile-menu-toggle { display: flex !important; }
+            .hero-viz { display: none !important; }
+        }
+        @media (min-width: 769px) {
+            .mobile-menu-toggle { display: none !important; }
+        }
+    </style>
+</head>
+<body class="dark">
+
+<!-- ===== NAV ===== -->
+<nav id="navbar" style="position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    transition: background 0.3s ease, border-bottom 0.3s ease;">
+    <div class="dark:bg-navy-900/85 light:bg-white/85" style="backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255,255,255,0.04);">
+        <div style="max-width: 1280px; margin: 0 auto; padding: 0 24px; display: flex; align-items: center; justify-content: space-between; height: 68px;">
+            <div style="display: flex; align-items: center; gap: 40px;">
+                <a href="/index_ko.html" style="display: flex; align-items: center; gap: 10px; text-decoration: none;">
+                    <span style="background: linear-gradient(135deg, #6366f1, #06b6d4); width: 34px; height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 700; color: white;">G</span>
+                    <span style="font-size: 20px; font-weight: 800; letter-spacing: -0.5px;">
+                        <span class="gradient-text">중한 디지털 포트</span>
+                    </span>
+                </a>
+                <div class="desktop-nav" style="display: flex; gap: 4px;">
+                    <a href="#services" class="nav-link">서비스 소개</a>
+                    <a href="#process" class="nav-link">진출 프로세스</a>
+                    <a href="/order_ko.html" class="nav-link">서비스 신청</a>
+                    <a href="/pricing_ko.html" class="nav-link">요금 안내</a>
+                    <a href="/compliance/kr" class="nav-link">규정 진단</a>
+                    <a href="/chat/ko" class="nav-link">AI 상담</a>
+                </div>
+            </div>
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <div style="display: flex; background: transparent; border-radius: 8px; padding: 2px; gap: 2px;">
+                    <button class="lang-btn" onclick="window.location.href='index.html'">中文</button>
+                    <button class="lang-btn active">한국어</button>
+                </div>
+                <button class="theme-btn" onclick="toggleTheme()" id="themeToggle" aria-label="테마 전환">
+                    <i class="bi bi-moon-fill" id="themeIcon"></i>
+                </button>
+                <button class="mobile-menu-toggle" onclick="toggleMobileMenu()" style="background: transparent; border: none; font-size: 24px; cursor: pointer; padding: 8px;">
+                    <i class="bi bi-list" style="color: #94A3B8;"></i>
+                </button>
+            </div>
+        </div>
+        <div class="mobile-menu" id="mobileMenu" style="flex-direction: column; padding: 16px 24px; gap: 8px; border-top: 1px solid rgba(255,255,255,0.04);">
+            <a href="#services" class="nav-link">서비스 소개</a>
+            <a href="#process" class="nav-link">진출 프로세스</a>
+            <a href="/order_ko.html" class="nav-link">서비스 신청</a>
+            <a href="/pricing_ko.html" class="nav-link">요금 안내</a>
+            <a href="/compliance/kr" class="nav-link">규정 진단</a>
+            <a href="/chat/ko" class="nav-link">AI 상담</a>
+        </div>
+    </div>
+</nav>
+
+<!-- ===== HERO ===== -->
+<section style="min-height: 100vh; display: flex; align-items: center; position: relative; overflow: hidden; padding-top: 68px;" class="hero-grid">
+    <div class="hero-glow hero-glow-1"></div>
+    <div class="hero-glow hero-glow-2"></div>
+
+    <div style="max-width: 1280px; margin: 0 auto; padding: 80px 24px; width: 100%; position: relative; z-index: 10;">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center;">
+            <div style="animation: fadeUp 0.8s ease-out forwards;">
+                <div style="display: inline-flex; align-items: center; gap: 8px; border-radius: 20px; padding: 6px 16px 6px 6px; margin-bottom: 28px;"
+                     class="dark:bg-purple-500/8 light:bg-purple-500/5"
+                     style="border: 1px solid rgba(99,102,241,0.15);">
+                    <span style="background: linear-gradient(135deg, #6366f1, #06b6d4); padding: 2px 10px; border-radius: 14px; font-size: 12px; font-weight: 700; color: white;">AI 구동</span>
+                    <span style="font-size: 13px; color: #94A3B8;">CFC 엔진 기반</span>
+                </div>
+
+                <h1 style="font-size: 52px; font-weight: 800; line-height: 1.1; letter-spacing: -1px; margin-bottom: 24px;" class="hero-title">
+                    한국에서 중국까지<br>
+                    <span class="purple-cyan-text">AI가 정확한 채널을 매칭합니다</span>
+                </h1>
+
+                <p style="font-size: 18px; line-height: 1.7; max-width: 520px; margin-bottom: 36px;"
+                   class="dark:text-slate-400 light:text-slate-600">
+                    CFC 엔진 + AI 디지털 직원 군단이 중한 무역 결정 주기를 <strong>몇 개월에서 몇 시간</strong>으로 단축합니다. 상품 선정, 마케팅, 채널 매칭부터 계약 성사까지 전 과정을 AI가 지원합니다.
+                </p>
+
+                <div style="display: flex; gap: 16px; flex-wrap: wrap;">
+                    <a href="#services" class="btn-primary"><i class="bi bi-rocket-takeoff"></i> 서비스 알아보기</a>
+                    <a href="/chat/ko" class="btn-secondary"><i class="bi bi-chat-dots"></i> AI 상담사와 대화</a>
+                </div>
+
+                <div style="margin-top: 48px; padding-top: 32px; border-top: 1px solid rgba(255,255,255,0.04);">
+                    <div style="display: flex; gap: 32px; flex-wrap: wrap;">
+                        <div><span style="font-size: 28px; font-weight: 800; color: #6366f1;">195</span><span class="dark:text-slate-500 light:text-slate-400" style="font-size: 14px; margin-left: 4px;">개국 시장 데이터</span></div>
+                        <div><span style="font-size: 28px; font-weight: 800; color: #06b6d4;">110</span><span class="dark:text-slate-500 light:text-slate-400" style="font-size: 14px; margin-left: 4px;">AI 디지털 직원</span></div>
+                        <div><span style="font-size: 28px; font-weight: 800; color: #6366f1;">85<span style="font-size: 16px;">%</span></span><span class="dark:text-slate-500 light:text-slate-400" style="font-size: 14px; margin-left: 4px;">채널 매칭 정확도</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="hero-viz" style="position: relative;">
+                <div class="glass-card" style="padding: 32px;">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px;">
+                        <div>
+                            <div style="font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;" class="dark:text-slate-500 light:text-slate-400">CFC 매칭 분석</div>
+                            <div style="font-size: 24px; font-weight: 700;">
+                                한국 <span style="color: #6366f1;">≈</span> 중국 <span style="color: #06b6d4;">2026</span>
+                            </div>
+                        </div>
+                        <div style="text-align: right;">
+                            <div style="font-size: 28px; font-weight: 800; color: #6366f1;">70.6<span style="font-size: 16px;">%</span></div>
+                            <div style="font-size: 12px;" class="dark:text-slate-500 light:text-slate-400">종합 매칭도</div>
+                        </div>
+                    </div>
+
+                    <div style="display: grid; gap: 12px;">
+                        <div><div style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 4px;"><span class="dark:text-slate-400 light:text-slate-500">디지털 인프라</span><span style="color: #6366f1;">91.4%</span></div><div style="border-radius: 2px; height: 4px;" class="dark:bg-white/5 light:bg-black/5"><div class="data-bar" style="width: 91.4%;"></div></div></div>
+                        <div><div style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 4px;"><span class="dark:text-slate-400 light:text-slate-500">물류 성숙도</span><span style="color: #6366f1;">84.2%</span></div><div style="border-radius: 2px; height: 4px;" class="dark:bg-white/5 light:bg-black/5"><div class="data-bar" style="width: 84.2%;"></div></div></div>
+                        <div><div style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 4px;"><span class="dark:text-slate-400 light:text-slate-500">결제 생태계</span><span style="color: #06b6d4;">81.5%</span></div><div style="border-radius: 2px; height: 4px;" class="dark:bg-white/5 light:bg-black/5"><div class="data-bar" style="width: 81.5%;"></div></div></div>
+                        <div><div style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 4px;"><span class="dark:text-slate-400 light:text-slate-500">소비력</span><span style="color: #06b6d4;">46.6%</span></div><div style="border-radius: 2px; height: 4px;" class="dark:bg-white/5 light:bg-black/5"><div class="data-bar" style="width: 46.6%;"></div></div></div>
+                        <div><div style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 4px;"><span class="dark:text-slate-400 light:text-slate-500">정책 리스크</span><span style="color: #6366f1;">66.9%</span></div><div style="border-radius: 2px; height: 4px;" class="dark:bg-white/5 light:bg-black/5"><div class="data-bar" style="width: 66.9%;"></div></div></div>
+                    </div>
+
+                    <div style="display: flex; align-items: center; gap: 8px; margin-top: 20px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.04);">
+                        <span style="background: linear-gradient(135deg, #6366f1, #06b6d4); font-size: 10px; padding: 2px 8px; border-radius: 4px; color: white; font-weight: 700;">인사이트</span>
+                        <span style="font-size: 13px;" class="dark:text-slate-500 light:text-slate-400">한국 디지털 인프라 점수 91.4%, 디지털 무역 신속 구축에 적합</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ===== 서비스 소개 ===== -->
+<section id="services" style="padding: 100px 24px; position: relative;">
+    <div style="max-width: 1280px; margin: 0 auto;">
+        <div style="text-align: center; margin-bottom: 60px;">
+            <h2 class="purple-cyan-text" style="font-size: 40px; font-weight: 800; margin-bottom: 16px;">서비스 소개</h2>
+            <p style="font-size: 18px; max-width: 600px; margin: 0 auto;" class="dark:text-slate-500 light:text-slate-400">
+                한국 기업의 중국 시장 진출을 위한 올인원 솔루션
+            </p>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;">
+            <div class="glass-card" style="padding: 36px 28px; text-align: center;">
+                <div class="service-icon" style="background: linear-gradient(135deg, rgba(99,102,241,0.15), rgba(6,182,212,0.1)); margin: 0 auto 20px;">
+                    <i class="bi bi-shield-check" style="color: #6366f1;"></i>
+                </div>
+                <h3 style="font-size: 20px; font-weight: 700; margin-bottom: 12px;">규정 준수 진단</h3>
+                <p style="font-size: 14px; line-height: 1.7;" class="dark:text-slate-400 light:text-slate-500">
+                    AI 기반 규정 준수 진단 시스템이 업종별 중국 진출 요건을 자동 분석합니다. 6대 AI 전문 관료가 시장 진입·데이터 보안·지식 재산권·세무·노동·비자를 진단합니다.
+                </p>
+                <a href="/compliance/kr" style="display: inline-flex; align-items: center; gap: 6px; margin-top: 20px; font-size: 14px; font-weight: 600; color: #06b6d4; text-decoration: none;">
+                    자세히 보기 <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
+
+            <div class="glass-card" style="padding: 36px 28px; text-align: center;">
+                <div class="service-icon" style="background: linear-gradient(135deg, rgba(6,182,212,0.15), rgba(16,185,129,0.1)); margin: 0 auto 20px;">
+                    <i class="bi bi-robot" style="color: #06b6d4;"></i>
+                </div>
+                <h3 style="font-size: 20px; font-weight: 700; margin-bottom: 12px;">AI 디지털 상담</h3>
+                <p style="font-size: 14px; line-height: 1.7;" class="dark:text-slate-400 light:text-slate-500">
+                    24시간 AI 한국어 상담사가 중국 시장 진출에 관한 모든 문의에 답변합니다. 규정, 유통 채널, 마케팅, 물류 등 전문 분야별 맞춤 상담을 제공합니다.
+                </p>
+                <a href="/chat/ko" style="display: inline-flex; align-items: center; gap: 6px; margin-top: 20px; font-size: 14px; font-weight: 600; color: #06b6d4; text-decoration: none;">
+                    지금 상담하기 <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
+
+            <div class="glass-card" style="padding: 36px 28px; text-align: center;">
+                <div class="service-icon" style="background: linear-gradient(135deg, rgba(16,185,129,0.15), rgba(99,102,241,0.1)); margin: 0 auto 20px;">
+                    <i class="bi bi-graph-up-arrow" style="color: #10b981;"></i>
+                </div>
+                <h3 style="font-size: 20px; font-weight: 700; margin-bottom: 12px;">시장 진출 전략</h3>
+                <p style="font-size: 14px; line-height: 1.7;" class="dark:text-slate-400 light:text-slate-500">
+                    CFC 엔진이 195개국 시장 데이터를 분석하여 최적의 중국 시장 진출 전략을 수립합니다. 제품-시장-채널 최적 매칭으로 리스크를 최소화하고 성공률을 극대화합니다.
+                </p>
+                <a href="/pricing_ko.html" style="display: inline-flex; align-items: center; gap: 6px; margin-top: 20px; font-size: 14px; font-weight: 600; color: #06b6d4; text-decoration: none;">
+                    요금제 보기 <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ===== 진출 프로세스 ===== -->
+<section id="process" style="padding: 100px 24px; position: relative; background: rgba(99,102,241,0.02);">
+    <div style="max-width: 1280px; margin: 0 auto;">
+        <div style="text-align: center; margin-bottom: 60px;">
+            <h2 class="purple-cyan-text" style="font-size: 40px; font-weight: 800; margin-bottom: 16px;">중국 진출 프로세스</h2>
+            <p style="font-size: 18px; max-width: 600px; margin: 0 auto;" class="dark:text-slate-500 light:text-slate-400">
+                AI 기반 올인원 서비스로 중국 시장 진출을 간편하게
+            </p>
+        </div>
+
+        <div style="display: grid; gap: 24px; max-width: 800px; margin: 0 auto;">
+            <div style="display: flex; gap: 20px; align-items: flex-start; animation: slideUp 0.5s ease-out forwards;">
+                <div class="step-number" style="flex-shrink: 0;">1</div>
+                <div>
+                    <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 6px;">규정 준수 진단</h3>
+                    <p style="font-size: 14px; line-height: 1.6;" class="dark:text-slate-400 light:text-slate-500">
+                        AI 규정 준수 진단 시스템이 귀사의 업종과 제품에 맞는 중국 진출 요건을 분석합니다. 시장 진입 장벽, 필요 인증, 법적 요구사항을 한 번에 파악하세요.
+                    </p>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 20px; align-items: flex-start; animation: slideUp 0.6s ease-out forwards;">
+                <div class="step-number" style="flex-shrink: 0;">2</div>
+                <div>
+                    <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 6px;">전략 수립</h3>
+                    <p style="font-size: 14px; line-height: 1.6;" class="dark:text-slate-400 light:text-slate-500">
+                        CFC 엔진이 195개국 시장 데이터를 분석하여 최적의 진출 전략을 제안합니다. 타겟 도시, 유통 채널, 마케팅 전략을 데이터 기반으로 수립합니다.
+                    </p>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 20px; align-items: flex-start; animation: slideUp 0.7s ease-out forwards;">
+                <div class="step-number" style="flex-shrink: 0;">3</div>
+                <div>
+                    <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 6px;">서비스 신청 및 실행</h3>
+                    <p style="font-size: 14px; line-height: 1.6;" class="dark:text-slate-400 light:text-slate-500">
+                        맞춤형 패키지를 선택하고 서비스를 신청하세요. AI 디지털 직원과 전문가 팀이 규정 준수, 채널 발굴, 계약 체결까지 전 과정을 지원합니다.
+                    </p>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 20px; align-items: flex-start; animation: slideUp 0.8s ease-out forwards;">
+                <div class="step-number" style="flex-shrink: 0;">4</div>
+                <div>
+                    <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 6px;">지속적 모니터링</h3>
+                    <p style="font-size: 14px; line-height: 1.6;" class="dark:text-slate-400 light:text-slate-500">
+                        진출 후에도 정책 변화, 시장 동향을 지속적으로 모니터링합니다. AI가 실시간으로 규정 변경을 감지하고 선제적 대응 방안을 제공합니다.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 48px;">
+            <a href="/order_ko.html" class="btn-primary"><i class="bi bi-pencil-square"></i> 지금 신청하기</a>
+        </div>
+    </div>
+</section>
+
+<!-- ===== CTA ===== -->
+<section style="padding: 100px 24px; position: relative; text-align: center;">
+    <div style="max-width: 700px; margin: 0 auto;">
+        <h2 style="font-size: 36px; font-weight: 800; margin-bottom: 16px;">
+            지금 바로 <span class="purple-cyan-text">AI 규정 진단</span>을 시작하세요
+        </h2>
+        <p style="font-size: 18px; line-height: 1.7; margin-bottom: 36px;" class="dark:text-slate-400 light:text-slate-600">
+            무료로 귀사의 중국 시장 진출 가능성을 진단해보세요.<br>
+            5분 만에 맞춤형 규정 준수 리포트를 받아보실 수 있습니다.
+        </p>
+        <div style="display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;">
+            <a href="/compliance/kr" class="btn-primary"><i class="bi bi-shield-check"></i> 무료 진단 시작</a>
+            <a href="/pricing_ko.html" class="btn-secondary"><i class="bi bi-credit-card"></i> 요금제 보기</a>
+        </div>
+    </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer style="padding: 60px 24px 40px; border-top: 1px solid rgba(255,255,255,0.03);">
+    <div style="max-width: 1280px; margin: 0 auto;">
+        <div style="display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 40px;">
+            <div>
+                <div style="display: flex; align-items: center; gap: 10px; font-size: 20px; font-weight: 700; margin-bottom: 12px;">
+                    <span style="background: linear-gradient(135deg, #6366f1, #06b6d4); width: 28px; height: 28px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 16px; color: white;">G</span>
+                    <span class="gradient-text">중한 디지털 포트</span>
+                </div>
+                <p style="font-size: 14px; line-height: 1.7; max-width: 300px;" class="dark:text-slate-600 light:text-slate-400">
+                    중한 해외진출 디지털 포트는 한국 기업의 중국 시장 진출을 위한 AI 기반 플랫폼입니다. 규정 준수 진단, 채널 매칭, 마케팅 전략까지 올인원 서비스를 제공합니다.
+                </p>
+            </div>
+            <div>
+                <h4 style="font-size: 14px; font-weight: 700; margin-bottom: 16px;">서비스</h4>
+                <div style="display: flex; flex-direction: column; gap: 4px;">
+                    <a href="/compliance/kr" class="footer-link">규정 준수 진단</a>
+                    <a href="/chat/ko" class="footer-link">AI 상담</a>
+                    <a href="/order_ko.html" class="footer-link">서비스 신청</a>
+                    <a href="/pricing_ko.html" class="footer-link">요금 안내</a>
+                </div>
+            </div>
+            <div>
+                <h4 style="font-size: 14px; font-weight: 700; margin-bottom: 16px;">기술</h4>
+                <div style="display: flex; flex-direction: column; gap: 4px;">
+                    <span style="font-size: 14px;" class="dark:text-slate-600 light:text-slate-400">CFC 엔진</span>
+                    <span style="font-size: 14px;" class="dark:text-slate-600 light:text-slate-400">195개국 시장 DB</span>
+                    <span style="font-size: 14px;" class="dark:text-slate-600 light:text-slate-400">AI 디지털 직원 시스템</span>
+                </div>
+            </div>
+            <div>
+                <h4 style="font-size: 14px; font-weight: 700; margin-bottom: 16px;">연락처</h4>
+                <div style="display: flex; flex-direction: column; gap: 4px;">
+                    <div style="display: flex; align-items: center; gap: 8px; font-size: 14px;" class="dark:text-slate-600 light:text-slate-400"><i class="bi bi-wechat" style="color: #06b6d4;"></i> haoran_kr</div>
+                    <span style="font-size: 14px;" class="dark:text-slate-600 light:text-slate-400">한국 파트너: 하오란</span>
+                </div>
+            </div>
+        </div>
+        <div style="margin-top: 40px; padding-top: 24px; border-top: 1px solid rgba(255,255,255,0.03); text-align: center; font-size: 13px;" class="dark:text-slate-700 light:text-slate-400">
+            <i class="bi bi-cpu"></i> Powered by 중한 해외진출 디지털 포트 · CFC 엔진 &amp; AI 디지털 직원
+        </div>
+    </div>
+</footer>
+
+<script>
+// ===== THEME SWITCHING =====
+function applyTheme(theme) {
+    const body = document.body;
+    const icon = document.getElementById('themeIcon');
+    if (theme === 'light') {
+        body.classList.remove('dark');
+        body.classList.add('light');
+        if (icon) icon.className = 'bi bi-sun-fill';
+    } else {
+        body.classList.remove('light');
+        body.classList.add('dark');
+        if (icon) icon.className = 'bi bi-moon-fill';
+    }
+    const nav = document.querySelector('#navbar > div');
+    if (nav) {
+        if (theme === 'light') {
+            nav.style.background = 'rgba(248,249,250,0.85)';
+            nav.style.borderBottomColor = 'rgba(0,0,0,0.04)';
+        } else {
+            nav.style.background = 'rgba(11,17,32,0.85)';
+            nav.style.borderBottomColor = 'rgba(255,255,255,0.04)';
+        }
+    }
+    localStorage.setItem('preferredTheme', theme);
+}
+
+function toggleTheme() {
+    const isDark = document.body.classList.contains('dark') || (!document.body.classList.contains('light') && !document.body.classList.contains('dark'));
+    applyTheme(isDark ? 'light' : 'dark');
+}
+
+// ===== MOBILE MENU =====
+function toggleMobileMenu() {
+    const menu = document.getElementById('mobileMenu');
+    if (menu) {
+        menu.classList.toggle('open');
+        menu.style.display = menu.classList.contains('open') ? 'flex' : 'none';
+    }
+}
+
+document.addEventListener('click', function(e) {
+    const menu = document.getElementById('mobileMenu');
+    if (menu && menu.classList.contains('open')) {
+        if (!e.target.closest('#navbar') || e.target.closest('.nav-link')) {
+            menu.classList.remove('open');
+            menu.style.display = 'none';
+        }
+    }
+});
+
+// ===== INIT =====
+document.addEventListener('DOMContentLoaded', function() {
+    const savedTheme = localStorage.getItem('preferredTheme') || 'dark';
+    applyTheme(savedTheme);
+});
+</script>
+
+</body>
+</html>

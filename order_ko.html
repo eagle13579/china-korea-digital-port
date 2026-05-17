@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>서비스 신청 — 중한 해외진출 디지털 포트</title>
+    <meta name="description" content="한국 기업의 중국 시장 진출 서비스 패키지 — Basic, Premium, Enterprise 세 가지 맞춤형 플랜">
+    <link rel="icon" href="favicon.ico">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        :root {
+            --bg-primary: #0A0A0F;
+            --bg-secondary: #12121A;
+            --bg-tertiary: #1A1A25;
+            --accent: #6366f1;
+            --accent2: #06b6d4;
+            --text-primary: #F1F5F9;
+            --text-secondary: #94A3B8;
+            --text-muted: #64748B;
+            --border-color: rgba(255,255,255,0.08);
+            --glass-bg: rgba(255,255,255,0.03);
+            --glass-border: rgba(255,255,255,0.06);
+        }
+        body.light-mode {
+            --bg-primary: #F8FAFC;
+            --bg-secondary: #FFFFFF;
+            --bg-tertiary: #F1F5F9;
+            --text-primary: #1E293B;
+            --text-secondary: #475569;
+            --text-muted: #94A3B8;
+            --border-color: rgba(0,0,0,0.1);
+            --glass-bg: rgba(0,0,0,0.03);
+            --glass-border: rgba(0,0,0,0.1);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        .container { max-width: 1140px; margin: 0 auto; padding: 0 24px; }
+
+        /* Header */
+        .header {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+            background: rgba(10,10,15,0.85); backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border-color);
+        }
+        body.light-mode .header { background: rgba(255,255,255,0.85); }
+        .header__content { display: flex; align-items: center; justify-content: space-between; height: 68px; }
+        .header__logo { display: flex; align-items: center; gap: 10px; }
+        .logo__text { font-size: 18px; font-weight: 800; background: linear-gradient(135deg, #6366f1, #06b6d4); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .header__nav .nav__list { display: flex; list-style: none; gap: 4px; }
+        .nav__link { text-decoration: none; font-size: 14px; font-weight: 500; padding: 8px 16px; border-radius: 8px; color: var(--text-secondary); transition: all 0.2s; }
+        .nav__link:hover { color: var(--text-primary); background: rgba(255,255,255,0.04); }
+
+        .order-page { padding-top: 120px; padding-bottom: 80px; }
+
+        .section__header { text-align: center; margin-bottom: 50px; }
+        .section__title { font-size: 36px; font-weight: 800; margin-bottom: 12px; }
+        .section__title .highlight { background: linear-gradient(135deg, #6366f1, #06b6d4); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .section__subtitle { font-size: 16px; color: var(--text-secondary); max-width: 600px; margin: 0 auto; line-height: 1.6; }
+
+        /* Plan Cards */
+        .plans-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-bottom: 60px; }
+        .plan-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 40px 28px;
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+        .plan-card:hover { transform: translateY(-4px); box-shadow: 0 20px 60px rgba(0,0,0,0.2); border-color: rgba(99,102,241,0.3); }
+        .plan-card.featured { border-color: #6366f1; border-width: 2px; box-shadow: 0 0 30px rgba(99,102,241,0.1); }
+        .plan-card .badge {
+            position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
+            background: linear-gradient(135deg, #6366f1, #06b6d4); color: white;
+            padding: 6px 20px; border-radius: 20px; font-size: 13px; font-weight: 700;
+            white-space: nowrap;
+        }
+        .plan-icon { width: 56px; height: 56px; border-radius: 16px; margin: 0 auto 16px; display: flex; align-items: center; justify-content: center; font-size: 24px; }
+        .plan-name { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
+        .plan-name-ko { font-size: 14px; color: var(--text-muted); margin-bottom: 16px; }
+        .plan-price { font-size: 38px; font-weight: 800; margin-bottom: 4px; color: #06b6d4; }
+        .plan-price .currency { font-size: 18px; font-weight: 500; color: var(--text-secondary); }
+        .plan-price .period { font-size: 14px; font-weight: 400; color: var(--text-muted); }
+        .plan-desc { font-size: 14px; color: var(--text-secondary); margin-bottom: 20px; line-height: 1.6; }
+        .plan-features { list-style: none; padding: 0; margin: 0 0 auto 0; text-align: left; flex-grow: 1; }
+        .plan-features li { padding: 10px 0; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; gap: 10px; font-size: 14px; }
+        .plan-features li i { color: #22c55e; font-size: 16px; flex-shrink: 0; }
+        .plan-features li .text-muted { color: var(--text-muted); }
+        .plan-cta {
+            display: inline-block; padding: 14px 32px; border: none; border-radius: 12px;
+            font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.3s ease;
+            text-decoration: none; width: 100%; margin-top: 24px;
+        }
+        .plan-cta.primary { background: linear-gradient(135deg, #6366f1, #06b6d4); color: white; }
+        .plan-cta.primary:hover { opacity: 0.9; transform: translateY(-2px); }
+        .plan-cta.secondary { background: transparent; border: 2px solid var(--border-color); color: var(--text-primary); }
+        .plan-cta.secondary:hover { border-color: #6366f1; }
+
+        /* Order Form */
+        .order-form-section { max-width: 700px; margin: 0 auto; }
+        .form-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 40px;
+        }
+        .form-card h3 { font-size: 22px; font-weight: 700; margin-bottom: 24px; display: flex; align-items: center; gap: 10px; }
+        .form-card h3 i { color: #6366f1; }
+        .form__group { margin-bottom: 20px; }
+        .form__label { display: block; margin-bottom: 8px; font-size: 14px; font-weight: 500; }
+        .form__input, .form__select {
+            width: 100%; padding: 14px 18px; border-radius: 12px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            font-size: 15px;
+            outline: none;
+            transition: border-color 0.2s;
+            box-sizing: border-box;
+        }
+        .form__input:focus, .form__select:focus { border-color: #6366f1; }
+        .form__input::placeholder { color: var(--text-muted); }
+        .form__row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        .form__actions { display: flex; gap: 12px; margin-top: 24px; }
+        .btn {
+            padding: 14px 32px; border-radius: 12px; font-size: 16px; font-weight: 600;
+            cursor: pointer; border: none; transition: all 0.3s ease; text-decoration: none;
+        }
+        .btn--primary { background: linear-gradient(135deg, #6366f1, #06b6d4); color: white; flex: 1; }
+        .btn--primary:hover { opacity: 0.9; transform: translateY(-2px); }
+        .btn--secondary { background: transparent; border: 1px solid var(--border-color); color: var(--text-primary); }
+        .btn--secondary:hover { background: var(--bg-tertiary); }
+        .btn--full { width: 100%; }
+
+        .back-link { text-align: center; margin-top: 40px; }
+        .back-link a { color: #06b6d4; text-decoration: none; font-size: 14px; }
+        .back-link a:hover { text-decoration: underline; }
+
+        /* Steps indicator */
+        .steps-indicator { display: flex; justify-content: center; gap: 8px; margin-bottom: 40px; }
+        .step-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--border-color); }
+        .step-dot.active { background: linear-gradient(135deg, #6366f1, #06b6d4); }
+        .step-dot.done { background: #22c55e; }
+
+        @media (max-width: 768px) {
+            .plans-grid { grid-template-columns: 1fr; }
+            .form__row { grid-template-columns: 1fr; }
+            .section__title { font-size: 28px; }
+        }
+
+        /* Toast */
+        .toast { position: fixed; bottom: 24px; right: 24px; padding: 14px 24px; border-radius: 12px; font-size: 14px; font-weight: 500; z-index: 1000; display: none; animation: fadeUp 0.3s ease; }
+        .toast.success { background: #065f46; color: #86efac; border: 1px solid rgba(34,197,94,0.3); }
+        .toast.error { background: #7f1d1d; color: #fca5a5; border: 1px solid rgba(239,68,68,0.3); }
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="header__content">
+                <div class="header__logo">
+                    <a href="/index_ko.html" style="text-decoration:none;"><h1 class="logo__text">중한 해외진출 디지털 포트</h1></a>
+                </div>
+                <nav class="header__nav">
+                    <ul class="nav__list">
+                        <li class="nav__item"><a href="/index_ko.html" class="nav__link">홈</a></li>
+                        <li class="nav__item"><a href="/index_ko.html#services" class="nav__link">서비스</a></li>
+                        <li class="nav__item"><a href="/pricing_ko.html" class="nav__link">요금</a></li>
+                        <li class="nav__item"><a href="/compliance/kr" class="nav__link">규정 진단</a></li>
+                        <li class="nav__item"><a href="/chat/ko" class="nav__link">AI 상담</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <section class="order-page">
+        <div class="container">
+            <div class="section__header">
+                <h2 class="section__title"><span class="highlight">서비스 패키지</span> 신청</h2>
+                <p class="section__subtitle">한국 기업의 중국 시장 진출을 위한 맞춤형 서비스 패키지를 선택하세요</p>
+            </div>
+
+            <!-- Plans Grid -->
+            <div class="plans-grid">
+                <!-- Basic -->
+                <div class="plan-card">
+                    <div class="plan-icon" style="background: linear-gradient(135deg, rgba(99,102,241,0.12), rgba(99,102,241,0.05));">
+                        <i class="bi bi-rocket" style="color: #6366f1;"></i>
+                    </div>
+                    <div class="plan-name">Basic</div>
+                    <div class="plan-name-ko">베이직 — 입문형</div>
+                    <div class="plan-price"><span class="currency">₩</span>990,000<span class="period"> /월</span></div>
+                    <p class="plan-desc">중국 시장 진출을 처음 고려하는 기업을 위한 기본 패키지</p>
+                    <ul class="plan-features">
+                        <li><i class="bi bi-check-circle"></i> AI 규정 준수 진단 (업종별 기본 진단)</li>
+                        <li><i class="bi bi-check-circle"></i> 1회 전문가 컨설팅 (1시간)</li>
+                        <li><i class="bi bi-check-circle"></i> 시장 진입 요건 리포트</li>
+                        <li><i class="bi bi-check-circle"></i> AI 상담사 이용 (5회/월)</li>
+                        <li><i class="bi bi-check-circle"></i> 기본 규정 가이드북 제공</li>
+                        <li><i class="bi bi-check-circle text-muted"></i> <span class="text-muted">전담 매니저 배정</span></li>
+                        <li><i class="bi bi-check-circle text-muted"></i> <span class="text-muted">현지 파트너 매칭</span></li>
+                    </ul>
+                    <button class="plan-cta secondary" onclick="selectPlan('basic', '베이직', '₩990,000/월', 990000)">선택하기</button>
+                </div>
+
+                <!-- Premium (Featured) -->
+                <div class="plan-card featured">
+                    <div class="badge">추천</div>
+                    <div class="plan-icon" style="background: linear-gradient(135deg, rgba(6,182,212,0.12), rgba(99,102,241,0.05));">
+                        <i class="bi bi-stars" style="color: #06b6d4;"></i>
+                    </div>
+                    <div class="plan-name">Premium</div>
+                    <div class="plan-name-ko">프리미엄 — 종합형</div>
+                    <div class="plan-price"><span class="currency">₩</span>2,900,000<span class="period"> /월</span></div>
+                    <p class="plan-desc">본격적인 중국 시장 진출을 준비하는 기업을 위한 종합 패키지</p>
+                    <ul class="plan-features">
+                        <li><i class="bi bi-check-circle"></i> AI 규정 준수 진단 (전 분야 종합 진단)</li>
+                        <li><i class="bi bi-check-circle"></i> 4회 전문가 컨설팅 (월 4시간)</li>
+                        <li><i class="bi bi-check-circle"></i> 맞춤형 시장 진출 전략 보고서</li>
+                        <li><i class="bi bi-check-circle"></i> AI 상담사 무제한 이용</li>
+                        <li><i class="bi bi-check-circle"></i> 채널 매칭 서비스 (3개 채널)</li>
+                        <li><i class="bi bi-check-circle"></i> 전담 매니저 배정</li>
+                        <li><i class="bi bi-check-circle text-muted"></i> <span class="text-muted">현지 법인 설립 지원</span></li>
+                    </ul>
+                    <button class="plan-cta primary" onclick="selectPlan('premium', '프리미엄', '₩2,900,000/월', 2900000)">선택하기</button>
+                </div>
+
+                <!-- Enterprise -->
+                <div class="plan-card">
+                    <div class="plan-icon" style="background: linear-gradient(135deg, rgba(16,185,129,0.12), rgba(6,182,212,0.05));">
+                        <i class="bi bi-buildings" style="color: #10b981;"></i>
+                    </div>
+                    <div class="plan-name">Enterprise</div>
+                    <div class="plan-name-ko">엔터프라이즈 — 맞춤형</div>
+                    <div class="plan-price"><span class="currency">₩</span>맞춤<span class="period"> 견적</span></div>
+                    <p class="plan-desc">대규모 중국 시장 진출 및 맞춤형 통합 서비스가 필요한 기업 전용</p>
+                    <ul class="plan-features">
+                        <li><i class="bi bi-check-circle"></i> AI 규정 준수 진단 + 실시간 모니터링</li>
+                        <li><i class="bi bi-check-circle"></i> 전문가 팀 상시 컨설팅</li>
+                        <li><i class="bi bi-check-circle"></i> 맞춤형 종합 진출 전략</li>
+                        <li><i class="bi bi-check-circle"></i> AI 상담사 + 전문가 지원</li>
+                        <li><i class="bi bi-check-circle"></i> 채널 매칭 무제한</li>
+                        <li><i class="bi bi-check-circle"></i> 전담 매니저 + 현지 팀 배정</li>
+                        <li><i class="bi bi-check-circle"></i> 현지 법인 설립 및 등록 지원</li>
+                    </ul>
+                    <button class="plan-cta secondary" onclick="selectPlan('enterprise', '엔터프라이즈', '맞춤 견적', 0)">문의하기</button>
+                </div>
+            </div>
+
+            <!-- Order Form -->
+            <div class="order-form-section" id="orderFormSection">
+                <div class="form-card">
+                    <h3><i class="bi bi-pencil-square"></i> 서비스 신청서</h3>
+
+                    <div class="steps-indicator">
+                        <div class="step-dot done"></div>
+                        <div class="step-dot active"></div>
+                        <div class="step-dot"></div>
+                    </div>
+
+                    <form id="serviceForm" onsubmit="submitOrder(event)">
+                        <div class="form__group">
+                            <label class="form__label">선택한 패키지</label>
+                            <input type="text" class="form__input form__input--readonly" id="selectedPlanDisplay" value="패키지를 선택해주세요" readonly style="opacity:0.7;">
+                        </div>
+
+                        <div class="form__group">
+                            <label class="form__label">패키지 선택</label>
+                            <select class="form__select" id="planSelect" onchange="updatePlanDisplay()">
+                                <option value="">-- 패키지를 선택하세요 --</option>
+                                <option value="basic">Basic — ₩990,000/월</option>
+                                <option value="premium">Premium — ₩2,900,000/월</option>
+                                <option value="enterprise">Enterprise — 맞춤 견적</option>
+                            </select>
+                        </div>
+
+                        <div class="form__row">
+                            <div class="form__group">
+                                <label class="form__label">기업명 <span style="color:#ef4444;">*</span></label>
+                                <input type="text" class="form__input" name="company" required placeholder="㈜한국무역">
+                            </div>
+                            <div class="form__group">
+                                <label class="form__label">담당자명 <span style="color:#ef4444;">*</span></label>
+                                <input type="text" class="form__input" name="name" required placeholder="홍길동">
+                            </div>
+                        </div>
+
+                        <div class="form__row">
+                            <div class="form__group">
+                                <label class="form__label">이메일 <span style="color:#ef4444;">*</span></label>
+                                <input type="email" class="form__input" name="email" required placeholder="contact@korean-company.kr">
+                            </div>
+                            <div class="form__group">
+                                <label class="form__label">연락처</label>
+                                <input type="tel" class="form__input" name="phone" placeholder="+82-10-1234-5678">
+                            </div>
+                        </div>
+
+                        <div class="form__group">
+                            <label class="form__label">업종</label>
+                            <select class="form__select" name="industry">
+                                <option value="">업종을 선택하세요</option>
+                                <option value="food">식품·음료</option>
+                                <option value="beauty">화장품·뷰티</option>
+                                <option value="fashion">패션·의류</option>
+                                <option value="electronics">전자제품</option>
+                                <option value="it">IT·소프트웨어</option>
+                                <option value="medical">의료·헬스케어</option>
+                                <option value="education">교육</option>
+                                <option value="other">기타</option>
+                            </select>
+                        </div>
+
+                        <div class="form__group">
+                            <label class="form__label">추가 요청사항</label>
+                            <textarea class="form__input" name="notes" rows="3" placeholder="추가로 문의하실 사항을 입력해주세요" style="resize:vertical;"></textarea>
+                        </div>
+
+                        <div class="form__actions">
+                            <button type="submit" class="btn btn--primary"><i class="bi bi-send"></i> 신청 제출</button>
+                            <button type="reset" class="btn btn--secondary" onclick="resetForm()">초기화</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="back-link">
+                <a href="/index_ko.html">← 홈으로 돌아가기</a>
+            </div>
+        </div>
+    </section>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        function selectPlan(plan, name, price, amount) {
+            document.getElementById('planSelect').value = plan;
+            updatePlanDisplay();
+            document.getElementById('selectedPlanDisplay').value = name + ' — ' + price;
+            document.getElementById('orderFormSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        function updatePlanDisplay() {
+            var select = document.getElementById('planSelect');
+            var display = document.getElementById('selectedPlanDisplay');
+            var plans = {
+                'basic': 'Basic — ₩990,000/월',
+                'premium': 'Premium — ₩2,900,000/월',
+                'enterprise': 'Enterprise — 맞춤 견적'
+            };
+            display.value = select.value ? plans[select.value] : '패키지를 선택해주세요';
+        }
+
+        function showToast(msg, type) {
+            var t = document.getElementById('toast');
+            t.textContent = msg;
+            t.className = 'toast ' + type;
+            t.style.display = 'block';
+            setTimeout(function(){ t.style.display = 'none'; }, 4000);
+        }
+
+        function resetForm() {
+            document.getElementById('serviceForm').reset();
+            document.getElementById('selectedPlanDisplay').value = '패키지를 선택해주세요';
+        }
+
+        function submitOrder(e) {
+            e.preventDefault();
+
+            var plan = document.getElementById('planSelect').value;
+            if (!plan) {
+                showToast('패키지를 선택해주세요', 'error');
+                return;
+            }
+
+            var form = document.getElementById('serviceForm');
+            var formData = new FormData(form);
+            var data = {
+                plan: plan,
+                company: formData.get('company'),
+                name: formData.get('name'),
+                email: formData.get('email'),
+                phone: formData.get('phone') || '',
+                industry: formData.get('industry') || '',
+                notes: formData.get('notes') || ''
+            };
+
+            // Show loading state
+            var btn = form.querySelector('.btn--primary');
+            var originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="bi bi-arrow-repeat"></i> 제출 중...';
+            btn.disabled = true;
+
+            // Submit to backend
+            fetch('/api/v1/orders', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    plan_type: data.plan,
+                    user_company: data.company,
+                    user_name: data.name,
+                    user_email: data.email,
+                    user_phone: data.phone,
+                    industry: data.industry,
+                    notes: data.notes,
+                    lang: 'ko'
+                })
+            })
+            .then(function(r) { return r.json(); })
+            .then(function(result) {
+                if (result.success) {
+                    showToast('신청이 완료되었습니다! 확인 이메일을 발송했습니다.', 'success');
+                    form.reset();
+                    document.getElementById('selectedPlanDisplay').value = '패키지를 선택해주세요';
+                } else {
+                    showToast(result.detail || '신청 중 오류가 발생했습니다', 'error');
+                }
+            })
+            .catch(function(err) {
+                showToast('네트워크 오류: ' + err.message, 'error');
+            })
+            .finally(function() {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            });
+        }
+    </script>
+</body>
+</html>

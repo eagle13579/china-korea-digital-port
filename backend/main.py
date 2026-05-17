@@ -266,6 +266,18 @@ async def compliance_kr_page():
 async def chat_ko_page():
     return FileResponse(os.path.join(ROOT_DIR, "templates", "chat_ko.html"))
 
+@app.get("/index_ko.html")
+async def index_ko_html():
+    return FileResponse(os.path.join(ROOT_DIR, "index_ko.html"))
+
+@app.get("/order_ko.html")
+async def order_ko_html():
+    return FileResponse(os.path.join(ROOT_DIR, "order_ko.html"))
+
+@app.get("/pricing_ko.html")
+async def pricing_ko_html():
+    return FileResponse(os.path.join(ROOT_DIR, "pricing_ko.html"))
+
 @app.get("/health")
 async def health():
     return {"status": "ok"}

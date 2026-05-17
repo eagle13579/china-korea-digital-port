@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>요금 안내 — 중한 해외진출 디지털 포트</title>
+    <meta name="description" content="SaaS 월간/연간 요금제: 베이직 ₩990,000/월, 프리미엄 ₩2,900,000/월, 엔터프라이즈 맞춤 견적. 연간 결제 시 20% 할인.">
+    <link rel="icon" href="favicon.ico">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        :root {
+            --bg-primary: #0A0A0F;
+            --bg-secondary: #12121A;
+            --bg-tertiary: #1A1A25;
+            --accent: #6366f1;
+            --accent2: #06b6d4;
+            --text-primary: #F1F5F9;
+            --text-secondary: #94A3B8;
+            --text-muted: #64748B;
+            --border-color: rgba(255,255,255,0.08);
+            --card-bg: #12121A;
+            --badge-bg: #6366f1;
+        }
+        body.light-mode {
+            --bg-primary: #F8FAFC;
+            --bg-secondary: #FFFFFF;
+            --bg-tertiary: #F1F5F9;
+            --text-primary: #1E293B;
+            --text-secondary: #475569;
+            --text-muted: #94A3B8;
+            --border-color: rgba(0,0,0,0.1);
+            --card-bg: #FFFFFF;
+            --badge-bg: #4f46e5;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        .container { max-width: 1140px; margin: 0 auto; padding: 0 24px; }
+
+        .header {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+            background: rgba(10,10,15,0.85); backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border-color);
+        }
+        body.light-mode .header { background: rgba(255,255,255,0.85); }
+        .header__content { display: flex; align-items: center; justify-content: space-between; height: 68px; }
+        .header__logo { display: flex; align-items: center; gap: 10px; }
+        .logo__text { font-size: 18px; font-weight: 800; background: linear-gradient(135deg, #6366f1, #06b6d4); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .header__nav .nav__list { display: flex; list-style: none; gap: 4px; }
+        .nav__link { text-decoration: none; font-size: 14px; font-weight: 500; padding: 8px 16px; border-radius: 8px; color: var(--text-secondary); transition: all 0.2s; }
+        .nav__link:hover { color: var(--text-primary); background: rgba(255,255,255,0.04); }
+
+        .pricing-page { padding-top: 120px; padding-bottom: 80px; }
+        .section__header { text-align: center; margin-bottom: 50px; }
+        .section__title { font-size: 36px; font-weight: 800; margin-bottom: 12px; }
+        .section__title .highlight { background: linear-gradient(135deg, #6366f1, #06b6d4); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .section__subtitle { font-size: 16px; color: var(--text-secondary); max-width: 600px; margin: 0 auto; line-height: 1.6; }
+
+        /* Billing toggle */
+        .billing-toggle { display: flex; align-items: center; justify-content: center; gap: 16px; margin-bottom: 40px; }
+        .billing-toggle .toggle-label { font-size: 15px; font-weight: 500; color: var(--text-secondary); cursor: pointer; transition: color 0.2s; }
+        .billing-toggle .toggle-label.active { color: var(--text-primary); font-weight: 600; }
+        .billing-toggle .toggle-switch { position: relative; width: 56px; height: 28px; background: var(--border-color); border-radius: 14px; cursor: pointer; transition: background 0.3s; flex-shrink: 0; }
+        .billing-toggle .toggle-switch.active { background: var(--accent); }
+        .billing-toggle .toggle-switch .toggle-knob { position: absolute; top: 3px; left: 3px; width: 22px; height: 22px; background: #fff; border-radius: 50%; transition: transform 0.3s ease; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+        .billing-toggle .toggle-switch.active .toggle-knob { transform: translateX(28px); }
+        .billing-toggle .savings-badge { background: #dc2626; color: #fff; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 12px; white-space: nowrap; }
+
+        /* Pricing Grid */
+        .pricing-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+        .pricing-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 40px 28px;
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+        .pricing-card:hover { transform: translateY(-5px); box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
+        .pricing-card.featured { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+        .pricing-card.featured .pricing-badge {
+            background: linear-gradient(135deg, #6366f1, #06b6d4);
+            color: #fff; padding: 6px 16px; border-radius: 20px;
+            font-size: 13px; position: absolute; top: -12px; left: 50%; transform: translateX(-50%); white-space: nowrap;
+        }
+        .pricing-name { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
+        .pricing-name-ko { font-size: 14px; color: var(--text-muted); margin-bottom: 16px; }
+        .pricing-price { font-size: 38px; font-weight: 700; margin-bottom: 4px; color: #06b6d4; }
+        .pricing-price .period { font-size: 16px; font-weight: 400; color: var(--text-secondary); }
+        .pricing-price .original-price { font-size: 16px; font-weight: 400; color: #999; text-decoration: line-through; margin-left: 8px; }
+        .pricing-discount-badge { display: inline-block; background: #dc2626; color: #fff; font-size: 12px; font-weight: 600; padding: 2px 10px; border-radius: 10px; margin-left: 8px; vertical-align: super; }
+        .pricing-desc { color: var(--text-secondary); margin-bottom: 16px; line-height: 1.6; font-size: 14px; }
+        .pricing-features { list-style: none; padding: 0; margin: 0 0 auto 0; text-align: left; flex-grow: 1; }
+        .pricing-features li { padding: 10px 0; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; gap: 10px; font-size: 14px; }
+        .pricing-features li i { color: #22c55e; font-size: 18px; flex-shrink: 0; }
+        .pricing-cta {
+            display: inline-block; padding: 14px 40px; border: none; border-radius: 12px;
+            font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.3s ease;
+            text-decoration: none; width: 100%; margin-top: 24px;
+        }
+        .pricing-cta.primary { background: linear-gradient(135deg, #6366f1, #06b6d4); color: #fff; }
+        .pricing-cta.primary:hover { opacity: 0.9; }
+        .pricing-cta.secondary { background: transparent; border: 2px solid var(--border-color); color: var(--text-primary); }
+        .pricing-cta.secondary:hover { border-color: var(--accent); background: var(--bg-tertiary); }
+
+        /* FAQ */
+        .pricing-faq { max-width: 800px; margin: 60px auto 0; }
+        .pricing-faq h2 { text-align: center; margin-bottom: 30px; font-size: 28px; font-weight: 700; }
+        .faq-item { padding: 20px 0; border-bottom: 1px solid var(--border-color); }
+        .faq-q { font-weight: 600; margin-bottom: 8px; font-size: 15px; display: flex; align-items: center; gap: 8px; }
+        .faq-q i { color: #06b6d4; }
+        .faq-a { color: var(--text-secondary); line-height: 1.6; font-size: 14px; padding-left: 28px; }
+
+        .back-link { text-align: center; margin-top: 40px; }
+        .back-link a { color: #06b6d4; text-decoration: none; font-size: 14px; }
+        .back-link a:hover { text-decoration: underline; }
+
+        /* Comparison Table */
+        .comparison-section { margin-top: 80px; }
+        .comparison-section h2 { text-align: center; margin-bottom: 30px; font-size: 28px; font-weight: 700; }
+        .comparison-table { width: 100%; border-collapse: collapse; border-radius: 16px; overflow: hidden; }
+        .comparison-table th, .comparison-table td { padding: 16px 20px; text-align: center; font-size: 14px; }
+        .comparison-table th { background: var(--bg-tertiary); font-weight: 600; }
+        .comparison-table td { border-bottom: 1px solid var(--border-color); }
+        .comparison-table tr:hover td { background: rgba(99,102,241,0.03); }
+        .comparison-table .feature-name { text-align: left; font-weight: 500; }
+        .comparison-table .check { color: #22c55e; }
+        .comparison-table .cross { color: #ef4444; }
+        .comparison-table .highlight-col { background: rgba(99,102,241,0.05); }
+
+        @media (max-width: 768px) {
+            .pricing-grid { grid-template-columns: 1fr; }
+            .section__title { font-size: 28px; }
+            .comparison-table { font-size: 12px; }
+            .comparison-table th, .comparison-table td { padding: 10px 8px; }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="header__content">
+                <div class="header__logo">
+                    <a href="/index_ko.html" style="text-decoration:none;"><h1 class="logo__text">중한 해외진출 디지털 포트</h1></a>
+                </div>
+                <nav class="header__nav">
+                    <ul class="nav__list">
+                        <li class="nav__item"><a href="/index_ko.html" class="nav__link">홈</a></li>
+                        <li class="nav__item"><a href="/index_ko.html#services" class="nav__link">서비스</a></li>
+                        <li class="nav__item"><a href="/order_ko.html" class="nav__link">신청</a></li>
+                        <li class="nav__item"><a href="/compliance/kr" class="nav__link">규정 진단</a></li>
+                        <li class="nav__item"><a href="/chat/ko" class="nav__link">AI 상담</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <section class="pricing-page">
+        <div class="container">
+            <div class="section__header">
+                <h2 class="section__title"><span class="highlight">SaaS 구독</span> 요금제</h2>
+                <p class="section__subtitle">AI 디지털 직원이 지원하는 중국 시장 진출 SaaS 서비스, 월간/연간 유연한 구독</p>
+            </div>
+
+            <!-- Billing toggle -->
+            <div class="billing-toggle">
+                <span class="toggle-label active" id="labelMonthly">월간 결제</span>
+                <div class="toggle-switch" id="billingToggle" onclick="toggleBilling()">
+                    <div class="toggle-knob"></div>
+                </div>
+                <span class="toggle-label" id="labelYearly">연간 결제</span>
+                <span class="savings-badge">20% 할인</span>
+            </div>
+
+            <!-- Pricing Cards -->
+            <div class="pricing-grid" id="pricingGrid">
+                <!-- Basic -->
+                <div class="pricing-card">
+                    <div class="pricing-name">Basic</div>
+                    <div class="pricing-name-ko">베이직 — 입문형</div>
+                    <div class="pricing-price" id="price-basic">
+                        <span class="currency">₩</span>990,000<span class="period"> /월</span>
+                    </div>
+                    <p class="pricing-desc">중국 시장 진출을 처음 고려하는 기업을 위한 기본 패키지</p>
+                    <ul class="pricing-features">
+                        <li><i class="bi bi-check-circle"></i> AI 규정 준수 진단 (기본)</li>
+                        <li><i class="bi bi-check-circle"></i> 전문가 컨설팅 1회/월</li>
+                        <li><i class="bi bi-check-circle"></i> 시장 진입 요건 리포트</li>
+                        <li><i class="bi bi-check-circle"></i> AI 상담 5회/월</li>
+                        <li><i class="bi bi-check-circle"></i> 기본 규정 가이드북</li>
+                        <li><i class="bi bi-check-circle" style="color: var(--text-muted);"></i> <span style="color: var(--text-muted);">전담 매니저</span></li>
+                        <li><i class="bi bi-check-circle" style="color: var(--text-muted);"></i> <span style="color: var(--text-muted);">채널 매칭</span></li>
+                    </ul>
+                    <a href="/order_ko.html?plan=basic" class="pricing-cta secondary">구독 시작</a>
+                </div>
+
+                <!-- Premium (Featured) -->
+                <div class="pricing-card featured">
+                    <div class="pricing-badge">가장 인기</div>
+                    <div class="pricing-name">Premium</div>
+                    <div class="pricing-name-ko">프리미엄 — 종합형</div>
+                    <div class="pricing-price" id="price-premium">
+                        <span class="currency">₩</span>2,900,000<span class="period"> /월</span>
+                    </div>
+                    <p class="pricing-desc">본격적인 중국 시장 진출을 준비하는 기업을 위한 종합 패키지</p>
+                    <ul class="pricing-features">
+                        <li><i class="bi bi-check-circle"></i> AI 규정 준수 진단 (전 분야)</li>
+                        <li><i class="bi bi-check-circle"></i> 전문가 컨설팅 4회/월</li>
+                        <li><i class="bi bi-check-circle"></i> 맞춤형 진출 전략 보고서</li>
+                        <li><i class="bi bi-check-circle"></i> AI 상담 무제한</li>
+                        <li><i class="bi bi-check-circle"></i> 채널 매칭 (3개 채널)</li>
+                        <li><i class="bi bi-check-circle"></i> 전담 매니저 배정</li>
+                        <li><i class="bi bi-check-circle" style="color: var(--text-muted);"></i> <span style="color: var(--text-muted);">법인 설립 지원</span></li>
+                    </ul>
+                    <a href="/order_ko.html?plan=premium" class="pricing-cta primary">구독 시작</a>
+                </div>
+
+                <!-- Enterprise -->
+                <div class="pricing-card">
+                    <div class="pricing-name">Enterprise</div>
+                    <div class="pricing-name-ko">엔터프라이즈 — 맞춤형</div>
+                    <div class="pricing-price" id="price-enterprise" style="font-size: 28px;">
+                        <span class="currency">₩</span>맞춤 견적
+                    </div>
+                    <p class="pricing-desc">대규모 중국 시장 진출이 필요한 기업을 위한 맞춤형 통합 서비스</p>
+                    <ul class="pricing-features">
+                        <li><i class="bi bi-check-circle"></i> AI 규정 진단 + 실시간 모니터링</li>
+                        <li><i class="bi bi-check-circle"></i> 전문가 팀 상시 컨설팅</li>
+                        <li><i class="bi bi-check-circle"></i> 종합 맞춤 진출 전략</li>
+                        <li><i class="bi bi-check-circle"></i> AI 상담 + 전문가 지원</li>
+                        <li><i class="bi bi-check-circle"></i> 채널 매칭 무제한</li>
+                        <li><i class="bi bi-check-circle"></i> 전담 매니저 + 현지 팀</li>
+                        <li><i class="bi bi-check-circle"></i> 법인 설립 및 등록 지원</li>
+                    </ul>
+                    <a href="/order_ko.html?plan=enterprise" class="pricing-cta secondary">문의하기</a>
+                </div>
+            </div>
+
+            <!-- Comparison Table -->
+            <div class="comparison-section">
+                <h2>서비스 비교</h2>
+                <div style="overflow-x:auto;">
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th style="text-align:left;">기능</th>
+                                <th>Basic</th>
+                                <th class="highlight-col">Premium</th>
+                                <th>Enterprise</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="feature-name">AI 규정 준수 진단</td>
+                                <td>업종별 기본</td>
+                                <td class="highlight-col">전 분야 종합</td>
+                                <td>전 분야 + 실시간</td>
+                            </tr>
+                            <tr>
+                                <td class="feature-name">전문가 컨설팅</td>
+                                <td>1회/월 (1시간)</td>
+                                <td class="highlight-col">4회/월 (4시간)</td>
+                                <td>상시 지원</td>
+                            </tr>
+                            <tr>
+                                <td class="feature-name">시장 진출 전략</td>
+                                <td>기본 리포트</td>
+                                <td class="highlight-col">맞춤형 보고서</td>
+                                <td>종합 맞춤 전략</td>
+                            </tr>
+                            <tr>
+                                <td class="feature-name">AI 상담사</td>
+                                <td>5회/월</td>
+                                <td class="highlight-col">무제한</td>
+                                <td>무제한</td>
+                            </tr>
+                            <tr>
+                                <td class="feature-name">채널 매칭</td>
+                                <td><i class="bi bi-x-circle cross"></i></td>
+                                <td class="highlight-col">3개 채널</td>
+                                <td>무제한</td>
+                            </tr>
+                            <tr>
+                                <td class="feature-name">전담 매니저</td>
+                                <td><i class="bi bi-x-circle cross"></i></td>
+                                <td class="highlight-col"><i class="bi bi-check-circle check"></i></td>
+                                <td><i class="bi bi-check-circle check"></i></td>
+                            </tr>
+                            <tr>
+                                <td class="feature-name">현지 법인 설립 지원</td>
+                                <td><i class="bi bi-x-circle cross"></i></td>
+                                <td class="highlight-col"><i class="bi bi-x-circle cross"></i></td>
+                                <td><i class="bi bi-check-circle check"></i></td>
+                            </tr>
+                            <tr>
+                                <td class="feature-name">현지 팀 배정</td>
+                                <td><i class="bi bi-x-circle cross"></i></td>
+                                <td class="highlight-col"><i class="bi bi-x-circle cross"></i></td>
+                                <td><i class="bi bi-check-circle check"></i></td>
+                            </tr>
+                            <tr>
+                                <td class="feature-name">이메일 지원</td>
+                                <td><i class="bi bi-check-circle check"></i></td>
+                                <td class="highlight-col"><i class="bi bi-check-circle check"></i></td>
+                                <td><i class="bi bi-check-circle check"></i></td>
+                            </tr>
+                            <tr>
+                                <td class="feature-name">전화/채팅 지원</td>
+                                <td>업무 시간</td>
+                                <td class="highlight-col">연장 지원</td>
+                                <td>24/7</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- FAQ -->
+            <div class="pricing-faq">
+                <h2>자주 묻는 질문</h2>
+                <div class="faq-item">
+                    <div class="faq-q"><i class="bi bi-question-circle"></i> Q: 월간 결제와 연간 결제의 차이는 무엇인가요?</div>
+                    <div class="faq-a">월간 결제는 매월 자동 결제되며 언제든지 해지할 수 있습니다. 연간 결제는 1년 치를 선불로 결제하시면 20% 할인 혜택을 받으실 수 있습니다. 두 방식 모두 언제든지 상위 요금제로 업그레이드 가능합니다.</div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-q"><i class="bi bi-question-circle"></i> Q: AI 규정 준수 진단은 어떻게 진행되나요?</div>
+                    <div class="faq-a">6명의 AI 디지털 전문 관료(시장 진입-서준, 데이터 보안-유진, 지식 재산권-지호, 세무-재현, 노무-현우, 비자-미영)가 각 분야별로 진단을 수행합니다. Basic은 1명, Premium은 6명 전면 개방, Enterprise는 실시간 모니터링이 추가됩니다.</div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-q"><i class="bi bi-question-circle"></i> Q: 규정 진단은 월 몇 회까지 가능한가요?</div>
+                    <div class="faq-a">Basic은 월 5회, Premium과 Enterprise는 무제한입니다. 진단 범위는 시장 진입 허가, 데이터 보안, 지식 재산권, 세무, 노무, 비자 6대 분야를 포괄합니다.</div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-q"><i class="bi bi-question-circle"></i> Q: 어떤 결제 방식을 지원하나요?</div>
+                    <div class="faq-a">신용카드, Alipay, WeChat Pay, 은행 송금을 지원합니다. 기업 고객은 세금 계산서 발행이 가능합니다. 해외 결제는 미국 달러(USD)와 한국 원(KRW) 결제를 지원합니다.</div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-q"><i class="bi bi-question-circle"></i> Q: 환불이 가능한가요?</div>
+                    <div class="faq-a">최초 구독 후 7일 이내 청약 철회가 가능합니다. 환불 시 해당 구독은 즉시 종료되며, 이미 사용한 서비스 건수는 비례하여 차감됩니다.</div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-q"><i class="bi bi-question-circle"></i> Q: 무료 체험판이 있나요?</div>
+                    <div class="faq-a">네, <a href="/compliance/kr" style="color:#06b6d4;">AI 규정 준수 진단</a> 페이지에서 무료로 기본 진단을 체험하실 수 있습니다. 업종과 제품 정보를 입력하시면 5분 이내에 맞춤형 규정 준수 리포트를 받아보실 수 있습니다.</div>
+                </div>
+            </div>
+
+            <div class="back-link">
+                <a href="/index_ko.html">← 홈으로 돌아가기</a>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        var isYearly = false;
+
+        // Pricing data
+        var prices = {
+            basic: { monthly: 990000, yearly: 9500000 },
+            premium: { monthly: 2900000, yearly: 27840000 },
+            enterprise: { monthly: '맞춤 견적', yearly: '맞춤 견적' }
+        };
+
+        function toggleBilling() {
+            isYearly = !isYearly;
+            var toggle = document.getElementById('billingToggle');
+            var labelM = document.getElementById('labelMonthly');
+            var labelY = document.getElementById('labelYearly');
+
+            toggle.classList.toggle('active', isYearly);
+            labelM.classList.toggle('active', !isYearly);
+            labelY.classList.toggle('active', isYearly);
+
+            updatePrices();
+        }
+
+        function updatePrices() {
+            var basicEl = document.getElementById('price-basic');
+            var premiumEl = document.getElementById('price-premium');
+            var enterpriseEl = document.getElementById('price-enterprise');
+
+            if (isYearly) {
+                basicEl.innerHTML = '<span class="currency">₩</span>9,500,000<span class="period"> /년</span><span class="pricing-discount-badge">20% 할인</span>';
+                premiumEl.innerHTML = '<span class="currency">₩</span>27,840,000<span class="period"> /년</span><span class="pricing-discount-badge">20% 할인</span>';
+                enterpriseEl.innerHTML = '<span class="currency">₩</span>맞춤 견적';
+            } else {
+                basicEl.innerHTML = '<span class="currency">₩</span>990,000<span class="period"> /월</span>';
+                premiumEl.innerHTML = '<span class="currency">₩</span>2,900,000<span class="period"> /월</span>';
+                enterpriseEl.innerHTML = '<span class="currency">₩</span>맞춤 견적';
+            }
+        }
+    </script>
+</body>
+</html>
